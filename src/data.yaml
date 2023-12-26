@@ -1,0 +1,211 @@
+litters:
+  # each weight represents the chance of an offspring count related to the position of the weight in the list
+  # for example, the first weight is the chance of 1 offspring, the second weight is the chance of 2 offspring, etc.
+  weights:
+    - 1.00
+    - 0.50
+    - 0.10
+    - 0.02
+
+genders:
+  Female:
+    base_chance: 0.6
+  Male:
+    base_chance: 0.4
+
+markings:
+  random_cap: 12
+  available:
+    Limited:
+      inherit_chance:
+        single: 1.00
+      options:
+        - Limited_1
+    Common:
+      inherit_chance:
+        single: 0.75
+        double: 0.95
+      options:
+        - Common_1
+    Uncommon:
+      inherit_chance:
+        single: 0.50
+        double: 0.75
+      options:
+        - Uncommon_1
+    Rare:
+      inherit_chance:
+        single: 0.25
+        double: 0.50
+      options:
+        - Rare_1
+    Epic:
+      inherit_chance:
+        single: 0.10
+        double: 0.20
+      options:
+        - Epic_1
+    Legendary:
+      inherit_chance:
+        single: 0.05
+        double: 0.10
+      options:
+        - Legendary_1
+
+traits:
+  random_cap: 6
+  available:
+    Common:
+      inherit_chance:
+        single: 0.50
+        double: 0.75
+      options:
+        - Common_1
+    Uncommon:
+      inherit_chance:
+        single: 0.25
+        double: 0.50
+      options:
+        - Uncommon_1
+    Rare:
+      inherit_chance:
+        single: 0.15
+        double: 0.30
+      options:
+        - Rare_1
+    Epic:
+      inherit_chance:
+        single: 0.10
+        double: 0.20
+      options:
+        - Epic_1
+    Legendary:
+      inherit_chance:
+        single: 0.05
+        double: 0.10
+      options:
+        - Legendary_1
+    Unique:
+      inherit_chance:
+        single: 0.05
+        double: 0.10
+      options:
+        - Unique_1
+
+# each element represents a separate option, with the options repeated with their weight of recieving that alternative
+# if the weight is null, the combination are considered illegal
+# for example, if one parent is Brute, and the second is Regal, the offspring's chance of being Regal is based on the weight listed under Brute>Regal
+builds:
+  default: Brute
+  available:
+    Brute:
+      inherit_chance:
+        Brute: 1.00
+        Regal: 0.40
+        Dwarf: 0.20
+        Domestic: null
+    Regal:
+      inherit_chance:
+        Brute: 0.60
+        Regal: 1.00
+        Dwarf: 0.40
+        Domestic: 0.20
+    Dwarf:
+      inherit_chance:
+        Brute: 0.80
+        Regal: 0.60
+        Dwarf: 1.00
+        Domestic: 0.40
+    Domestic:
+      inherit_chance:
+        Brute: null
+        Regal: 0.80
+        Dwarf: 0.60
+        Domestic: 1.00
+
+# each element represents a separate option, with the options repeated with their weight of receiving that alternative
+# for example, if one parent is Tan, and the second is Cream, the offspring's chance of being Cream is based on the weight listed for Tan>Cream
+coats:
+  # how do I handle random rolling coat?
+  Tan:
+    inherit_chance:
+      Tan: 1.00
+      Cream: 0.35
+      Agouti: 0.25
+  Cream:
+    inherit_chance:
+      Tan: 0.65
+      Cream: 1.00
+      Agouti: 0.35
+  Agouti:
+    inherit_chance:
+      Tan: 0.75
+      Cream: 0.65
+      Agouti: 1.00
+
+furs:
+  rare_chance: 0.05
+  # roll once - total
+  inherit_chance:
+    single: 0.25 # if at least one parent has the fur
+    double: 0.40 # if both parents have the fur
+  base_option: Sleek
+  rare_options:
+    - Curly
+    - Polar
+    - Silky
+    - Sphynx
+
+mutations:
+  random_cap: 2
+  base_chance: 0.03
+  # roll per parent
+  inherit_chance:
+    single: 0.1 # if at least one parent has the mutation
+  available:
+    - test_one
+    - test_two
+    - test_three
+
+add_ons:
+  AO_APHRO_PASSION:
+    display_name: Aphrodite's Passion
+    description: When selected, all cubs are guaranteed to be female.
+    mutually_exlusive: AO_HEPHAESTUS_FERVOR
+  AO_BIG_BONED:
+    display_name: Big Boned
+    description: Increases the chance offspring will be a Brute build
+  AO_BIRTHRIGHT:
+    display_name: Birthright
+    description: Increase the chance of Common, Uncommon, and Rare traits to be inherited by 15%.
+  AO_BLOSSOM_CHLORIS:
+    display_name: Blossom of Chloris
+    description: Guarantees an additional cub will be born. # does this go over the cap?, so is 5 possible?.
+  AO_BRUTE_POTION:
+    display_name: Brute Potion
+    description: Guarantees at least 1 cub will be a Brute build.
+  AO_DELICATE:
+    display_name: Delicate
+    description: Increases the chance offspring will be a Regal build.
+  AO_DOMESTIC_POTION:
+    display_name: Domestic Potion
+    description: Guarantees at least 1 cub will be a Dwarf build.
+  AO_FERTILITY_TREATMENT:
+    display_name: Fertility Treatment
+    description: 15% chance of 1-2 additional cubs being born. # does this go over the cap? so is 6 possible?
+  AO_HEPHAESTUS_FERVOR:
+    display_name: Hephaestus' Fervor
+    description: When selected, all cubs are guaranteed to be male.
+    mutually_exlusive: AO_APHRO_PASSION
+  AO_MUTATION_STONE:
+    display_name: Mutation Stone
+    description: Guarantees at least 1 cub will have a random mutation.
+  AO_REGAL_POTION:
+    display_name: Regal Potion
+    description: Guarantees at least 1 cub will be a Regal build.
+  AO_TINCTURE_TRANSFORMATION:
+    display_name: Tincture of Transformation
+    description: Guarantees at least 1 cub will be a Dwarf build.
+  AO_WEREWORM:
+    display_name: Wereworm
+    description: Increases chance of an offspring having a mutation by 15%.
