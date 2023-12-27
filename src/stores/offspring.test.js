@@ -4,7 +4,7 @@ import { describe, expect, it, beforeEach, vi } from "vitest"
 import offspringStore from "./offspring"
 
 import DATA from '@/data.yaml'
-import { FURS } from '@/Constants.js'
+import { FURS, COATS } from '@/Constants.js'
 
 describe('offspringStore', () => {
     beforeEach(() => {
@@ -153,6 +153,44 @@ describe('offspringStore', () => {
                 const result = offspring.representation.fur
                 expect(result).not.toBe(FURS.Sleek)
                 expect(DATA.furs.rare_options).toContain(result)
+            })
+        })
+    })
+
+    describe('generateCoat', () => {
+        describe('when both parents have the same coat', () => {
+            it('always returns the same coat as the parents', () => {
+                const expectedCoat = COATS.Cream
+                const offspring = offspringStore()
+                const parent = { coat: expectedCoat}
+
+                const mockMethod = vi.fn().mockImplementation(() => false)
+                offspring.generateCoat(parent, parent, mockMethod)
+    
+                expect(mockMethod.mock.calls.length).toBe(0)
+                expect(offspring.representation.coat).toBe(expectedCoat)
+            })
+        })
+
+        describe('when parents have different coats', () => {
+            it("returns the father's coat when the inherit roll is unsuccessful", () => {
+                const offspring = offspringStore()
+                const father = { coat: COATS.Cream }
+                const mother = { coat: COATS.Tan }
+
+                offspring.generateCoat(father, mother, () => false)
+
+                expect(offspring.representation.coat).toBe(father.coat)
+            })
+
+            it("returns the mother's coat when the inherit roll is successful", () => {
+                const offspring = offspringStore()
+                const father = { coat: COATS.Cream }
+                const mother = { coat: COATS.Tan }
+
+                offspring.generateCoat(father, mother, () => true)
+
+                expect(offspring.representation.coat).toBe(mother.coat)
             })
         })
     })

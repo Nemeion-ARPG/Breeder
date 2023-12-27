@@ -10,7 +10,8 @@ import { FURS } from '@/Constants.js'
 
 export default defineStore('offspring', () => {
     const representation = ref({
-        fur: null
+        fur: null,
+        coat: null,
     })
   
     function generateFur(father, mother, rareChanceRoll = rollRandom) {
@@ -61,7 +62,22 @@ export default defineStore('offspring', () => {
             representation.value.fur = rollRandomFur()
         }
     }
+
+    function generateCoat(father, mother, inheritChanceRoll = rollRandom) {
+        if (father.coat === mother.coat) {
+            // both are the same, just use one of them as the reference
+            representation.value.coat = father.coat
+        } else {
+            // find the mother's chance of passing on the trait by looking up the coat of the father
+            const inheritChance = DATA.coats[father.coat].inherit_chance[mother.coat]
+            if (inheritChanceRoll(inheritChance)) {
+                representation.value.coat = mother.coat
+            } else {
+                representation.value.coat = father.coat
+            }
+        }
+    }
   
-    return { representation, generateFur }
+    return { representation, generateFur, generateCoat }
   })
   
