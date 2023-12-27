@@ -4,7 +4,7 @@ import { describe, expect, it, beforeEach, vi } from "vitest"
 import offspringStore from "./offspring"
 
 import DATA from '@/data.yaml'
-import { FURS, COATS } from '@/Constants.js'
+import { GENDERS, FURS, COATS } from '@/Constants.js'
 
 describe('offspringStore', () => {
     beforeEach(() => {
@@ -192,6 +192,20 @@ describe('offspringStore', () => {
 
                 expect(offspring.representation.coat).toBe(mother.coat)
             })
+        })
+    })
+
+    describe('generateGender', () => {
+        it('returns female if the roll is successful', () => {
+            const offspring = offspringStore()
+            offspring.generateGender(() => true)
+            expect(offspring.representation.gender).toBe(GENDERS.Female)
+        })
+
+        it('returns male if the roll is unsuccessful', () => {
+            const offspring = offspringStore()
+            offspring.generateGender(() => false)
+            expect(offspring.representation.gender).toBe(GENDERS.Male)
         })
     })
 })

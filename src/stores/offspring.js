@@ -4,12 +4,13 @@ import { defineStore } from 'pinia'
 import { rollRandom } from '@/utils'
 
 import DATA from '@/data.yaml'
-import { FURS } from '@/Constants.js'
+import { FURS, GENDERS } from '@/Constants.js'
 
 /// Always use the mother as the tie-breaker for inherited traits
 
 export default defineStore('offspring', () => {
     const representation = ref({
+        gender: null,
         fur: null,
         coat: null,
     })
@@ -77,7 +78,11 @@ export default defineStore('offspring', () => {
             }
         }
     }
+
+    function generateGender(chanceRoll = rollRandom) {
+        representation.value.gender = chanceRoll(DATA.genders.Female.base_chance) ? GENDERS.Female : GENDERS.Male
+    }
   
-    return { representation, generateFur, generateCoat }
+    return { representation, generateFur, generateCoat, generateGender }
   })
   
