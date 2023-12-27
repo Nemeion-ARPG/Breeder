@@ -1,10 +1,13 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
-import { rollRandom } from '@/utils'
+import _random from 'lodash/random'
+import _sample from 'lodash/sample'
 
 import DATA from '@/data.yaml'
 import { FURS, GENDERS } from '@/Constants.js'
+
+const rollRandom = _random(0, 1, true)
 
 /// Always use the mother as the tie-breaker for inherited traits
 
@@ -13,6 +16,7 @@ export default defineStore('offspring', () => {
         gender: null,
         fur: null,
         coat: null,
+        mutations: [],
     })
   
     function generateFur(father, mother, rareChanceRoll = rollRandom) {
@@ -82,7 +86,28 @@ export default defineStore('offspring', () => {
     function generateGender(chanceRoll = rollRandom) {
         representation.value.gender = chanceRoll(DATA.genders.Female.base_chance) ? GENDERS.Female : GENDERS.Male
     }
+
+    function generateMutations(father, mother, chanceRoll = rollRandom, randomMutation = _sample) {
+        let result = []
+
+        if (father.hasMutations || mother.hasMutations) {
+            // build a super-set list of mutations to inherit from both parents
+            const mutations = [...father.mutations, ...mother.mutations]
+            for (const mutation of mutations) {
+                if (chanceRoll(DATA.mutations.inherit_chance)) {
+                    result.push(mutation)
+                }
+            }
+        }
+
+        // always roll for a potentially random mutation
+        if (chanceRoll(DATA.mutations.base_chance)) {
+            result.push(randomMutation(DATA.mutations.available))
+        }
+
+        representation.value.mutations = [...new Set(result)]
+    }
   
-    return { representation, generateFur, generateCoat, generateGender }
+    return { representation, generateFur, generateCoat, generateGender, generateMutations }
   })
   

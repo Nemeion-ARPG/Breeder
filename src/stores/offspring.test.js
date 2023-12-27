@@ -4,7 +4,7 @@ import { describe, expect, it, beforeEach, vi } from "vitest"
 import offspringStore from "./offspring"
 
 import DATA from '@/data.yaml'
-import { GENDERS, FURS, COATS } from '@/Constants.js'
+import { GENDERS, FURS, COATS, MUTATIONS } from '@/Constants.js'
 
 describe('offspringStore', () => {
     beforeEach(() => {
@@ -206,6 +206,96 @@ describe('offspringStore', () => {
             const offspring = offspringStore()
             offspring.generateGender(() => false)
             expect(offspring.representation.gender).toBe(GENDERS.Male)
+        })
+    })
+
+    describe('generateMutations', () => {
+        it('returns a unique list of mutations in the final result set', () => {
+            const parent = { hasMutations: true, mutations: [MUTATIONS.test_one] }
+            const offspring = offspringStore()
+
+            offspring.generateMutations(parent, parent, () => true, () => MUTATIONS.test_one)
+
+            expect(offspring.representation.mutations.length).toBe(1)
+        })
+
+        describe('when neither parents have mutations', () => {
+            const parent = { hasMutations: false }
+
+            it('returns no mutations if the chance roll is unsuccessful', () => {
+                const offspring = offspringStore()
+
+                offspring.generateMutations(parent, parent, () => false)
+
+                expect(offspring.representation.mutations).toEqual([])
+            })
+
+            it('returns a random mutation if the chance roll is successful', () => {            
+                const offspring = offspringStore()
+
+                offspring.generateMutations(parent, parent, () => true)
+
+                expect(offspring.representation.mutations.length).toBe(1)
+                expect(DATA.mutations.available).toContain(offspring.representation.mutations[0])
+            })
+        })
+
+        describe('when either parent has mutations', () => {
+            it('rolls for each mutation for inheritance individually', () => {
+                const father = { hasMutations: true, mutations: [MUTATIONS.test_one] }
+                const mother = { hasMutations: true, mutations: [MUTATIONS.test_one, MUTATIONS.test_two] }
+
+                const offspring = offspringStore()
+
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                offspring.generateMutations(father, mother, mockMethod)
+
+                expect(mockMethod.mock.calls.length).toBe(4) // 1 per mutation + 1 for the random roll
+            })
+
+            it('rolls an inherit chance for each parent with a mutation', () => {
+                const parent = { hasMutations: true, mutations: [MUTATIONS.test_one] }
+                const offspring = offspringStore()
+
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                offspring.generateMutations(parent, parent, mockMethod)
+
+                expect(mockMethod.mock.calls.length).toBe(3)
+            })
+
+            it('always rolls for a random mutation', () => {
+                const parent = { hasMutations: true, mutations: [MUTATIONS.test_one] }
+                const offspring = offspringStore()
+
+                const chanceRoll = vi.fn().mockImplementation(() => true)
+                offspring.generateMutations({}, {}, chanceRoll)
+
+                expect(chanceRoll.mock.calls.length).toBe(1)
+            })
+
+            it('only rolls for a random mutation once', () => {
+                const parent = { hasMutations: true, mutations: [MUTATIONS.test_one] }
+                const offspring = offspringStore()
+
+                const randomMutation = vi.fn().mockImplementation(() => parent.mutations[0])
+
+                offspring.generateMutations(parent, parent, () => true, randomMutation)
+                expect(randomMutation.mock.calls.length).toBe(1)
+
+                randomMutation.mockReset()
+
+                offspring.generateMutations({}, {}, () => true, randomMutation)
+                expect(randomMutation.mock.calls.length).toBe(1)
+            })
+
+            it('returns the parent mutations if the inherit roll is successful', () => {
+                const parent = { hasMutations: true, mutations: [MUTATIONS.test_one] }
+                const offspring = offspringStore()
+
+                offspring.generateMutations(parent, parent, () => true)
+
+                expect(offspring.representation.mutations).toContain(MUTATIONS.test_one)
+            })
         })
     })
 })
