@@ -22,6 +22,16 @@ export default defineStore('offspring', () => {
         traits: [],
         markings: []
     })
+
+    function generateFromParents(father, mother, chanceRoll = rollRandom, randomMutation = _sample) {
+        generateGender(chanceRoll)
+        generateFur(father, mother, chanceRoll)
+        generateCoat(father, mother, chanceRoll)
+        generateBuild(father, mother, chanceRoll)
+        generateMutations(father, mother, chanceRoll, randomMutation)
+        generateTraits(father, mother, chanceRoll)
+        generateMarkings(father, mother, chanceRoll)
+    }
   
     function generateFur(father, mother, rareChanceRoll = rollRandom) {
         function rollRandomFur() {
@@ -171,6 +181,8 @@ export default defineStore('offspring', () => {
   
     return {
         representation,
+        generateFromParents,
+
         generateFur,
         generateCoat,
         generateGender,
