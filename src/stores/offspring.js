@@ -17,6 +17,7 @@ export default defineStore('offspring', () => {
         gender: null,
         fur: null,
         coat: null,
+        build: null,
         mutations: [],
         traits: [],
     })
@@ -143,12 +144,24 @@ export default defineStore('offspring', () => {
 
         representation.value.traits = [...new Set(result)]
     }
+
+    function generateBuild(father, mother, chanceRoll = rollRandom) {
+        let fatherBuild = DATA.builds.available[father.build]
+        let inheritChance = fatherBuild.inherit_chance[mother.build]
+
+        if (inheritChance) { // this may be null explicitly in the dataset
+            representation.value.build = chanceRoll(inheritChance) ? mother.build : father.build
+        } else {
+            throw new Error('incompatible builds')
+        }
+    }
   
     return {
         representation,
         generateFur,
         generateCoat,
         generateGender,
+        generateBuild,
         generateMutations,
         generateTraits
     }

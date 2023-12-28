@@ -4,7 +4,7 @@ import { describe, expect, it, beforeEach, vi } from "vitest"
 import offspringStore from "./offspring"
 
 import DATA from '@/data.yaml'
-import { GENDERS, FURS, COATS, MUTATIONS, TRAITS, TRAIT_QUALITIES } from '@/Constants.js'
+import { GENDERS, FURS, COATS, BUILDS, MUTATIONS, TRAITS, TRAIT_QUALITIES } from '@/Constants.js'
 
 describe('offspringStore', () => {
     beforeEach(() => {
@@ -404,6 +404,67 @@ describe('offspringStore', () => {
                 offspring.generateTraits(parent, {}, () => false)
     
                 expect(offspring.representation.traits).toEqual([])
+            })
+        })
+    })
+
+    describe('generateBuild', () => {
+        describe('when both parents have the same build', () => {
+            it('uses the same build as the parents', () => {
+                const offspring = offspringStore()
+                const parent = { build: BUILDS.Brute }
+
+                offspring.generateBuild(parent, parent)
+
+                expect(offspring.representation.build).toBe(parent.build)
+            })
+        })
+
+        describe('when both parents have different builds', () => {
+            describe('and the builds are incompatible', () => {
+                it('throws an error', () => {
+                    const offspring = offspringStore()
+                    const father = { build: BUILDS.Brute }
+                    const mother = { build: BUILDS.Domestic }
+
+                    expect(() => offspring.generateBuild(father, mother)).toThrowError()
+                })
+            })
+
+            describe('and the builds are compatible', () => {
+                it("uses the mother's rate to roll for build inheritance", () => {
+                    const offspring = offspringStore()
+                    const father = { build: BUILDS.Brute }
+                    const mother = { build: BUILDS.Dwarf }
+
+                    const expectedChanceRate = DATA.builds.available[father.build].inherit_chance[mother.build]
+
+                    const mockMethod = vi.fn().mockImplementation(() => true)
+                    offspring.generateBuild(father, mother, mockMethod)
+
+                    expect(mockMethod.mock.calls.length).toBe(1)
+                    expect(mockMethod.mock.calls[0][0]).toBe(expectedChanceRate)
+                })
+
+                it("uses the father's build if the inherit roll is unsuccessful", () => {
+                    const offspring = offspringStore()
+                    const father = { build: BUILDS.Brute }
+                    const mother = { build: BUILDS.Dwarf }
+
+                    offspring.generateBuild(father, mother, () => false)
+
+                    expect(offspring.representation.build).toBe(father.build)
+                })
+
+                it("uses the mother's build if the inherit roll is successful", () => {
+                    const offspring = offspringStore()
+                    const father = { build: BUILDS.Brute }
+                    const mother = { build: BUILDS.Dwarf }
+
+                    offspring.generateBuild(father, mother, () => true)
+
+                    expect(offspring.representation.build).toBe(mother.build)
+                })
             })
         })
     })
