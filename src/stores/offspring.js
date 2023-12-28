@@ -7,21 +7,15 @@ import _sample from 'lodash/sample'
 import DATA from '@/data.yaml'
 import { FURS, GENDERS } from '@/Constants.js'
 
+import Nemeion from '@/types/Nemeion'
+
 const rollRandom = () => _random(0, 1, true)
 
 /// Always use the mother as the tie-breaker for inherited traits
 /// Always use the father as the first parent for generating offspring
 
 export default defineStore('offspring', () => {
-    const representation = ref({
-        gender: null,
-        fur: null,
-        coat: null,
-        build: null,
-        mutations: [],
-        traits: [],
-        markings: []
-    })
+    const representation = ref(new Nemeion())
 
     function generateFromParents(father, mother, chanceRoll = rollRandom, randomMutation = _sample) {
         generateGender(chanceRoll)
