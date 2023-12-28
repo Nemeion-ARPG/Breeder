@@ -7,7 +7,7 @@ import _sample from 'lodash/sample'
 import DATA from '@/data.yaml'
 import { FURS, GENDERS } from '@/Constants.js'
 
-const rollRandom = _random(0, 1, true)
+const rollRandom = () => _random(0, 1, true)
 
 /// Always use the mother as the tie-breaker for inherited traits
 /// Always use the father as the first parent for generating offspring
