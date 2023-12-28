@@ -26,4 +26,10 @@ export default class Enum {
             : Object.keys(this)
         return options[(options.length * Math.random()) << 0]
     }
+
+    /**
+     * An array of all possible values.
+     * @returns {String[]} An array of all the values in the enum.
+     */
+    get allValues() { return Object.keys(this) }
 }

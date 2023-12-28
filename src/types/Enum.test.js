@@ -45,4 +45,13 @@ describe('Enum', () => {
             })
         })
     })
+
+    describe('all values', () => {
+        it('returns an array of all the values in the enum', () => {
+            const enumInstance = new Enum(['a', 'b', 'c'])
+            const result = enumInstance.allValues
+
+            expect(result).toEqual(['a', 'b', 'c'])
+        })
+    })
 })
