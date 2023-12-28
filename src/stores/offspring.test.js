@@ -4,7 +4,7 @@ import { describe, expect, it, beforeEach, vi } from "vitest"
 import offspringStore from "./offspring"
 
 import DATA from '@/data.yaml'
-import { GENDERS, FURS, COATS, MUTATIONS } from '@/Constants.js'
+import { GENDERS, FURS, COATS, MUTATIONS, TRAITS, TRAIT_QUALITIES } from '@/Constants.js'
 
 describe('offspringStore', () => {
     beforeEach(() => {
@@ -295,6 +295,115 @@ describe('offspringStore', () => {
                 offspring.generateMutations(parent, parent, () => true)
 
                 expect(offspring.representation.mutations).toContain(MUTATIONS.test_one)
+            })
+        })
+    })
+
+    describe('generateTraits', () => {
+        it('returns a unique list of traits in the final result set', () => {
+            const offspring = offspringStore()
+            const parent = { hasTraits: true, traits: [TRAITS.Common_1] }
+
+            offspring.generateTraits(parent, parent, () => true)
+
+            expect(offspring.representation.traits.length).toBe(1)
+        })
+
+        describe('when both parents have no traits', () => {
+            it('returns no traits for the offspring', () => {
+                const offspring = offspringStore()
+                const parent = { hasTraits: false }
+                offspring.generateTraits(parent, parent)
+
+                expect(offspring.representation.traits).toEqual([])
+            })
+
+            it('does not roll for inheritance', () => {
+                const offspring = offspringStore()
+
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                offspring.generateTraits({}, {}, mockMethod)
+
+                expect(mockMethod.mock.calls.length).toBe(0)
+            })
+        })
+
+        describe('when both parents have traits', () => {
+            it('rolls to inherit all traits from both parents', () => {
+                const offspring = offspringStore()
+                const father = { hasTraits: true, traits: [TRAITS.Common_1] }
+                const mother = { hasTraits: true, traits: [TRAITS.Uncommon_1] }
+
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                offspring.generateTraits(father, mother, mockMethod)
+
+                expect(mockMethod.mock.calls.length).toBe(2)
+            })
+
+            describe('and the traits are the exact same', () => {
+                it('rolls to inherit exactly once', () => {
+                    const offspring = offspringStore()
+                    const parent = { hasTraits: true, traits: [TRAITS.Common_1, TRAITS.Uncommon_1] }
+        
+                    const mockMethod = vi.fn().mockImplementation(() => true)
+                    offspring.generateTraits(parent, parent, mockMethod)
+        
+                    expect(mockMethod.mock.calls.length).toBe(2)
+                    expect(mockMethod.mock.calls[0][0]).not.toBe(mockMethod.mock.calls[1][0])
+                })
+
+                it('rolls to inherit with the double rate', () => {
+                    const offspring = offspringStore()
+                    const parent = { hasTraits: true, traits: [TRAITS.Common_1] }
+        
+                    const mockMethod = vi.fn().mockImplementation(() => true)
+                    offspring.generateTraits(parent, parent, mockMethod)
+        
+                    expect(mockMethod.mock.calls.length).toBe(1)
+                    expect(mockMethod.mock.calls[0][0]).toBe(DATA.traits.qualities[TRAIT_QUALITIES.Common].inherit_chance.double)
+                })
+            })
+        })
+
+        describe('when at least one parent has traits', () => {
+            it('rolls to inherit the trait from the parent with the single rate', () => {
+                const offspring = offspringStore()
+                const father = { hasTraits: true, traits: [TRAITS.Common_1] }
+    
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                offspring.generateTraits(father, {}, mockMethod)
+    
+                expect(mockMethod.mock.calls.length).toBe(1)
+                expect(mockMethod.mock.calls[0][0]).toBe(DATA.traits.qualities[TRAIT_QUALITIES.Common].inherit_chance.single)
+            })
+
+            it('rolls to inherit the trait with the single rate even if the trait is accidentally duplicated', () => {
+                const offspring = offspringStore()
+                const father = { hasTraits: true, traits: [TRAITS.Common_1, TRAITS.Common_1] }
+    
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                offspring.generateTraits(father, {}, mockMethod)
+    
+                expect(mockMethod.mock.calls.length).toBe(1)
+                expect(mockMethod.mock.calls[0][0]).toBe(DATA.traits.qualities[TRAIT_QUALITIES.Common].inherit_chance.single)
+            })
+
+            it('inherits the trait from the parent if the inherit roll is successful', () => {
+                const offspring = offspringStore()
+                const parent = { hasTraits: true, traits: [TRAITS.Common_1] }
+    
+                offspring.generateTraits(parent, {}, () => true)
+    
+                expect(offspring.representation.traits).toContain(TRAITS.Common_1)
+            })
+
+            it('does not have any inherited traits if the inherit roll is unsuccessful', () => {
+                const offspring = offspringStore()
+                const parent = { hasTraits: true, traits: [TRAITS.Common_1] }
+    
+                offspring.generateTraits(parent, {}, () => false)
+    
+                expect(offspring.representation.traits).toEqual([])
             })
         })
     })

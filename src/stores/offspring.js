@@ -10,6 +10,7 @@ import { FURS, GENDERS } from '@/Constants.js'
 const rollRandom = _random(0, 1, true)
 
 /// Always use the mother as the tie-breaker for inherited traits
+/// Always use the father as the first parent for generating offspring
 
 export default defineStore('offspring', () => {
     const representation = ref({
@@ -17,6 +18,7 @@ export default defineStore('offspring', () => {
         fur: null,
         coat: null,
         mutations: [],
+        traits: [],
     })
   
     function generateFur(father, mother, rareChanceRoll = rollRandom) {
@@ -107,7 +109,48 @@ export default defineStore('offspring', () => {
 
         representation.value.mutations = [...new Set(result)]
     }
+
+    function generateTraits(father, mother, chanceRoll = rollRandom) {
+        if (!father.hasTraits && !mother.hasTraits) {
+            return
+        }
+
+        // protect against missing trait properties on the provided objects
+        // and guarantee that we're working with unique lists
+        let fatherTraits = [... new Set(father.traits)] || []
+        let motherTraits = [... new Set(mother.traits)] || []
+
+        // join the traits of both parents together into a single inheritance list with its associated chance of being inherited
+        // we get this by creating an empty list, and just looping through the superset of both parents
+        // if the given trait already exists in the result list, we update the rate to its double version
+        let traitMap = [...fatherTraits, ...motherTraits]
+            .reduce ((result, trait) => {
+                let traitData = DATA.traits.available[trait]
+                let qualityData = DATA.traits.qualities[traitData.quality]
+
+                result[trait] = result[trait] ? qualityData.inherit_chance.double : qualityData.inherit_chance.single
+                
+                return result
+            }, {})
+
+        // no we iterate through the map to roll for each individual trait
+        let result = []
+        for (const trait in traitMap) {
+            if (chanceRoll(traitMap[trait])) {
+                result.push(trait)
+            }
+        }
+
+        representation.value.traits = [...new Set(result)]
+    }
   
-    return { representation, generateFur, generateCoat, generateGender, generateMutations }
+    return {
+        representation,
+        generateFur,
+        generateCoat,
+        generateGender,
+        generateMutations,
+        generateTraits
+    }
   })
   

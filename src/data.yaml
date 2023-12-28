@@ -54,43 +54,50 @@ markings:
 
 traits:
   random_cap: 6
-  available:
+  qualities:
     Common:
       inherit_chance:
         single: 0.50
         double: 0.75
-      options:
-        - Common_1
     Uncommon:
       inherit_chance:
         single: 0.25
         double: 0.50
-      options:
-        - Uncommon_1
     Rare:
       inherit_chance:
         single: 0.15
         double: 0.30
-      options:
-        - Rare_1
     Epic:
       inherit_chance:
         single: 0.10
         double: 0.20
-      options:
-        - Epic_1
     Legendary:
       inherit_chance:
         single: 0.05
         double: 0.10
-      options:
-        - Legendary_1
     Unique:
       inherit_chance:
         single: 0.05
         double: 0.10
-      options:
-        - Unique_1
+  available:
+    Common_1:
+      display_name: Common Trait 1
+      quality: Common
+    Uncommon_1:
+      display_name: Uncommon Trait 1
+      quality: Uncommon
+    Rare_1:
+      display_name: Rare Trait 1
+      quality: Rare
+    Epic_1:
+      display_name: Epic Trait 1
+      quality: Epic
+    Legendary_1:
+      display_name: Legendary Trait 1
+      quality: Legendary
+    Unique_1:
+      display_name: Unique Trait 1
+      quality: Unique
 
 # each element represents a separate option, with the options repeated with their weight of recieving that alternative
 # if the weight is null, the combination are considered illegal
