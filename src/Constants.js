@@ -3,6 +3,7 @@ import data from '@/data.yaml'
 
 export const GENDERS = new Enum(data.genders)
 export const MARKINGS = new Enum(data.markings.available)
+export const MARKING_QUALITIES = new Enum(data.markings.qualities)
 export const TRAITS = new Enum(data.traits.available)
 export const TRAIT_QUALITIES = new Enum(data.traits.qualities)
 export const BUILDS = new Enum(data.builds.available)

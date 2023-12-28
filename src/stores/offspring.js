@@ -20,6 +20,7 @@ export default defineStore('offspring', () => {
         build: null,
         mutations: [],
         traits: [],
+        markings: []
     })
   
     function generateFur(father, mother, rareChanceRoll = rollRandom) {
@@ -116,33 +117,15 @@ export default defineStore('offspring', () => {
             return
         }
 
-        // protect against missing trait properties on the provided objects
-        // and guarantee that we're working with unique lists
-        let fatherTraits = [... new Set(father.traits)] || []
-        let motherTraits = [... new Set(mother.traits)] || []
+        representation.value.traits = _generateInheritedAspects(father, mother, 'traits', DATA.traits, chanceRoll)
+    }
 
-        // join the traits of both parents together into a single inheritance list with its associated chance of being inherited
-        // we get this by creating an empty list, and just looping through the superset of both parents
-        // if the given trait already exists in the result list, we update the rate to its double version
-        let traitMap = [...fatherTraits, ...motherTraits]
-            .reduce ((result, trait) => {
-                let traitData = DATA.traits.available[trait]
-                let qualityData = DATA.traits.qualities[traitData.quality]
-
-                result[trait] = result[trait] ? qualityData.inherit_chance.double : qualityData.inherit_chance.single
-                
-                return result
-            }, {})
-
-        // no we iterate through the map to roll for each individual trait
-        let result = []
-        for (const trait in traitMap) {
-            if (chanceRoll(traitMap[trait])) {
-                result.push(trait)
-            }
+    function generateMarkings(father, mother, chanceRoll = rollRandom) {
+        if (!father.hasMarkings && !mother.hasMarkings) {
+            return
         }
 
-        representation.value.traits = [...new Set(result)]
+        representation.value.markings = _generateInheritedAspects(father, mother, 'markings', DATA.markings, chanceRoll)
     }
 
     function generateBuild(father, mother, chanceRoll = rollRandom) {
@@ -155,6 +138,36 @@ export default defineStore('offspring', () => {
             throw new Error('incompatible builds')
         }
     }
+
+    function _generateInheritedAspects(father, mother, aspectKey, dataset, chanceRoll = rollRandom) {
+        // protect against missing aspect properties on the provided objects
+        // and guarantee that we're working with unique lists
+        let fatherAspects = [... new Set(father[aspectKey])] || []
+        let motherAspects = [... new Set(mother[aspectKey])] || []
+
+        // join the aspects of both parents together into a single inheritance list with its associated chance of being inherited
+        // we get this by creating an empty list, and just looping through the superset of both parents
+        // if the given aspect already exists in the result list, we update the rate to its double version
+        let aspectMap = [...fatherAspects, ...motherAspects]
+            .reduce ((result, aspect) => {
+                let aspectData = dataset.available[aspect]
+                let qualityData = dataset.qualities[aspectData.quality]
+
+                result[aspect] = result[aspect] ? qualityData.inherit_chance.double : qualityData.inherit_chance.single
+                
+                return result
+            }, {})
+
+        // no we iterate through the map to roll for each individual aspect
+        let result = []
+        for (const aspect in aspectMap) {
+            if (chanceRoll(aspectMap[aspect])) {
+                result.push(aspect)
+            }
+        }
+
+        return [...new Set(result)]
+    }
   
     return {
         representation,
@@ -163,7 +176,8 @@ export default defineStore('offspring', () => {
         generateGender,
         generateBuild,
         generateMutations,
-        generateTraits
+        generateTraits,
+        generateMarkings
     }
   })
   

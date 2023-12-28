@@ -15,42 +15,49 @@ genders:
 
 markings:
   random_cap: 12
-  available:
+  qualities:
     Limited:
       inherit_chance:
         single: 1.00
-      options:
-        - Limited_1
     Common:
       inherit_chance:
         single: 0.75
         double: 0.95
-      options:
-        - Common_1
     Uncommon:
       inherit_chance:
         single: 0.50
         double: 0.75
-      options:
-        - Uncommon_1
     Rare:
       inherit_chance:
         single: 0.25
         double: 0.50
-      options:
-        - Rare_1
     Epic:
       inherit_chance:
         single: 0.10
         double: 0.20
-      options:
-        - Epic_1
     Legendary:
       inherit_chance:
         single: 0.05
         double: 0.10
-      options:
-        - Legendary_1
+  available:
+    Limited_1:
+      display_name: Limited Marking 1
+      quality: Limited
+    Common_1:
+      display_name: Common Marking 1
+      quality: Common
+    Uncommon_1:
+      display_name: Uncommon Marking 1
+      quality: Uncommon
+    Rare_1:
+      display_name: Rare Marking 1
+      quality: Rare
+    Epic_1:
+      display_name: Epic Marking 1
+      quality: Epic
+    Legendary_1:
+      display_name: Legendary Marking 1
+      quality: Legendary
 
 traits:
   random_cap: 6

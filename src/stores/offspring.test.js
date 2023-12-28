@@ -4,7 +4,15 @@ import { describe, expect, it, beforeEach, vi } from "vitest"
 import offspringStore from "./offspring"
 
 import DATA from '@/data.yaml'
-import { GENDERS, FURS, COATS, BUILDS, MUTATIONS, TRAITS, TRAIT_QUALITIES } from '@/Constants.js'
+import {
+    GENDERS,
+    FURS,
+    COATS,
+    BUILDS,
+    MUTATIONS,
+    TRAITS, TRAIT_QUALITIES,
+    MARKINGS, MARKING_QUALITIES
+} from '@/Constants.js'
 
 describe('offspringStore', () => {
     beforeEach(() => {
@@ -404,6 +412,115 @@ describe('offspringStore', () => {
                 offspring.generateTraits(parent, {}, () => false)
     
                 expect(offspring.representation.traits).toEqual([])
+            })
+        })
+    })
+
+    describe('generateMarkings', () => {
+        it('returns a unique list of markings in the final result set', () => {
+            const offspring = offspringStore()
+            const parent = { hasMarkings: true, markings: [MARKINGS.Common_1] }
+
+            offspring.generateMarkings(parent, parent, () => true)
+
+            expect(offspring.representation.markings.length).toBe(1)
+        })
+
+        describe('when both parents have no markings', () => {
+            it('returns no markings for the offspring', () => {
+                const offspring = offspringStore()
+                const parent = { hasMarkings: false }
+                offspring.generateMarkings(parent, parent)
+
+                expect(offspring.representation.markings).toEqual([])
+            })
+
+            it('does not roll for inheritance', () => {
+                const offspring = offspringStore()
+
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                offspring.generateMarkings({}, {}, mockMethod)
+
+                expect(mockMethod.mock.calls.length).toBe(0)
+            })
+        })
+
+        describe('when both parents have traits', () => {
+            it('rolls to inherit all traits from both parents', () => {
+                const offspring = offspringStore()
+                const father = { hasMarkings: true, markings: [MARKINGS.Common_1] }
+                const mother = { hasMarkings: true, markings: [MARKINGS.Uncommon_1] }
+
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                offspring.generateMarkings(father, mother, mockMethod)
+
+                expect(mockMethod.mock.calls.length).toBe(2)
+            })
+
+            describe('and the traits are the exact same', () => {
+                it('rolls to inherit exactly once', () => {
+                    const offspring = offspringStore()
+                    const parent = { hasMarkings: true, markings: [TRAITS.Common_1, TRAITS.Uncommon_1] }
+        
+                    const mockMethod = vi.fn().mockImplementation(() => true)
+                    offspring.generateMarkings(parent, parent, mockMethod)
+        
+                    expect(mockMethod.mock.calls.length).toBe(2)
+                    expect(mockMethod.mock.calls[0][0]).not.toBe(mockMethod.mock.calls[1][0])
+                })
+
+                it('rolls to inherit with the double rate', () => {
+                    const offspring = offspringStore()
+                    const parent = { hasMarkings: true, markings: [MARKINGS.Common_1] }
+        
+                    const mockMethod = vi.fn().mockImplementation(() => true)
+                    offspring.generateMarkings(parent, parent, mockMethod)
+        
+                    expect(mockMethod.mock.calls.length).toBe(1)
+                    expect(mockMethod.mock.calls[0][0]).toBe(DATA.markings.qualities[MARKING_QUALITIES.Common].inherit_chance.double)
+                })
+            })
+        })
+
+        describe('when at least one parent has traits', () => {
+            it('rolls to inherit the trait from the parent with the single rate', () => {
+                const offspring = offspringStore()
+                const father = { hasMarkings: true, markings: [MARKINGS.Common_1] }
+    
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                offspring.generateMarkings(father, {}, mockMethod)
+    
+                expect(mockMethod.mock.calls.length).toBe(1)
+                expect(mockMethod.mock.calls[0][0]).toBe(DATA.markings.qualities[MARKING_QUALITIES.Common].inherit_chance.single)
+            })
+
+            it('rolls to inherit the trait with the single rate even if the trait is accidentally duplicated', () => {
+                const offspring = offspringStore()
+                const father = { hasMarkings: true, markings: [MARKINGS.Common_1, MARKINGS.Common_1] }
+    
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                offspring.generateMarkings(father, {}, mockMethod)
+    
+                expect(mockMethod.mock.calls.length).toBe(1)
+                expect(mockMethod.mock.calls[0][0]).toBe(DATA.markings.qualities[MARKING_QUALITIES.Common].inherit_chance.single)
+            })
+
+            it('inherits the trait from the parent if the inherit roll is successful', () => {
+                const offspring = offspringStore()
+                const parent = { hasMarkings: true, markings: [MARKINGS.Common_1] }
+    
+                offspring.generateMarkings(parent, {}, () => true)
+    
+                expect(offspring.representation.markings).toContain(MARKINGS.Common_1)
+            })
+
+            it('does not have any inherited markings if the inherit roll is unsuccessful', () => {
+                const offspring = offspringStore()
+                const parent = { hasMarkings: true, markings: [MARKINGS.Common_1] }
+    
+                offspring.generateMarkings(parent, {}, () => false)
+    
+                expect(offspring.representation.markings).toEqual([])
             })
         })
     })
