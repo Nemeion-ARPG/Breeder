@@ -82,7 +82,7 @@ export default defineStore('offspring', () => {
             representation.value.coat = father.coat
         } else {
             // find the mother's chance of passing on the trait by looking up the coat of the father
-            const inheritChance = DATA.coats[father.coat].inherit_chance[mother.coat]
+            const inheritChance = DATA.coats.available[father.coat].inherit_chance[mother.coat]
             if (inheritChanceRoll(inheritChance)) {
                 representation.value.coat = mother.coat
             } else {

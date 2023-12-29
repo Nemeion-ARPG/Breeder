@@ -140,22 +140,23 @@ builds:
 # each element represents a separate option, with the options repeated with their weight of receiving that alternative
 # for example, if one parent is Tan, and the second is Cream, the offspring's chance of being Cream is based on the weight listed for Tan>Cream
 coats:
-  # how do I handle random rolling coat?
-  Tan:
-    inherit_chance:
-      Tan: 1.00
-      Cream: 0.35
-      Agouti: 0.25
-  Cream:
-    inherit_chance:
-      Tan: 0.65
-      Cream: 1.00
-      Agouti: 0.35
-  Agouti:
-    inherit_chance:
-      Tan: 0.75
-      Cream: 0.65
-      Agouti: 1.00
+  default: Tan
+  available:
+    Tan:
+      inherit_chance:
+        Tan: 1.00
+        Cream: 0.35
+        Agouti: 0.25
+    Cream:
+      inherit_chance:
+        Tan: 0.65
+        Cream: 1.00
+        Agouti: 0.35
+    Agouti:
+      inherit_chance:
+        Tan: 0.75
+        Cream: 0.65
+        Agouti: 1.00
 
 furs:
   rare_chance: 0.05
@@ -163,6 +164,7 @@ furs:
   inherit_chance:
     single: 0.25 # if at least one parent has the fur
     double: 0.40 # if both parents have the fur
+  default: Sleek
   base_option: Sleek
   rare_options:
     - Curly
