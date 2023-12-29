@@ -1,12 +1,12 @@
 export default class Nemeion {
-    constructor() {
-        this.gender = null
-        this.fur = null
-        this.coat = null
-        this.build = null
-        this.traits = []
-        this.markings = []
-        this.mutations = []
+    constructor(initialValues = {}) {
+        this.gender = initialValues.gender || null
+        this.fur = initialValues.fur || null
+        this.coat = initialValues.coat || null
+        this.build = initialValues.build || null
+        this.traits = initialValues.traits || []
+        this.markings = initialValues.markings || []
+        this.mutations = initialValues.mutations || []
     }
 
     get hasTraits() { return this.traits.length > 0 }
