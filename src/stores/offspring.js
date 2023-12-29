@@ -5,7 +5,7 @@ import _random from 'lodash/random'
 import _sample from 'lodash/sample'
 
 import DATA from '@/data.yaml'
-import { FURS, GENDERS } from '@/Constants.js'
+import { FURS, GENDERS, MUTATIONS } from '@/Constants.js'
 
 import Nemeion from '@/types/Nemeion'
 
@@ -28,11 +28,12 @@ export default defineStore('offspring', () => {
     }
   
     function generateFur(father, mother, rareChanceRoll = rollRandom) {
+        const DEFAULT_FUR = DATA.furs.default
         function rollRandomFur() {
             if (rareChanceRoll(DATA.furs.rare_chance)) {
-                return FURS.randomValue([FURS.Sleek])
+                return FURS.randomValue([DEFAULT_FUR])
             } else {
-                return FURS.Sleek
+                return DEFAULT_FUR
             }
         }
 
@@ -110,7 +111,7 @@ export default defineStore('offspring', () => {
 
         // always roll for a potentially random mutation
         if (chanceRoll(DATA.mutations.base_chance)) {
-            result.push(randomMutation(DATA.mutations.available))
+            result.push(randomMutation(MUTATIONS.allValues))
         }
 
         representation.value.mutations = [...new Set(result)]

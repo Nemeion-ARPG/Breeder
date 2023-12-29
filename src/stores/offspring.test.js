@@ -240,11 +240,12 @@ describe('offspringStore', () => {
 
             it('returns a random mutation if the chance roll is successful', () => {            
                 const offspring = offspringStore()
+                const expectedResult = MUTATIONS.Test_One
 
-                offspring.generateMutations(parent, parent, () => true)
+                offspring.generateMutations(parent, parent, () => true, () => expectedResult)
 
                 expect(offspring.representation.mutations.length).toBe(1)
-                expect(DATA.mutations.available).toContain(offspring.representation.mutations[0])
+                expect(offspring.representation.mutations[0]).toBe(expectedResult)
             })
         })
 

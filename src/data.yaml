@@ -15,6 +15,7 @@ genders:
 
 markings:
   random_cap: 12
+  default: []
   qualities:
     Limited:
       inherit_chance:
@@ -61,6 +62,7 @@ markings:
 
 traits:
   random_cap: 6
+  default: []
   qualities:
     Common:
       inherit_chance:
@@ -160,12 +162,10 @@ coats:
 
 furs:
   rare_chance: 0.05
-  # roll once - total
   inherit_chance:
-    single: 0.25 # if at least one parent has the fur
-    double: 0.40 # if both parents have the fur
+    single: 0.25
+    double: 0.40
   default: Sleek
-  base_option: Sleek
   rare_options:
     - Curly
     - Polar
@@ -175,13 +175,14 @@ furs:
 mutations:
   random_cap: 2
   base_chance: 0.03
-  # roll per parent
   inherit_chance:
-    single: 0.1 # if at least one parent has the mutation
+    single: 0.1
+  default: []
   available:
-    - test_one
-    - test_two
-    - test_three
+    Test_One:
+      display_name: Test Mutation One
+    Test_Two:
+      display_name: Test Mutation Two
 
 add_ons:
   AO_APHRO_PASSION:
