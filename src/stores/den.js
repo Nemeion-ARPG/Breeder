@@ -1,24 +1,21 @@
+import Nemeion from '@/types/Nemeion'
+
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 import _random from 'lodash/random'
 
 import DATA from '@/data.yaml'
+import { GENDERS } from '@/Constants'
 
-import useOffspringStore from './offspring'
+const DEFAULT_CHANCE_ROLL = () => _random(0, 1, true)
 
-const defaultChanceRoll = () => _random(0, 1, true)
-
-export default defineStore('litter', () => {
+export default defineStore('den', () => {
+    const father = ref(new Nemeion({ gender: GENDERS.Male }))
+    const mother = ref(new Nemeion({ gender: GENDERS.Female }))
     const offspring = ref([])
 
-    function generateOffspring(father, mother, chanceRoll = defaultChanceRoll, offspringStore = useOffspringStore()) {
-        offspring.value = _generateLitter(chanceRoll, () => {
-            offspringStore.generateFromParents(father, mother, chanceRoll)
-        })
-    }
-
-    function _generateLitter(chanceRoll = rollRandom, implementation) {
+    function _generateLitter(chanceRoll, implementation) {
         // litter size is based off weights in the data table
         // so we roll and then lookup in the table to deterime the size
         const litterSize = (() => {
@@ -43,8 +40,19 @@ export default defineStore('litter', () => {
         return litter
     }
 
+    function generateOffspring(
+        chanceRoll = DEFAULT_CHANCE_ROLL
+    ) {
+        offspring.value = _generateLitter(chanceRoll, () => {
+            return new Nemeion(father, mother, chanceRoll)
+        })
+    }
+
     return {
+        father,
+        mother,
         offspring,
+
         generateOffspring
     }
 })
