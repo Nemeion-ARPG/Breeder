@@ -54,4 +54,13 @@ describe('Enum', () => {
             expect(result).toEqual(['a', 'b', 'c'])
         })
     })
+
+    describe('first value', () => {
+        it('returns the first defined constant in the enum', () => {
+            const enumInstance = new Enum(['a', 'b', 'c'])
+            const result = enumInstance.firstValue
+
+            expect(result).toEqual('a')
+        })
+    })
 })
