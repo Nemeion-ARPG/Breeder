@@ -14,11 +14,20 @@
       v-model:parentRef="den.mother"
       :otherParentRef="den.father"
     />
+    <OffspringOutput
+      title="Offspring"
+      :offspring="den.offspring"
+      @generateOffspring="den.makeOffspring()"
+      @reset="den.$reset()"
+    />
   </main>
 </template>
 
 <script setup>
 import ParentBuilder from '@/components/ParentBuilder.vue'
+import OffspringOutput from '@/components/OffspringOutput.vue'
+
+import { ref } from 'vue'
 
 import denStore from '@/stores/den'
 
