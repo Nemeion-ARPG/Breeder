@@ -1,8 +1,8 @@
 import { setActivePinia, createPinia } from 'pinia'
 import { describe, expect, it, beforeEach, vi } from "vitest"
 
-import NemeionBreedingGround, { DEFAULT_RANDOM_SAMPLE } from './breeding-ground'
-import { DEFAULT_SHOULD_DO_ACTION, DEFAULT_RANDOM_SAMPLE } from './breeding-ground'
+import NemeionBreedingGround, { DEFAULT_RANDOM_SAMPLE } from './NemeionBreedingGround'
+import { DEFAULT_SHOULD_DO_ACTION, DEFAULT_RANDOM_SAMPLE } from './NemeionBreedingGround'
 
 import DATA from '@/data.yaml'
 import {
