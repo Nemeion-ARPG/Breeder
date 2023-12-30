@@ -113,6 +113,11 @@ traits:
 # for example, if one parent is Brute, and the second is Regal, the offspring's chance of being Regal is based on the weight listed under Brute>Regal
 builds:
   default: Brute
+  random_chance: # these need to total 1.00 (100)
+    Brute: 0.50
+    Regal: 0.30
+    Dwarf: 0.15
+    Domestic: 0.05
   available:
     Brute:
       inherit_chance:
@@ -143,6 +148,10 @@ builds:
 # for example, if one parent is Tan, and the second is Cream, the offspring's chance of being Cream is based on the weight listed for Tan>Cream
 coats:
   default: Tan
+  random_chance: # these need to total 1.00 (100)
+    Tan: 0.50
+    Cream: 0.35
+    Agouti: 0.15
   available:
     Tan:
       inherit_chance:

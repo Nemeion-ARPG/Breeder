@@ -1,11 +1,11 @@
 import Nemeion from '@/types/Nemeion'
+import NemeionBreedingGround from '@/types/NemeionBreedingGround'
+import NemeionRandomGenerator from '@/types/NemeionRandomGenerator'
 
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 import _random from 'lodash/random'
-
-import NemeionBreedingGround from '@/types/NemeionBreedingGround'
 
 import DATA from '@/data.yaml'
 import { GENDERS } from '@/Constants'
@@ -42,6 +42,21 @@ export default defineStore('den', () => {
         return litter
     }
 
+    function makeRandom(
+        randomGenerator = new NemeionRandomGenerator(),
+        chanceRoll = DEFAULT_CHANCE_ROLL
+    ) {
+        if (!randomGenerator) {
+            throw new Error('Cannot make Nemeions without a random generator')
+        }
+        if (!(randomGenerator instanceof NemeionRandomGenerator)) {
+            throw new Error('Can only make Nemeions with a NemeionRandomGenerator')
+        }
+        offspring.value = _generateLitter(chanceRoll, () => {
+            return randomGenerator.makeOffspring()
+        })
+    }
+
     function makeOffspring(
         breedingGround = new NemeionBreedingGround(father.value, mother.value),
         chanceRoll = DEFAULT_CHANCE_ROLL
@@ -62,6 +77,7 @@ export default defineStore('den', () => {
         mother,
         offspring,
 
-        makeOffspring
+        makeOffspring,
+        makeRandom
     }
 })

@@ -20,6 +20,11 @@
             >Roll</BButton>
 
             <BButton
+                @click="$emit('generateRandom')"
+                variant="light"
+            >Random</BButton>
+
+            <BButton
                 @click="$emit('reset')"
                 variant="light"
             >Reset</BButton>
@@ -45,7 +50,7 @@ defineProps({
         }
     }
 })
-defineEmits(['generateOffspring', 'reset'])
+defineEmits(['generateOffspring', 'reset', 'generateRandom'])
 </script>
 
 <style scoped>

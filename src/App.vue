@@ -19,6 +19,7 @@
       :offspring="den.offspring"
       @generateOffspring="den.makeOffspring()"
       @reset="den.$reset()"
+      @generateRandom="den.makeRandom()"
     />
   </main>
 </template>
@@ -26,8 +27,6 @@
 <script setup>
 import ParentBuilder from '@/components/ParentBuilder.vue'
 import OffspringOutput from '@/components/OffspringOutput.vue'
-
-import { ref } from 'vue'
 
 import denStore from '@/stores/den'
 
