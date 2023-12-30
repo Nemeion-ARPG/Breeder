@@ -57,6 +57,18 @@ defineProps({
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-evenly;
-    gap: 0.3rem 0.5rem;
+    gap: 1rem 0.5rem;
+}
+
+:deep(.btn-check + .btn) {
+    color: var(--color-heading);
+    background-color: var(--color-border-hover);
+}
+
+:deep(.btn-check:checked + .btn) {
+    background-color: var(--bs-success);
+}
+:deep(.btn-check:disabled + .btn) {
+    background-color: var(--color-background-soft);
 }
 </style>

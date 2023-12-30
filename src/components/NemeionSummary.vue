@@ -4,14 +4,14 @@
             {{ headerText }}
         </h3>
 
-        <div>
-            <label>Gender: {{ reference.gender }}</label>
-            <label>Build: {{ reference.build }}</label>
-            <label>Fur: {{ reference.fur }}</label>
-            <label>Coat: {{ reference.coat }}</label>
-            <label>Traits: {{ selectedTraits }}</label>
-            <label>Markings: {{ selectedMarkings }}</label>
-            <label>Mutations: {{ selectedMutations }}</label>
+        <div class="content">
+            <label>GENDER: {{ reference.gender }}</label>
+            <label>BUILD: {{ reference.build }}</label>
+            <label>FUR: {{ reference.fur }}</label>
+            <label>COAT: {{ reference.coat }}</label>
+            <label>TRAITS: {{ selectedTraits }}</label>
+            <label>MARKINGS: {{ selectedMarkings }}</label>
+            <label>MUTATIONS: {{ selectedMutations }}</label>
         </div>
     </div>
 </template>
@@ -59,5 +59,9 @@ const selectedMutations = computed(() => {
 <style scoped>
 .nemeion-summary label {
     display: block;
+}
+
+.nemeion-summary .content > * {
+    margin: 0.5rem 0;
 }
 </style>

@@ -10,7 +10,7 @@
             opacity="0.95"
             no-center
         >
-            <div>
+            <div class="content-container">
                 <div class="build-selector">
                     <div>
                         <label>Build</label>
@@ -21,6 +21,7 @@
                         :options="availableBuilds"
                         :name="`${title}-build`"
                         buttons
+                        button-variant="dark"
                     />
                 </div>
 
@@ -34,6 +35,7 @@
                         :options="availableFurs"
                         :name="`${title}-fur`"
                         buttons
+                        button-variant="dark"
                     />
                 </div>
 
@@ -47,6 +49,7 @@
                         :options="availableCoats"
                         :name="`${title}-coat`"
                         buttons
+                        button-variant="dark"
                     />
                 </div>
 
@@ -56,6 +59,7 @@
                     </div>
 
                     <BFormSelect
+                        class="form-selector"
                         multiple
                         v-model="parentRef.traits"
                         :options="availableTraits"
@@ -68,6 +72,7 @@
                     </div>
 
                     <BFormSelect
+                        class="form-selector"
                         multiple
                         v-model="parentRef.markings"
                         :options="availableMarkings"
@@ -80,26 +85,36 @@
                     </div>
 
                     <BFormSelect
+                        class="form-selector"
                         multiple
                         v-model="parentRef.mutations"
                         :options="availableMutations"
                     />
                 </div>
 
-                <BButton @click="showSummary = !showSummary">
-                    View Summary
-                </BButton>
+                <footer class="button-container">
+
+                    <BButton
+                        class="summary-button"
+                        variant="dark"
+                        @click="showSummary = !showSummary"
+                    >
+                        View Summary
+                    </BButton>
+                </footer>
             </div>
 
             <template #overlay>
                 <NemeionSummary :reference="parentRef" />
 
-                <BButton
-                    @click="showSummary = !showSummary"
-                    variant="light"
-                >
-                    Hide Summary
-                </BButton>
+                <div class="button-container">
+                    <BButton
+                        @click="showSummary = !showSummary"
+                        variant="secondary"
+                    >
+                        Hide Summary
+                    </BButton>
+                </div>
             </template>
         </BOverlay>
     </section>
@@ -181,5 +196,48 @@ const availableBuilds = computed(() => {
 </script>
 
 <style scoped>
+.content-container > * {
+    margin-bottom: 0.5rem;
+}
 
+label {
+    color: var(--color-text);
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 0.1rem;
+}
+
+.form-selector {
+    color: var(--color-text);
+    background: var(--color-background-soft);
+    padding: 0.5rem;
+}
+
+:deep(.btn-check:checked + .btn) {
+    color: var(--color-heading);
+    background-color: var(--color-border-hover);
+}
+
+:deep(.btn-check:disabled + .btn) {
+    background-color: var(--color-background-soft);
+}
+
+:deep(.btn-check + .btn) {
+    color: var(--color-text);
+    background-color: var(--color-background-mute);
+}
+
+:deep(option:checked) {
+    color: var(--color-text);
+    background-color: var(--color-border-hover);
+}
+
+:deep(select) {
+    border-color: var(--color-border);
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+}
 </style>

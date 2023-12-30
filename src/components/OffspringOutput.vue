@@ -18,18 +18,21 @@
 
         <footer>
             <BButton
+                class="primary-button"
                 @click="$emit('generateOffspring')"
-                variant="light"
+                variant="secondary"
             >Roll</BButton>
 
             <BButton
+                class="primary-button"
                 @click="$emit('generateRandom')"
-                variant="light"
+                variant="secondary"
             >Random</BButton>
 
             <BButton
+                class="secondary-button"
                 @click="$emit('reset')"
-                variant="light"
+                variant="dark"
             >Reset</BButton>
         </footer>
     </section>
@@ -57,5 +60,28 @@ defineEmits(['generateOffspring', 'reset', 'generateRandom'])
 </script>
 
 <style scoped>
+footer {
+    display: flex;
+    justify-content: space-evenly;    
+    margin-bottom: 0.5rem;
+}
 
+:deep(.btn) {
+    padding: 0.3rem 1.25rem;
+}
+
+:deep(.btn-check + .btn) {
+    color: var(--color-text);
+    background-color: var(--color-background-mute);
+}
+
+:deep(.btn-dark) {
+    color: var(--color-text);
+    background-color: var(--color-border-hover);
+}
+
+:deep(.btn-secondary) {
+    color: var(--color-heading);
+    background-color: var(--color-background-mute);
+}
 </style>
