@@ -14,7 +14,7 @@
     "bootstrap-vue-next": "^0.15.5",
     "lodash": "^4.17.21",
     "pinia": "^2.1.7",
-    "vue": "^3.3.11"
+    "vue": "^3.4.1"
   },
   "devDependencies": {
     "@originjs/vite-plugin-content": "^1.0.5",
