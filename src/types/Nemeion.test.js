@@ -74,5 +74,11 @@ describe('Nemeion', () => {
             instance.mutations = ['some mutation']
             expect(instance.hasMutations).toBe(true)
         })
+
+        test('hasRareFur is based on the fur property', () => {
+            expect(instance.hasRareFur).toBe(false)
+            instance.fur = DATA.furs.rare_options[0]
+            expect(instance.hasRareFur).toBe(true)
+        })
     })
 })

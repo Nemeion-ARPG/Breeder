@@ -11,6 +11,7 @@ export default class Nemeion {
         this.mutations = initialValues.mutations || DATA.mutations.default
     }
 
+    get hasRareFur() { return DATA.furs.rare_options.includes(this.fur) }
     get hasTraits() { return this.traits.length > 0 }
     get hasMarkings() { return this.markings.length > 0 }
     get hasMutations() { return this.mutations.length > 0 }
