@@ -1,8 +1,8 @@
 <template>
     <div class="nemeion-summary">
-        <header>
-            SUMMARY
-        </header>
+        <h3>
+            {{ headerText }}
+        </h3>
 
         <div>
             <label>Gender: {{ reference.gender }}</label>
@@ -24,10 +24,20 @@ import { computed } from 'vue'
 import DATA from '@/data.yaml'
 
 const props = defineProps({
+    index: {
+        type: Number,
+        required: false
+    },
     reference: {
         type: Nemeion,
         required: true
     }
+})
+const headerText = computed(() => {
+    if (props.index === undefined || props.index === null) {
+        return 'Summary'
+    }
+    return `#${props.index + 1} Summary`
 })
 const selectedTraits = computed(() => {
     return props.reference.traits

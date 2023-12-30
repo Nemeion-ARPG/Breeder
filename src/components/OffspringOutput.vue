@@ -6,9 +6,12 @@
 
         <div
             class="offspring-list"
-            v-for="offspring in offspring"
+            v-for="(offspring, index) in offspring"
         >
-            <NemeionSummary :reference="offspring"/>
+            <NemeionSummary
+                :index="index"
+                :reference="offspring"
+            />
 
             <hr />
         </div>
