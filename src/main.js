@@ -3,6 +3,8 @@ import 'bootstrap-vue-next/dist/bootstrap-vue-next.css'
 
 import './assets/main.css'
 
+import './extensions/Array'
+
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 

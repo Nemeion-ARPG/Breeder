@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest"
 
 import { DEFAULT_SHOULD_DO_ACTION } from "./NemeionRandomGenerator"
 
-import { GENDERS } from '@/Constants.js'
+import { GENDERS, ADDONS } from '@/Constants.js'
 
 describe('NemeionRandomGenerator', () => {
     describe('initialization', () => {
@@ -48,6 +48,28 @@ describe('NemeionRandomGenerator', () => {
             expect(traitsSpy).toHaveBeenCalled()
             expect(markingsSpy).toHaveBeenCalled()
             expect(mutationsSpy).toHaveBeenCalled()
+        })
+
+        it('should pass the addons to each property', () => {
+            const breedingGround = new NemeionGenerator()
+            const genderSpy = vi.spyOn(breedingGround, '_generateGender')
+            const furSpy = vi.spyOn(breedingGround, '_generateFur')
+            const coatSpy = vi.spyOn(breedingGround, '_generateCoat')
+            const buildSpy = vi.spyOn(breedingGround, '_generateBuild')
+            const traitsSpy = vi.spyOn(breedingGround, '_generateTraits')
+            const markingsSpy = vi.spyOn(breedingGround, '_generateMarkings')
+            const mutationsSpy = vi.spyOn(breedingGround, '_generateMutations')
+
+            const expectedResult = [ADDONS.AO_APHRO_PASSION]
+            let _ = breedingGround.makeOffspring(expectedResult)
+
+            expect(genderSpy).toHaveBeenCalledWith(expectedResult)
+            expect(furSpy).toHaveBeenCalledWith(expectedResult)
+            expect(coatSpy).toHaveBeenCalledWith(expectedResult)
+            expect(buildSpy).toHaveBeenCalledWith(expectedResult)
+            expect(traitsSpy).toHaveBeenCalledWith(expectedResult)
+            expect(markingsSpy).toHaveBeenCalledWith(expectedResult)
+            expect(mutationsSpy).toHaveBeenCalledWith(expectedResult)
         })
     })
 

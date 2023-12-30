@@ -1,3 +1,4 @@
+import NemeionGenerator from './NemeionGenerator'
 import NemeionBreedingGround from './NemeionBreedingGround'
 
 import { describe, expect, it, vi } from "vitest"
@@ -12,7 +13,8 @@ import {
     BUILDS,
     MUTATIONS,
     TRAITS, TRAIT_QUALITIES,
-    MARKINGS, MARKING_QUALITIES
+    MARKINGS, MARKING_QUALITIES,
+    ADDONS
 } from '@/Constants.js'
 import Nemeion from '@/types/Nemeion'
 
@@ -85,6 +87,36 @@ describe('NemeionBreedingGround', () => {
 
                 expect(breedingGround.randomSample).toBe(mockRandomSample)
                 expect(breedingGround.randomSample).not.toBe(DEFAULT_RANDOM_SAMPLE)
+            })
+        })
+    })
+
+    describe('_generateGender', () => {
+        describe('when given the aphro passion addon', () => {
+            it('always returns female', () => {
+                const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother)
+
+                const result = breedingGround._generateGender([ADDONS.AO_APHRO_PASSION])
+                expect(result).toBe(GENDERS.Female)
+            })
+        })
+
+        describe('when given the hephaestus fervor addon', () => {
+            it('always returns male', () => {
+                const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother)
+
+                const result = breedingGround._generateGender([ADDONS.AO_HEPHAESTUS_FERVOR])
+                expect(result).toBe(GENDERS.Male)
+            })
+        })
+
+        describe('when not given any addons', () => {
+            it('delegates to the superclass implementation', () => {
+                const mockMethod = vi.spyOn(NemeionGenerator.prototype, '_generateGender')
+                const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother)
+
+                let _ = breedingGround._generateGender([])
+                expect(mockMethod).toHaveBeenCalled()
             })
         })
     })
@@ -319,6 +351,52 @@ describe('NemeionBreedingGround', () => {
                 })
             })
         })
+
+        describe('with the big boned addon', () => {
+            const BRUTE_RATE = DATA.add_ons.AO_BIG_BONED.options.Brute
+            const REGAL_RATE = DATA.add_ons.AO_BIG_BONED.options.Regal
+
+            it(`rolls with an ${BRUTE_RATE * 100}% chance if the mother is a brute build`, () => {
+                const father = new Nemeion({ ...prototypeFather, build: BUILDS.Domestic })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockShouldDoAction })
+
+                let _ = breedingGround._generateBuild([ADDONS.AO_BIG_BONED])
+                expect(mockShouldDoAction).toHaveBeenCalledWith(BRUTE_RATE)
+            })
+
+            it(`rolls with a ${REGAL_RATE * 100}% chance if the mother is a regal build`, () => {
+                const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Regal })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(prototypeFather, mother, { shouldDoAction: mockShouldDoAction })
+
+                let _ = breedingGround._generateBuild([ADDONS.AO_BIG_BONED])
+                expect(mockShouldDoAction).toHaveBeenCalledWith(REGAL_RATE)
+            })
+        })
+
+        describe('with the delicate addon', () => {
+            const BRUTE_RATE = DATA.add_ons.AO_DELICATE.options.Brute
+            const REGAL_RATE = DATA.add_ons.AO_DELICATE.options.Regal
+
+            it(`rolls with an ${BRUTE_RATE * 100}% chance if the mother is a brute build`, () => {
+                const father = new Nemeion({ ...prototypeFather, build: BUILDS.Domestic })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockShouldDoAction })
+
+                let _ = breedingGround._generateBuild([ADDONS.AO_DELICATE])
+                expect(mockShouldDoAction).toHaveBeenCalledWith(BRUTE_RATE)
+            })
+
+            it(`rolls with a ${REGAL_RATE * 100}% chance if the mother is a regal build`, () => {
+                const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Regal })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(prototypeFather, mother, { shouldDoAction: mockShouldDoAction })
+
+                let _ = breedingGround._generateBuild([ADDONS.AO_DELICATE])
+                expect(mockShouldDoAction).toHaveBeenCalledWith(0.60)
+            })
+        })
     })
 
     describe('_generateTraits', () => {
@@ -432,6 +510,29 @@ describe('NemeionBreedingGround', () => {
                 let result = breedingGround._generateTraits()
 
                 expect(result).toEqual([])
+            })
+        })
+
+        describe('when using the birthright addon', () => {
+            it('increases the chance of receiving certain quality traits by a set amount in the data config', () => {
+                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1, TRAITS.Uncommon_1, TRAITS.Rare_1] })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockShouldDoAction })
+
+                const combineRates = (traitQuality) => {
+                    return DATA.traits.qualities[traitQuality].inherit_chance.single + DATA.add_ons.AO_BIRTHRIGHT.options[traitQuality]
+                }
+                const expectedRates = [
+                    combineRates(TRAIT_QUALITIES.Common),
+                    combineRates(TRAIT_QUALITIES.Uncommon),
+                    combineRates(TRAIT_QUALITIES.Rare)
+                ]
+                
+                let _ = breedingGround._generateTraits([ADDONS.AO_BIRTHRIGHT])
+                
+                expect(mockShouldDoAction).toHaveBeenNthCalledWith(1, expectedRates[0])
+                expect(mockShouldDoAction).toHaveBeenNthCalledWith(2, expectedRates[1])
+                expect(mockShouldDoAction).toHaveBeenNthCalledWith(3, expectedRates[2])
             })
         })
     })
@@ -667,6 +768,22 @@ describe('NemeionBreedingGround', () => {
 
                 const result = breedingGround._generateMutations()
                 expect(result).toEqual([MUTATIONS.Test_One])
+            })
+        })
+
+        describe('when using the wereworm addon', () => {
+            const INCREASED_RATE = DATA.add_ons.AO_WEREWORM.options.increased_chance
+
+            it(`increases the chance of a mutation roll by ${INCREASED_RATE * 100}%`, () => {
+                const expectedChance = DATA.mutations.base_chance + INCREASED_RATE
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, {
+                    shouldDoAction: mockShouldDoAction,
+                    randomSample: DEFAULT_RANDOM_SAMPLE
+                })
+
+                let _ = breedingGround._generateMutations([ADDONS.AO_WEREWORM])
+                expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChance)
             })
         })
     })

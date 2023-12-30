@@ -5,10 +5,12 @@ import _sample from 'lodash/sample'
 import { rollForThreshold } from '@/utils'
 
 import DATA from '@/data.yaml'
-import { GENDERS, MUTATIONS } from '@/Constants.js'
+import { GENDERS, MUTATIONS, ADDONS, TRAIT_QUALITIES, BUILDS } from '@/Constants.js'
 
 export const DEFAULT_RANDOM_SAMPLE = _sample
 export const DEFAULT_SHOULD_DO_ACTION = rollForThreshold
+
+const ASPECT_KEYS = { traits: 'traits', markings: 'markings' }
 
 /// Always use the mother as the tie-breaker for inherited traits
 /// Always use the father as the first parent for generating offspring
@@ -32,6 +34,15 @@ export default class NemeionBreedingGround extends NemeionGenerator {
         }
     }
 
+    _generateGender(addons) {
+        if (addons.includes(ADDONS.AO_APHRO_PASSION)) {
+            return GENDERS.Female
+        } else if (addons.includes(ADDONS.AO_HEPHAESTUS_FERVOR)) {
+            return GENDERS.Male
+        } else {
+            return super._generateGender(addons)
+        }
+    }
     _generateFur() {
         const DEFAULT_FUR = DATA.furs.default
         const rollRandomFur = () => {
@@ -92,7 +103,7 @@ export default class NemeionBreedingGround extends NemeionGenerator {
             }
         }
     }
-    _generateBuild() {
+    _generateBuild(addons = []) {
         if (this.father.build === this.mother.build) {
             return this.father.build
         }
@@ -100,27 +111,35 @@ export default class NemeionBreedingGround extends NemeionGenerator {
         let fatherBuild = DATA.builds.available[this.father.build]
         let inheritChance = fatherBuild.inherit_chance[this.mother.build]
 
+        if (addons.includes(ADDONS.AO_BIG_BONED)) {
+            let optionalChance = DATA.add_ons.AO_BIG_BONED.options[this.mother.build]
+            inheritChance = optionalChance ? optionalChance : inheritChance
+        } else if (addons.includes(ADDONS.AO_DELICATE)) {
+            let optionalChance = DATA.add_ons.AO_DELICATE.options[this.mother.build]
+            inheritChance = optionalChance ? optionalChance : inheritChance
+        }
+
         if (inheritChance) { // this may be null explicitly in the dataset
             return this.shouldDoAction(inheritChance) ? this.mother.build : this.father.build
         } else {
             throw new Error('incompatible builds')
         }
     }
-    _generateTraits() {
+    _generateTraits(addons = []) {
         if (!this.father.hasTraits && !this.mother.hasTraits) {
             return []
         }
 
-        return this.#_generateInheritedAspects('traits', DATA.traits)
+        return this.#_generateInheritedAspects(ASPECT_KEYS.traits, DATA.traits, addons)
     }
-    _generateMarkings() {
+    _generateMarkings(addons = []) {
         if (!this.father.hasMarkings && !this.mother.hasMarkings) {
             return []
         }
 
-        return this.#_generateInheritedAspects('markings', DATA.markings)
+        return this.#_generateInheritedAspects(ASPECT_KEYS.markings, DATA.markings, addons)
     }
-    _generateMutations() {
+    _generateMutations(addons = []) {
         let result = []
 
         if (this.father.hasMutations || this.mother.hasMutations) {
@@ -134,14 +153,19 @@ export default class NemeionBreedingGround extends NemeionGenerator {
         }
 
         // always roll for a potentially random mutation
-        if (this.shouldDoAction(DATA.mutations.base_chance)) {
+        let mutationChance = DATA.mutations.base_chance
+        if (addons.includes(ADDONS.AO_WEREWORM)) {
+            mutationChance += DATA.add_ons.AO_WEREWORM.options.increased_chance
+        }
+
+        if (this.shouldDoAction(mutationChance)) {
             result.push(this.randomSample(MUTATIONS.allValues))
         }
 
         return [...new Set(result)]
     }
 
-    #_generateInheritedAspects(aspectKey, dataset) {
+    #_generateInheritedAspects(aspectKey, dataset, addons) {
         // protect against missing aspect properties on the provided objects
         // and guarantee that we're working with unique lists
         let fatherAspects = [... new Set(this.father[aspectKey])] || []
@@ -156,6 +180,13 @@ export default class NemeionBreedingGround extends NemeionGenerator {
                 let qualityData = dataset.qualities[aspectData.quality]
 
                 result[aspect] = result[aspect] ? qualityData.inherit_chance.double : qualityData.inherit_chance.single
+
+                if (aspectKey === ASPECT_KEYS.traits && addons.includes(ADDONS.AO_BIRTHRIGHT)) {
+                    const increasedChance = DATA.add_ons.AO_BIRTHRIGHT.options[aspectData.quality]
+                    if (increasedChance) {
+                        result[aspect] += increasedChance
+                    }
+                }
                 
                 return result
             }, {})

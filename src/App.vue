@@ -9,11 +9,19 @@
       v-model:parentRef="den.father"
       :otherParentRef="den.mother"
     />
+
     <ParentBuilder
       title="Mother"
       v-model:parentRef="den.mother"
       :otherParentRef="den.father"
     />
+
+    <AddonSelector
+      title="Addons"
+      v-model="den.selectedAddons"
+      :available-addons="availableAddons"
+    />
+
     <OffspringOutput
       title="Offspring"
       :offspring="den.offspring"
@@ -26,11 +34,21 @@
 
 <script setup>
 import ParentBuilder from '@/components/ParentBuilder.vue'
+import AddonSelector from '@/components/AddonSelector.vue'
 import OffspringOutput from '@/components/OffspringOutput.vue'
 
 import denStore from '@/stores/den'
 
+import DATA from '@/data.yaml'
+
 const den = denStore()
+
+const availableAddons = Object.entries(DATA.add_ons).map(([key, value]) => {
+  return {
+    id: key,
+    ...value
+  }
+})
 </script>
 
 <style scoped>

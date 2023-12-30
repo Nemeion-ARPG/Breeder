@@ -197,35 +197,51 @@ add_ons:
   AO_APHRO_PASSION:
     display_name: Aphrodite's Passion
     description: When selected, all cubs are guaranteed to be female.
-    mutually_exlusive: AO_HEPHAESTUS_FERVOR
+    mutually_exclusive: AO_HEPHAESTUS_FERVOR
   AO_BIG_BONED:
     display_name: Big Boned
     description: Increases the chance offspring will be a Brute build
+    options:
+      Brute: 0.80
+      Regal: 0.20
   AO_BIRTHRIGHT:
     display_name: Birthright
     description: Increase the chance of Common, Uncommon, and Rare traits to be inherited by 15%.
+    options:
+      Common: 0.15
+      Uncommon: 0.15
+      Rare: 0.15
   AO_BLOSSOM_CHLORIS:
     display_name: Blossom of Chloris
-    description: Guarantees an additional cub will be born. # does this go over the cap?, so is 5 possible?.
+    description: Guarantees an additional cub will be born.
+    options:
+      additional: 1
   AO_BRUTE_POTION:
     display_name: Brute Potion
     description: Guarantees at least 1 cub will be a Brute build.
   AO_DELICATE:
     display_name: Delicate
     description: Increases the chance offspring will be a Regal build.
+    options:
+      Brute: 0.40
+      Regal: 0.60
   AO_DOMESTIC_POTION:
     display_name: Domestic Potion
     description: Guarantees at least 1 cub will be a Dwarf build.
   AO_FERTILITY_TREATMENT:
     display_name: Fertility Treatment
-    description: 15% chance of 1-2 additional cubs being born. # does this go over the cap? so is 6 possible?
+    description: 15% chance of 1-2 additional cubs being born.
+    options:
+      chance: 0.15
+      min_additional: 1
+      max_additional: 2
   AO_HEPHAESTUS_FERVOR:
     display_name: Hephaestus' Fervor
     description: When selected, all cubs are guaranteed to be male.
-    mutually_exlusive: AO_APHRO_PASSION
-  AO_MUTATION_STONE:
-    display_name: Mutation Stone
-    description: Guarantees at least 1 cub will have a random mutation.
+    mutually_exclusive: AO_APHRO_PASSION
+  # AO_MUTATION_STONE:
+  #   display_name: Mutation Stone
+  #   description: Guarantees at least 1 cub will have a random mutation.
   AO_REGAL_POTION:
     display_name: Regal Potion
     description: Guarantees at least 1 cub will be a Regal build.
@@ -235,3 +251,5 @@ add_ons:
   AO_WEREWORM:
     display_name: Wereworm
     description: Increases chance of an offspring having a mutation by 15%.
+    options:
+      increased_chance: 0.15

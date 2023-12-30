@@ -12,25 +12,25 @@ export default class NemeionGenerator {
         this.shouldDoAction = shouldDoAction
     }
 
-    makeOffspring() {
+    makeOffspring(addons = []) {
         return new Nemeion({
-            gender: this._generateGender(),
-            fur: this._generateFur(),
-            coat: this._generateCoat(),
-            build: this._generateBuild(),
-            traits: this._generateTraits(),
-            markings: this._generateMarkings(),
-            mutations: this._generateMutations()
+            gender: this._generateGender(addons),
+            fur: this._generateFur(addons),
+            coat: this._generateCoat(addons),
+            build: this._generateBuild(addons),
+            traits: this._generateTraits(addons),
+            markings: this._generateMarkings(addons),
+            mutations: this._generateMutations(addons)
         })
     }
 
-    _generateGender() {
+    _generateGender(addons) {
         return this.shouldDoAction(DATA.genders.Female.base_chance) ? GENDERS.Female : GENDERS.Male
     }
-    _generateFur() { }
-    _generateCoat() { }
-    _generateBuild() { }
-    _generateTraits() { }
-    _generateMarkings() { }
-    _generateMutations() { }
+    _generateFur(addons) { }
+    _generateCoat(addons) { }
+    _generateBuild(addons) { }
+    _generateTraits(addons) { }
+    _generateMarkings(addons) { }
+    _generateMutations(addons) { }
 }
