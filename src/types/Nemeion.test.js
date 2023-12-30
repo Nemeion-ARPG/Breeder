@@ -10,32 +10,32 @@ describe('Nemeion', () => {
 
     describe('initialization', () => {
         describe('when passed no arguments', () => {
-            it('has a gender', () => {
+            it('has a gender property defined', () => {
                 expect(instance.gender).toBeDefined()
             })
 
-            it('has a fur style', () => {
-                expect(instance.fur).toBeDefined()
+            it('has the default fur style', () => {
+                expect(instance.fur).toBe(DATA.furs.default)
             })
 
-            it('has a coat coloring', () => {
-                expect(instance.coat).toBeDefined()
+            it('has the default coat coloring', () => {
+                expect(instance.coat).toBe(DATA.coats.default)
             })
 
-            it('has a build defined', () => {
-                expect(instance.build).toBeDefined()
+            it('has the default build', () => {
+                expect(instance.build).toBe(DATA.builds.default)
             })
 
-            it('has storage for traits', () => {
-                expect(instance.traits).toBeDefined()
+            it('has the default traits', () => {
+                expect(instance.traits).toBe(DATA.traits.default)
             })
 
-            it('has storage for markings', () => {
-                expect(instance.markings).toBeDefined()
+            it('has the default markings', () => {
+                expect(instance.markings).toBe(DATA.markings.default)
             })
 
-            it('has storage for mutations', () => {
-                expect(instance.mutations).toBeDefined()
+            it('has the default mutations', () => {
+                expect(instance.mutations).toBe(DATA.mutations.default)
             })
         })
 
@@ -73,6 +73,12 @@ describe('Nemeion', () => {
             expect(instance.hasMutations).toBe(false)
             instance.mutations = ['some mutation']
             expect(instance.hasMutations).toBe(true)
+        })
+
+        test('hasRareFur is based on the fur property', () => {
+            expect(instance.hasRareFur).toBe(false)
+            instance.fur = DATA.furs.rare_options[0]
+            expect(instance.hasRareFur).toBe(true)
         })
     })
 })
