@@ -1,5 +1,5 @@
-import * as NemeionModule from '@/types/Nemeion'
-const Nemeion = NemeionModule.default
+import Nemeion from '@/types/Nemeion'
+import NemeionBreedingGround from '@/types/NemeionBreedingGround'
 
 import { setActivePinia, createPinia } from 'pinia'
 import { describe, expect, it, beforeEach, vi } from "vitest"
@@ -33,24 +33,49 @@ describe("den store", () => {
         })
     })
 
-    describe('generateOffspring', () => {
+    describe('makeOffspring', () => {
         it('should generate a litter of offspring based off the weights in the data table', () => {
             const den = denStore()
 
             for (const litterChance of DATA.litters.weights) {
-                den.generateOffspring(() => litterChance, { generateFromParents: () => { return {} }})
+                const breedingGround = new NemeionBreedingGround(den.father, den.mother)
+                den.makeOffspring(breedingGround, () => litterChance)
 
                 const index = DATA.litters.weights.indexOf(litterChance)
                 expect(den.offspring.length).toBe(index + 1)
             }
         })
 
-        it('should create Nemeion types', () => {
+        it('should call the breeding ground to generate offspring', () => {
+            class MockBreedingGround extends NemeionBreedingGround {
+                constructor(father, mother) {
+                    super(father, mother)
+                    this.makeOffspring = vi.fn().mockImplementation(() => new Nemeion())
+                }
+            }
             const den = denStore()
+            const breedingGround = new MockBreedingGround(den.father, den.mother)
+            
+            den.makeOffspring(breedingGround)
+            expect(breedingGround.makeOffspring).toHaveBeenCalled()
+        })
 
-            den.generateOffspring(() => 1)
+        describe('when given a breeding ground', () => {
+            it('throws an error if it is not a NemeionBreedingGround', () => {
+                const den = denStore()
 
-            expect(den.offspring[0]).toBeInstanceOf(Nemeion)
+                expect(() => {
+                    den.makeOffspring(null)
+                }).toThrowError()
+            })
+
+            it('throws if the value is null', () => {
+                const den = denStore()
+
+                expect(() => {
+                    den.makeOffspring(null)
+                }).toThrowError()
+            })
         })
     })
 })

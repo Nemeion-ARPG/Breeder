@@ -5,6 +5,8 @@ import { defineStore } from 'pinia'
 
 import _random from 'lodash/random'
 
+import NemeionBreedingGround from '@/types/NemeionBreedingGround'
+
 import DATA from '@/data.yaml'
 import { GENDERS } from '@/Constants'
 
@@ -40,11 +42,18 @@ export default defineStore('den', () => {
         return litter
     }
 
-    function generateOffspring(
+    function makeOffspring(
+        breedingGround = new NemeionBreedingGround(father.value, mother.value),
         chanceRoll = DEFAULT_CHANCE_ROLL
     ) {
+        if (!breedingGround) {
+            throw new Error('Cannot breed just anywhere')
+        }
+        if (!(breedingGround instanceof NemeionBreedingGround)) {
+            throw new Error('Can only breed in a NemeionBreedingGround')
+        }
         offspring.value = _generateLitter(chanceRoll, () => {
-            return new Nemeion(father, mother, chanceRoll)
+            return breedingGround.makeOffspring()
         })
     }
 
@@ -53,6 +62,6 @@ export default defineStore('den', () => {
         mother,
         offspring,
 
-        generateOffspring
+        makeOffspring
     }
 })
