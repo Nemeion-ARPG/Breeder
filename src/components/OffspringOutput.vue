@@ -57,7 +57,5 @@ defineEmits(['generateOffspring', 'reset', 'generateRandom'])
 </script>
 
 <style scoped>
-.offspring-output header {
-    text-align: center;
-}
+
 </style>

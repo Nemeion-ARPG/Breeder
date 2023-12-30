@@ -4,20 +4,23 @@
             <h2>{{ title }}</h2>
         </header>
 
-        <div 
-            v-for="(addon, index) in availableAddons"
-            :title = "addon.description"
-        >
-            <BFormCheckbox
-                :key="index"
-                :value="addon.id"
-                v-model="selectedAddons"
-                :disabled="addon.mutually_exclusive && selectedAddons.includes(addon.mutually_exclusive)"
-                button
-                :button-variant="selectedAddons.includes(addon.id) ? 'success' : 'secondary'"
+        <div class="addon-list">
+            <div
+                class="addon-list-item"
+                v-for="(addon, index) in availableAddons"
+                :title = "addon.description"
             >
-            {{ addon.display_name }}
-            </BFormCheckbox>
+                <BFormCheckbox
+                    :key="index"
+                    :value="addon.id"
+                    v-model="selectedAddons"
+                    :disabled="addon.mutually_exclusive && selectedAddons.includes(addon.mutually_exclusive)"
+                    button
+                    :button-variant="selectedAddons.includes(addon.id) ? 'success' : 'secondary'"
+                >
+                {{ addon.display_name }}
+                </BFormCheckbox>
+            </div>
         </div>
     </section>
 </template>
@@ -48,4 +51,12 @@ defineProps({
 </script>
 
 <style scoped>
+
+.addon-list {
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    gap: 0.3rem 0.5rem;
+}
 </style>

@@ -181,7 +181,5 @@ const availableBuilds = computed(() => {
 </script>
 
 <style scoped>
-.container header {
-    text-align: center;
-}
+
 </style>
