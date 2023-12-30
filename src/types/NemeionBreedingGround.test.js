@@ -1,7 +1,7 @@
-import { setActivePinia, createPinia } from 'pinia'
-import { describe, expect, it, beforeEach, vi } from "vitest"
+import NemeionBreedingGround from './NemeionBreedingGround'
 
-import NemeionBreedingGround, { DEFAULT_RANDOM_SAMPLE } from './NemeionBreedingGround'
+import { describe, expect, it, vi } from "vitest"
+
 import { DEFAULT_SHOULD_DO_ACTION, DEFAULT_RANDOM_SAMPLE } from './NemeionBreedingGround'
 
 import DATA from '@/data.yaml'
@@ -16,7 +16,7 @@ import {
 } from '@/Constants.js'
 import Nemeion from '@/types/Nemeion'
 
-describe('nemeion breeding ground', () => {
+describe('NemeionBreedingGround', () => {
     const prototypeFather = new Nemeion({ gender: GENDERS.Male })
     const prototypeMother = new Nemeion({ gender: GENDERS.Female })
 
@@ -67,7 +67,7 @@ describe('nemeion breeding ground', () => {
         describe('logic dependency injection', () => {
             it('should store defaults if no overrides are provided', () => {
                 const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother)
-                
+
                 expect(breedingGround.shouldDoAction).toBe(DEFAULT_SHOULD_DO_ACTION)
                 expect(breedingGround.randomSample).toBe(DEFAULT_RANDOM_SAMPLE)
             })
@@ -82,515 +82,476 @@ describe('nemeion breeding ground', () => {
 
                 expect(breedingGround.shouldDoAction).toBe(mockShouldDoAction)
                 expect(breedingGround.shouldDoAction).not.toBe(DEFAULT_SHOULD_DO_ACTION)
-                
+
                 expect(breedingGround.randomSample).toBe(mockRandomSample)
                 expect(breedingGround.randomSample).not.toBe(DEFAULT_RANDOM_SAMPLE)
             })
         })
     })
 
-    describe('makeOffspring', () => {
-        it('generates an offspring based on the parents', () => {
-            const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother)
-            const genderSpy = vi.spyOn(breedingGround, '_generateGender')
-            const furSpy = vi.spyOn(breedingGround, '_generateFur')
-            const coatSpy = vi.spyOn(breedingGround, '_generateCoat')
-            const buildSpy = vi.spyOn(breedingGround, '_generateBuild')
-            const traitsSpy = vi.spyOn(breedingGround, '_generateTraits')
-            const markingsSpy = vi.spyOn(breedingGround, '_generateMarkings')
-            const mutationsSpy = vi.spyOn(breedingGround, '_generateMutations')
-
-            const offspring = breedingGround.makeOffspring()
-
-            expect(offspring).toBeInstanceOf(Nemeion)
-            expect(genderSpy).toBeCalledTimes(1)
-            expect(furSpy).toBeCalledTimes(1)
-            expect(coatSpy).toBeCalledTimes(1)
-            expect(buildSpy).toBeCalledTimes(1)
-            expect(traitsSpy).toBeCalledTimes(1)
-            expect(markingsSpy).toBeCalledTimes(1)
-            expect(mutationsSpy).toBeCalledTimes(1)
-        })
-
-        describe('generateGender', () => {
-            it('returns female if the roll is successful', () => {
-                const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, { shouldDoAction: () => true })
-                const result = breedingGround._generateGender()
-                expect(result).toBe(GENDERS.Female)
-            })
-
-            it('returns male if the roll is unsuccessful', () => {
+    describe('_generateFur', () => {
+        describe('when no parent has rare fur', () => {
+            it('returns a sleek fur when the random roll is unsuccessful', () => {
                 const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, { shouldDoAction: () => false })
-                const result = breedingGround._generateGender()
-                expect(result).toBe(GENDERS.Male)
+                const result = breedingGround._generateFur()
+
+                expect(result).toBe(FURS.Sleek)
+            })
+
+            it('returns a rare fur when the random roll is successful', () => {
+                const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, {
+                    shouldDoAction: () => true,
+                    randomSample: () => FURS.Silky
+                })
+                const result = breedingGround._generateFur()
+
+                expect(result).toEqual(FURS.Silky)
             })
         })
 
-        describe('generateFur', () => {
-            describe('when no parent has rare fur', () => {
-                it('returns a sleek fur when the random roll is unsuccessful', () => {
-                    const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, { shouldDoAction: () => false })
-                    const result = breedingGround._generateFur()
+        describe('when both parents have rare fur', () => {
+            describe('when parents have the same fur', () => {
+                const expectedFur = FURS.Silky
+                const father = new Nemeion({ ...prototypeFather, fur: expectedFur })
+                const mother = new Nemeion({ ...prototypeMother, fur: expectedFur })
 
-                    expect(result).toBe(FURS.Sleek)
-                })
+                it('returns a sleek fur when the inherit roll AND the random roll are unsuccessful', () => {
+                    const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => false })
 
-                it('returns a rare fur when the random roll is successful', () => {
-                    const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, {
-                        shouldDoAction: () => true,
-                        randomSample: () => FURS.Silky
-                    })
-                    const result = breedingGround._generateFur()
-
-                    expect(result).toEqual(FURS.Silky)
-                })
-            })
-
-            describe('when both parents have rare fur', () => {
-                describe('when parents have the same fur', () => {
-                    const expectedFur = FURS.Silky
-                    const father = new Nemeion({ ...prototypeFather, fur: expectedFur })
-                    const mother = new Nemeion({ ...prototypeMother, fur: expectedFur })
-
-                    it('returns a sleek fur when the inherit roll AND the random roll are unsuccessful', () => {
-                        const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => false })
-                        
-                        const result = breedingGround._generateFur()
-                        expect(result).toBe(FURS.Sleek)
-                    })
-
-                    it('returns the same fur as the parents when the inherit roll is successful', () => {
-                        const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => true })
-                        
-                        const result = breedingGround._generateFur()
-                        expect(result).toBe(expectedFur)
-                    })
-
-                    it('returns a random rare fur when the inherit roll is unsuccessful but the random roll is successful', () => {
-                        const mockChanceRoll = vi.fn()
-                            .mockImplementationOnce(() => false)
-                            .mockImplementationOnce(() => true)
-                        const mockSampleRoll = vi.fn().mockImplementation(() => FURS.Polar)
-                        const breedingGround = new NemeionBreedingGround(father, mother, {
-                            shouldDoAction: mockChanceRoll,
-                            randomSample: mockSampleRoll
-                        })
-                        
-                        const result = breedingGround._generateFur()
-                        expect(result).toBe(FURS.Polar)
-                    })
-                })
-
-                describe("when parents DON'T have the same fur", () => {
-                    const mother = new Nemeion({ ...prototypeMother, fur: FURS.Silky })
-
-                    it('always rolls an inherit chance for each parent', () => {
-                        const father = new Nemeion({ ...prototypeFather, fur: FURS.Polar })
-
-                        const mockMethod = vi.fn().mockImplementation(() => false)
-
-                        const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
-                        const result = breedingGround._generateFur()
-
-                        // 1 per parent + 1 for the random roll
-                        expect(mockMethod.mock.calls.length).toBe(3)
-                    })
-
-                    it("returns the mother's fur when both inherit rolls are successful", () => {
-                        const father = new Nemeion({ ...prototypeFather, fur: FURS.Polar })
-                        const mockMethod = vi.fn().mockImplementation(() => true)
-
-                        const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
-                        const result = breedingGround._generateFur()
-
-                        expect(result).toBe(FURS.Silky)
-                    })
-
-                    it("returns the appropriate parent's fur when only one inherit roll is successful", () => {
-                        const father = new Nemeion({ ...prototypeFather, fur: FURS.Polar })
-
-                        const fatherResultMethod = vi.fn()
-                            .mockImplementationOnce(() => false)
-                            .mockImplementationOnce(() => true)
-                        const fatherBreedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: fatherResultMethod })
-                        const fatherResult = fatherBreedingGround._generateFur()
-                        expect(fatherResult).toBe(father.fur)
-
-                        const motherResultMethod = vi.fn()
-                            .mockImplementationOnce(() => true)
-                            .mockImplementationOnce(() => false)
-                        const motherBreedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: motherResultMethod })
-                        const motherResult = motherBreedingGround._generateFur()
-                        expect(motherResult).toBe(mother.fur)
-                    })
-                })
-            })
-
-            describe('when one parent has rare fur', () => {
-                it("returns the appropriate parent's fur when the inherit roll is successful", () => {
-                    const father = new Nemeion({ ...prototypeFather, fur: FURS.Silky })
-                    const fatherBreedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => true })
-                    const fatherResult = fatherBreedingGround._generateFur()
-                    expect(fatherResult).toBe(father.fur)
-
-                    const mother = new Nemeion({ ...prototypeMother, fur: FURS.Polar })
-                    const motherBreedingGround = new NemeionBreedingGround(prototypeFather, mother, { shouldDoAction: () => true })
-                    const motherResult = motherBreedingGround._generateFur()
-                    expect(motherResult).toBe(mother.fur)
-                })
-
-                it('returns a sleek fur when the inherit roll is unsuccessful AND random roll is unsuccessful', () => {
-                    const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, { shouldDoAction: () => false })
                     const result = breedingGround._generateFur()
                     expect(result).toBe(FURS.Sleek)
+                })
+
+                it('returns the same fur as the parents when the inherit roll is successful', () => {
+                    const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => true })
+
+                    const result = breedingGround._generateFur()
+                    expect(result).toBe(expectedFur)
                 })
 
                 it('returns a random rare fur when the inherit roll is unsuccessful but the random roll is successful', () => {
-                    const father = new Nemeion({ ...prototypeFather, fur: FURS.Silky })
-
-                    const mockInheritRoll = vi.fn()
+                    const mockChanceRoll = vi.fn()
                         .mockImplementationOnce(() => false)
                         .mockImplementationOnce(() => true)
                     const mockSampleRoll = vi.fn().mockImplementation(() => FURS.Polar)
-                    const breedingGround = new NemeionBreedingGround(father, prototypeMother, {
-                        shouldDoAction: mockInheritRoll,
+                    const breedingGround = new NemeionBreedingGround(father, mother, {
+                        shouldDoAction: mockChanceRoll,
                         randomSample: mockSampleRoll
                     })
-                    const result = breedingGround._generateFur()
 
+                    const result = breedingGround._generateFur()
                     expect(result).toBe(FURS.Polar)
-                    expect(mockSampleRoll).toHaveBeenCalled()
                 })
             })
-        })
 
-        describe('generateCoat', () => {
-            describe('when both parents have the same coat', () => {
-                it('always returns the same coat as the parents', () => {
-                    const expectedCoat = COATS.Cream
-                    const father = new Nemeion({ ...prototypeFather, coat: expectedCoat })
-                    const mother = new Nemeion({ ...prototypeMother, coat: expectedCoat })
+            describe("when parents DON'T have the same fur", () => {
+                const mother = new Nemeion({ ...prototypeMother, fur: FURS.Silky })
+
+                it('always rolls an inherit chance for each parent', () => {
+                    const father = new Nemeion({ ...prototypeFather, fur: FURS.Polar })
 
                     const mockMethod = vi.fn().mockImplementation(() => false)
+
                     const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
-                    
-                    const result = breedingGround._generateCoat()
-        
-                    expect(mockMethod).not.toHaveBeenCalled()
-                    expect(result).toBe(expectedCoat)
-                })
-            })
+                    const result = breedingGround._generateFur()
 
-            describe('when parents have different coats', () => {
-                it("returns the father's coat when the inherit roll is unsuccessful", () => {
-                    const father = new Nemeion({ ...prototypeFather, coat: COATS.Cream })
-                    const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => false })
-                    
-                    const result = breedingGround._generateCoat()
-
-                    expect(result).toBe(father.coat)
+                    // 1 per parent + 1 for the random roll
+                    expect(mockMethod.mock.calls.length).toBe(3)
                 })
 
-                it("returns the mother's coat when the inherit roll is successful", () => {
-                    const father = new Nemeion({ ...prototypeFather, coat: COATS.Cream })
-                    const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => true })
-                    
-                    const result = breedingGround._generateCoat()
-
-                    expect(result).toBe(prototypeMother.coat)
-                })
-            })
-        })
-
-        describe('generateBuild', () => {
-            describe('when both parents have the same build', () => {
-                it('uses the same build as the parents', () => {
-                    const mockMethod = vi.fn()
-                    const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, { shouldDoAction: mockMethod })
-
-                    expect(prototypeFather.build).toBe(prototypeMother.build)
-                    const result = breedingGround._generateBuild()
-                    expect(mockMethod).not.toBeCalled()
-                    expect(result).toBe(prototypeFather.build)
-                })
-            })
-
-            describe('when both parents have different builds', () => {
-                describe('and the builds are incompatible', () => {
-                    it('throws an error', () => {
-                        const father = new Nemeion({ ...prototypeFather, build: BUILDS.Brute })
-                        const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Domestic })
-                        const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => true })
-
-                        expect(() => offspring._generateBuild).toThrowError()
-                    })
-                })
-
-                describe('and the builds are compatible', () => {
-                    const father = prototypeFather
-                    const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Dwarf })
-
-                    it("uses the mother's rate to roll for build inheritance", () => {
-                        const mockMethod = vi.fn().mockImplementation(() => true)
-                        const expectedChanceRate = DATA.builds.available[father.build].inherit_chance[mother.build]
-                        const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
-
-                        let _ = breedingGround._generateBuild()
-
-                        expect(mockMethod).toBeCalledTimes(1)
-                        expect(mockMethod).toBeCalledWith(expectedChanceRate)
-                    })
-
-                    it("uses the father's build if the inherit roll is unsuccessful", () => {
-                        const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => false })
-
-                        const result = breedingGround._generateBuild()
-                        expect(result).toBe(father.build)
-                    })
-
-                    it("uses the mother's build if the inherit roll is successful", () => {
-                        const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => true})
-
-                        const result = breedingGround._generateBuild()
-                        expect(result).toBe(mother.build)
-                    })
-                })
-            })
-        })
-
-        describe('generateTraits', () => {
-            it('returns a unique list of traits in the final result set', () => {
-                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1] })
-                const mother = new Nemeion({ ...prototypeMother, traits: [TRAITS.Common_1] })
-                const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => true})
-                
-                const result = breedingGround._generateTraits()
-                expect(result.length).toBe(1)
-            })
-
-            describe('when both parents have no traits', () => {
-                it('returns no traits for the offspring', () => {
-                    const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, { shouldDoAction: () => true })
-
-                    const result = breedingGround._generateTraits()
-                    expect(result).toEqual([])
-                })
-
-                it('does not roll for inheritance', () => {
+                it("returns the mother's fur when both inherit rolls are successful", () => {
+                    const father = new Nemeion({ ...prototypeFather, fur: FURS.Polar })
                     const mockMethod = vi.fn().mockImplementation(() => true)
-                    const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, { shouldDoAction: mockMethod })
 
-                    const result = breedingGround._generateTraits()
-                    expect(mockMethod).not.toBeCalled()
-                })
-            })
-
-            describe('when both parents have traits', () => {
-                it('rolls to inherit all traits from both parents', () => {
-                    const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1] })
-                    const mother = new Nemeion({ ...prototypeMother, traits: [TRAITS.Uncommon_1] })
-
-                    const mockMethod = vi.fn().mockImplementation(() => true)
                     const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
+                    const result = breedingGround._generateFur()
 
-                    let _ = breedingGround._generateTraits()
-                    expect(mockMethod).toBeCalledTimes(2)
+                    expect(result).toBe(FURS.Silky)
                 })
 
-                describe('and the traits are the exact same', () => {
-                    it('rolls to inherit exactly once', () => {
-                        const traits = [TRAITS.Common_1, TRAITS.Uncommon_1]
-                        const father = new Nemeion({ ...prototypeFather, traits })
-                        const mother = new Nemeion({ ...prototypeMother, traits })
-    
-                        const mockMethod = vi.fn().mockImplementation(() => true)
-                        const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
-    
-                        let _ = breedingGround._generateTraits()
+                it("returns the appropriate parent's fur when only one inherit roll is successful", () => {
+                    const father = new Nemeion({ ...prototypeFather, fur: FURS.Polar })
 
-                        expect(mockMethod).toBeCalledTimes(2)
-                        expect(mockMethod).not.toHaveBeenLastCalledWith(mockMethod.mock.calls[0][0])
-                    })
+                    const fatherResultMethod = vi.fn()
+                        .mockImplementationOnce(() => false)
+                        .mockImplementationOnce(() => true)
+                    const fatherBreedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: fatherResultMethod })
+                    const fatherResult = fatherBreedingGround._generateFur()
+                    expect(fatherResult).toBe(father.fur)
 
-                    it('rolls to inherit with the double rate', () => {
-                        const traits = [TRAITS.Common_1]
-                        const father = new Nemeion({ ...prototypeFather, traits })
-                        const mother = new Nemeion({ ...prototypeMother, traits })
-    
-                        const mockMethod = vi.fn().mockImplementation(() => true)
-                        const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
-    
-                        let _ = breedingGround._generateTraits()
-
-                        expect(mockMethod).toBeCalledTimes(1)
-                        expect(mockMethod).toHaveBeenCalledWith(DATA.traits.qualities[TRAIT_QUALITIES.Common].inherit_chance.double)
-                    })
-                })
-            })
-
-            describe('when at least one parent has traits', () => {
-                it('rolls to inherit the trait from the parent with the single rate', () => {
-                    const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1] })
-    
-                    const mockMethod = vi.fn().mockImplementation(() => true)
-                    const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockMethod })
-
-                    let _ = breedingGround._generateTraits()
-
-                    expect(mockMethod).toBeCalledTimes(1)
-                    expect(mockMethod).toHaveBeenCalledWith(DATA.traits.qualities[TRAIT_QUALITIES.Common].inherit_chance.single)
-                })
-
-                it('rolls to inherit the trait with the single rate even if the trait is accidentally duplicated', () => {
-                    const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1, TRAITS.Common_1] })
-
-                    const mockMethod = vi.fn().mockImplementation(() => true)
-                    const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockMethod })
-
-                    let _ = breedingGround._generateTraits()
-
-                    expect(mockMethod).toBeCalledTimes(1)
-                    expect(mockMethod).toHaveBeenCalledWith(DATA.traits.qualities[TRAIT_QUALITIES.Common].inherit_chance.single)
-                })
-
-                it('inherits the trait from the parent if the inherit roll is successful', () => {
-                    const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1] })
-                    const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => true })
-
-                    let result = breedingGround._generateTraits()
-
-                    expect(result).toEqual([TRAITS.Common_1])
-                })
-
-                it('does not have any inherited traits if the inherit roll is unsuccessful', () => {
-                    const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1] })
-                    const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => false })
-
-                    let result = breedingGround._generateTraits()
-
-                    expect(result).toEqual([])
+                    const motherResultMethod = vi.fn()
+                        .mockImplementationOnce(() => true)
+                        .mockImplementationOnce(() => false)
+                    const motherBreedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: motherResultMethod })
+                    const motherResult = motherBreedingGround._generateFur()
+                    expect(motherResult).toBe(mother.fur)
                 })
             })
         })
 
-        describe('generateMarkings', () => {
-            it('returns a unique list of markings in the final result set', () => {
-                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Common_1] })
-                const mother = new Nemeion({ ...prototypeMother, markings: [MARKINGS.Common_1] })
-                const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => true })
-                
-                const result = breedingGround._generateMarkings()
-                expect(result.length).toBe(1)
+        describe('when one parent has rare fur', () => {
+            it("returns the appropriate parent's fur when the inherit roll is successful", () => {
+                const father = new Nemeion({ ...prototypeFather, fur: FURS.Silky })
+                const fatherBreedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => true })
+                const fatherResult = fatherBreedingGround._generateFur()
+                expect(fatherResult).toBe(father.fur)
+
+                const mother = new Nemeion({ ...prototypeMother, fur: FURS.Polar })
+                const motherBreedingGround = new NemeionBreedingGround(prototypeFather, mother, { shouldDoAction: () => true })
+                const motherResult = motherBreedingGround._generateFur()
+                expect(motherResult).toBe(mother.fur)
             })
 
-            describe('when both parents have no markings', () => {
-                it('returns no markings for the offspring', () => {
-                    const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, () => true, () => true)
-
-                    const result = breedingGround._generateMarkings()
-                    expect(result).toEqual([])
-                })
-
-                it('does not roll for inheritance', () => {
-                    const mockMethod = vi.fn().mockImplementation(() => true)
-                    const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, () => true, mockMethod)
-
-                    const result = breedingGround._generateMarkings()
-                    expect(mockMethod).not.toBeCalled()
-                })
+            it('returns a sleek fur when the inherit roll is unsuccessful AND random roll is unsuccessful', () => {
+                const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, { shouldDoAction: () => false })
+                const result = breedingGround._generateFur()
+                expect(result).toBe(FURS.Sleek)
             })
 
-            describe('when both parents have markings', () => {
-                it('rolls to inherit all markings from both parents', () => {
-                    const father = new Nemeion({ ...prototypeFather, markings: [TRAITS.Common_1] })
-                    const mother = new Nemeion({ ...prototypeMother, markings: [TRAITS.Uncommon_1] })
+            it('returns a random rare fur when the inherit roll is unsuccessful but the random roll is successful', () => {
+                const father = new Nemeion({ ...prototypeFather, fur: FURS.Silky })
 
-                    const mockMethod = vi.fn().mockImplementation(() => true)
-                    const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
-
-                    let _ = breedingGround._generateMarkings()
-                    expect(mockMethod).toBeCalledTimes(2)
+                const mockInheritRoll = vi.fn()
+                    .mockImplementationOnce(() => false)
+                    .mockImplementationOnce(() => true)
+                const mockSampleRoll = vi.fn().mockImplementation(() => FURS.Polar)
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, {
+                    shouldDoAction: mockInheritRoll,
+                    randomSample: mockSampleRoll
                 })
+                const result = breedingGround._generateFur()
 
-                describe('and the markings are the exact same', () => {
-                    it('rolls to inherit exactly once', () => {
-                        const markings = [MARKINGS.Common_1, MARKINGS.Uncommon_1]
-                        const father = new Nemeion({ ...prototypeFather, markings })
-                        const mother = new Nemeion({ ...prototypeMother, markings })
-    
-                        const mockMethod = vi.fn().mockImplementation(() => true)
-                        const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
-    
-                        let _ = breedingGround._generateMarkings()
-
-                        expect(mockMethod).toBeCalledTimes(2)
-                        expect(mockMethod).not.toHaveBeenLastCalledWith(mockMethod.mock.calls[0][0])
-                    })
-
-                    it('rolls to inherit with the double rate', () => {
-                        const markings = [MARKINGS.Common_1]
-                        const father = new Nemeion({ ...prototypeFather, markings })
-                        const mother = new Nemeion({ ...prototypeMother, markings })
-    
-                        const mockMethod = vi.fn().mockImplementation(() => true)
-                        const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
-    
-                        let _ = breedingGround._generateMarkings()
-
-                        expect(mockMethod).toBeCalledTimes(1)
-                        expect(mockMethod).toHaveBeenCalledWith(DATA.markings.qualities[MARKING_QUALITIES.Common].inherit_chance.double)
-                    })
-                })
-            })
-
-            describe('when at least one parent has markings', () => {
-                it('rolls to inherit the marking from the parent with the single rate', () => {
-                    const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Common_1] })
-    
-                    const mockMethod = vi.fn().mockImplementation(() => true)
-                    const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockMethod })
-
-                    let _ = breedingGround._generateMarkings()
-
-                    expect(mockMethod).toBeCalledTimes(1)
-                    expect(mockMethod).toHaveBeenCalledWith(DATA.markings.qualities[MARKING_QUALITIES.Common].inherit_chance.single)
-                })
-
-                it('rolls to inherit the marking with the single rate even if the marking is accidentally duplicated', () => {
-                    const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Common_1, MARKINGS.Common_1] })
-
-                    const mockMethod = vi.fn().mockImplementation(() => true)
-                    const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockMethod})
-
-                    let _ = breedingGround._generateMarkings()
-
-                    expect(mockMethod).toBeCalledTimes(1)
-                    expect(mockMethod).toHaveBeenCalledWith(DATA.markings.qualities[MARKING_QUALITIES.Common].inherit_chance.single)
-                })
-
-                it('inherits the marking from the parent if the inherit roll is successful', () => {
-                    const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Common_1] })
-                    const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => true })
-
-                    let result = breedingGround._generateMarkings()
-
-                    expect(result).toEqual([MARKINGS.Common_1])
-                })
-
-                it('does not have any inherited markings if the inherit roll is unsuccessful', () => {
-                    const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Common_1] })
-                    const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => false })
-
-                    let result = breedingGround._generateMarkings()
-
-                    expect(result).toEqual([])
-                })
+                expect(result).toBe(FURS.Polar)
+                expect(mockSampleRoll).toHaveBeenCalled()
             })
         })
-
     })
 
-    describe('generateMutations', () => {
+    describe('_generateCoat', () => {
+        describe('when both parents have the same coat', () => {
+            it('always returns the same coat as the parents', () => {
+                const expectedCoat = COATS.Cream
+                const father = new Nemeion({ ...prototypeFather, coat: expectedCoat })
+                const mother = new Nemeion({ ...prototypeMother, coat: expectedCoat })
+
+                const mockMethod = vi.fn().mockImplementation(() => false)
+                const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
+
+                const result = breedingGround._generateCoat()
+
+                expect(mockMethod).not.toHaveBeenCalled()
+                expect(result).toBe(expectedCoat)
+            })
+        })
+
+        describe('when parents have different coats', () => {
+            it("returns the father's coat when the inherit roll is unsuccessful", () => {
+                const father = new Nemeion({ ...prototypeFather, coat: COATS.Cream })
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => false })
+
+                const result = breedingGround._generateCoat()
+
+                expect(result).toBe(father.coat)
+            })
+
+            it("returns the mother's coat when the inherit roll is successful", () => {
+                const father = new Nemeion({ ...prototypeFather, coat: COATS.Cream })
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => true })
+
+                const result = breedingGround._generateCoat()
+
+                expect(result).toBe(prototypeMother.coat)
+            })
+        })
+    })
+
+    describe('_generateBuild', () => {
+        describe('when both parents have the same build', () => {
+            it('uses the same build as the parents', () => {
+                const mockMethod = vi.fn()
+                const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, { shouldDoAction: mockMethod })
+
+                expect(prototypeFather.build).toBe(prototypeMother.build)
+                const result = breedingGround._generateBuild()
+                expect(mockMethod).not.toBeCalled()
+                expect(result).toBe(prototypeFather.build)
+            })
+        })
+
+        describe('when both parents have different builds', () => {
+            describe('and the builds are incompatible', () => {
+                it('throws an error', () => {
+                    const father = new Nemeion({ ...prototypeFather, build: BUILDS.Brute })
+                    const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Domestic })
+                    const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => true })
+
+                    expect(() => offspring._generateBuild).toThrowError()
+                })
+            })
+
+            describe('and the builds are compatible', () => {
+                const father = prototypeFather
+                const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Dwarf })
+
+                it("uses the mother's rate to roll for build inheritance", () => {
+                    const mockMethod = vi.fn().mockImplementation(() => true)
+                    const expectedChanceRate = DATA.builds.available[father.build].inherit_chance[mother.build]
+                    const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
+
+                    let _ = breedingGround._generateBuild()
+
+                    expect(mockMethod).toBeCalledTimes(1)
+                    expect(mockMethod).toBeCalledWith(expectedChanceRate)
+                })
+
+                it("uses the father's build if the inherit roll is unsuccessful", () => {
+                    const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => false })
+
+                    const result = breedingGround._generateBuild()
+                    expect(result).toBe(father.build)
+                })
+
+                it("uses the mother's build if the inherit roll is successful", () => {
+                    const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => true })
+
+                    const result = breedingGround._generateBuild()
+                    expect(result).toBe(mother.build)
+                })
+            })
+        })
+    })
+
+    describe('_generateTraits', () => {
+        it('returns a unique list of traits in the final result set', () => {
+            const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1] })
+            const mother = new Nemeion({ ...prototypeMother, traits: [TRAITS.Common_1] })
+            const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => true })
+
+            const result = breedingGround._generateTraits()
+            expect(result.length).toBe(1)
+        })
+
+        describe('when both parents have no traits', () => {
+            it('returns no traits for the offspring', () => {
+                const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, { shouldDoAction: () => true })
+
+                const result = breedingGround._generateTraits()
+                expect(result).toEqual([])
+            })
+
+            it('does not roll for inheritance', () => {
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, { shouldDoAction: mockMethod })
+
+                const result = breedingGround._generateTraits()
+                expect(mockMethod).not.toBeCalled()
+            })
+        })
+
+        describe('when both parents have traits', () => {
+            it('rolls to inherit all traits from both parents', () => {
+                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1] })
+                const mother = new Nemeion({ ...prototypeMother, traits: [TRAITS.Uncommon_1] })
+
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
+
+                let _ = breedingGround._generateTraits()
+                expect(mockMethod).toBeCalledTimes(2)
+            })
+
+            describe('and the traits are the exact same', () => {
+                it('rolls to inherit exactly once', () => {
+                    const traits = [TRAITS.Common_1, TRAITS.Uncommon_1]
+                    const father = new Nemeion({ ...prototypeFather, traits })
+                    const mother = new Nemeion({ ...prototypeMother, traits })
+
+                    const mockMethod = vi.fn().mockImplementation(() => true)
+                    const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
+
+                    let _ = breedingGround._generateTraits()
+
+                    expect(mockMethod).toBeCalledTimes(2)
+                    expect(mockMethod).not.toHaveBeenLastCalledWith(mockMethod.mock.calls[0][0])
+                })
+
+                it('rolls to inherit with the double rate', () => {
+                    const traits = [TRAITS.Common_1]
+                    const father = new Nemeion({ ...prototypeFather, traits })
+                    const mother = new Nemeion({ ...prototypeMother, traits })
+
+                    const mockMethod = vi.fn().mockImplementation(() => true)
+                    const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
+
+                    let _ = breedingGround._generateTraits()
+
+                    expect(mockMethod).toBeCalledTimes(1)
+                    expect(mockMethod).toHaveBeenCalledWith(DATA.traits.qualities[TRAIT_QUALITIES.Common].inherit_chance.double)
+                })
+            })
+        })
+
+        describe('when at least one parent has traits', () => {
+            it('rolls to inherit the trait from the parent with the single rate', () => {
+                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1] })
+
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockMethod })
+
+                let _ = breedingGround._generateTraits()
+
+                expect(mockMethod).toBeCalledTimes(1)
+                expect(mockMethod).toHaveBeenCalledWith(DATA.traits.qualities[TRAIT_QUALITIES.Common].inherit_chance.single)
+            })
+
+            it('rolls to inherit the trait with the single rate even if the trait is accidentally duplicated', () => {
+                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1, TRAITS.Common_1] })
+
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockMethod })
+
+                let _ = breedingGround._generateTraits()
+
+                expect(mockMethod).toBeCalledTimes(1)
+                expect(mockMethod).toHaveBeenCalledWith(DATA.traits.qualities[TRAIT_QUALITIES.Common].inherit_chance.single)
+            })
+
+            it('inherits the trait from the parent if the inherit roll is successful', () => {
+                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1] })
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => true })
+
+                let result = breedingGround._generateTraits()
+
+                expect(result).toEqual([TRAITS.Common_1])
+            })
+
+            it('does not have any inherited traits if the inherit roll is unsuccessful', () => {
+                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1] })
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => false })
+
+                let result = breedingGround._generateTraits()
+
+                expect(result).toEqual([])
+            })
+        })
+    })
+
+    describe('_generateMarkings', () => {
+        it('returns a unique list of markings in the final result set', () => {
+            const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Common_1] })
+            const mother = new Nemeion({ ...prototypeMother, markings: [MARKINGS.Common_1] })
+            const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => true })
+
+            const result = breedingGround._generateMarkings()
+            expect(result.length).toBe(1)
+        })
+
+        describe('when both parents have no markings', () => {
+            it('returns no markings for the offspring', () => {
+                const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, () => true, () => true)
+
+                const result = breedingGround._generateMarkings()
+                expect(result).toEqual([])
+            })
+
+            it('does not roll for inheritance', () => {
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, () => true, mockMethod)
+
+                const result = breedingGround._generateMarkings()
+                expect(mockMethod).not.toBeCalled()
+            })
+        })
+
+        describe('when both parents have markings', () => {
+            it('rolls to inherit all markings from both parents', () => {
+                const father = new Nemeion({ ...prototypeFather, markings: [TRAITS.Common_1] })
+                const mother = new Nemeion({ ...prototypeMother, markings: [TRAITS.Uncommon_1] })
+
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
+
+                let _ = breedingGround._generateMarkings()
+                expect(mockMethod).toBeCalledTimes(2)
+            })
+
+            describe('and the markings are the exact same', () => {
+                it('rolls to inherit exactly once', () => {
+                    const markings = [MARKINGS.Common_1, MARKINGS.Uncommon_1]
+                    const father = new Nemeion({ ...prototypeFather, markings })
+                    const mother = new Nemeion({ ...prototypeMother, markings })
+
+                    const mockMethod = vi.fn().mockImplementation(() => true)
+                    const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
+
+                    let _ = breedingGround._generateMarkings()
+
+                    expect(mockMethod).toBeCalledTimes(2)
+                    expect(mockMethod).not.toHaveBeenLastCalledWith(mockMethod.mock.calls[0][0])
+                })
+
+                it('rolls to inherit with the double rate', () => {
+                    const markings = [MARKINGS.Common_1]
+                    const father = new Nemeion({ ...prototypeFather, markings })
+                    const mother = new Nemeion({ ...prototypeMother, markings })
+
+                    const mockMethod = vi.fn().mockImplementation(() => true)
+                    const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
+
+                    let _ = breedingGround._generateMarkings()
+
+                    expect(mockMethod).toBeCalledTimes(1)
+                    expect(mockMethod).toHaveBeenCalledWith(DATA.markings.qualities[MARKING_QUALITIES.Common].inherit_chance.double)
+                })
+            })
+        })
+
+        describe('when at least one parent has markings', () => {
+            it('rolls to inherit the marking from the parent with the single rate', () => {
+                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Common_1] })
+
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockMethod })
+
+                let _ = breedingGround._generateMarkings()
+
+                expect(mockMethod).toBeCalledTimes(1)
+                expect(mockMethod).toHaveBeenCalledWith(DATA.markings.qualities[MARKING_QUALITIES.Common].inherit_chance.single)
+            })
+
+            it('rolls to inherit the marking with the single rate even if the marking is accidentally duplicated', () => {
+                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Common_1, MARKINGS.Common_1] })
+
+                const mockMethod = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockMethod })
+
+                let _ = breedingGround._generateMarkings()
+
+                expect(mockMethod).toBeCalledTimes(1)
+                expect(mockMethod).toHaveBeenCalledWith(DATA.markings.qualities[MARKING_QUALITIES.Common].inherit_chance.single)
+            })
+
+            it('inherits the marking from the parent if the inherit roll is successful', () => {
+                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Common_1] })
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => true })
+
+                let result = breedingGround._generateMarkings()
+
+                expect(result).toEqual([MARKINGS.Common_1])
+            })
+
+            it('does not have any inherited markings if the inherit roll is unsuccessful', () => {
+                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Common_1] })
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => false })
+
+                let result = breedingGround._generateMarkings()
+
+                expect(result).toEqual([])
+            })
+        })
+    })
+
+    describe('_generateMutations', () => {
         it('returns a unique list of mutations in the final result set', () => {
             const father = new Nemeion({ ...prototypeFather, mutations: [MUTATIONS.Test_One] })
             const mother = new Nemeion({ ...prototypeMother, mutations: [MUTATIONS.Test_One] })
@@ -651,7 +612,7 @@ describe('nemeion breeding ground', () => {
                     shouldDoAction: mockMethod,
                     randomSample: DEFAULT_RANDOM_SAMPLE
                 })
-                
+
                 let _ = breedingGround._generateMutations()
 
                 expect(mockMethod).toHaveBeenCalledTimes(3)
@@ -703,7 +664,7 @@ describe('nemeion breeding ground', () => {
                     shouldDoAction: mockInheritRoll,
                     randomSample: DEFAULT_RANDOM_SAMPLE
                 })
-                
+
                 const result = breedingGround._generateMutations()
                 expect(result).toEqual([MUTATIONS.Test_One])
             })

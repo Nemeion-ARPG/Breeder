@@ -65,7 +65,7 @@ describe("den store", () => {
                 const den = denStore()
 
                 expect(() => {
-                    den.makeOffspring(null)
+                    den.makeOffspring({})
                 }).toThrowError()
             })
 

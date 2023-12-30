@@ -1,17 +1,19 @@
 import Nemeion from '@/types/Nemeion'
+import NemeionGenerator from './NemeionGenerator'
 
 import _sample from 'lodash/sample'
+import { rollForThreshold } from '@/utils'
 
 import DATA from '@/data.yaml'
 import { GENDERS, MUTATIONS } from '@/Constants.js'
 
 export const DEFAULT_RANDOM_SAMPLE = _sample
-export const DEFAULT_SHOULD_DO_ACTION = (threshold, tolerance = 0.1) => Math.random() <= threshold - tolerance
+export const DEFAULT_SHOULD_DO_ACTION = rollForThreshold
 
 /// Always use the mother as the tie-breaker for inherited traits
 /// Always use the father as the first parent for generating offspring
 
-export default class NemeionBreedingGround {
+export default class NemeionBreedingGround extends NemeionGenerator {
     constructor(father, mother, overrides = { shouldDoAction: DEFAULT_SHOULD_DO_ACTION, randomSample: DEFAULT_RANDOM_SAMPLE }) {
         if (!father || !mother) {
             throw new Error('Cannot breed asexually')
@@ -21,31 +23,15 @@ export default class NemeionBreedingGround {
             if (father.gender !== GENDERS.Male || mother.gender !== GENDERS.Female) {
                 throw new Error('Parent genders do not match reality for breeding')
             }
+            super(overrides.shouldDoAction)
             this.father = father
             this.mother = mother
-            this.shouldDoAction = overrides.shouldDoAction
             this.randomSample = overrides.randomSample
         } else {
             throw new Error('Only Nemeions can be bred here')
         }
     }
 
-    // methods with overloads for injecting methods
-    makeOffspring() {
-        return new Nemeion({
-            gender: this._generateGender(),
-            fur: this._generateFur(),
-            coat: this._generateCoat(),
-            build: this._generateBuild(),
-            traits: this._generateTraits(),
-            markings: this._generateMarkings(),
-            mutations: this._generateMutations()
-        })
-    }
-
-    _generateGender() {
-        return this.shouldDoAction(DATA.genders.Female.base_chance) ? GENDERS.Female : GENDERS.Male
-    }
     _generateFur() {
         const DEFAULT_FUR = DATA.furs.default
         const rollRandomFur = () => {
