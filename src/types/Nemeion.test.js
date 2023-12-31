@@ -46,9 +46,9 @@ describe('Nemeion', () => {
                     build: DATA.builds.default,
                     fur: DATA.furs.default,
                     coat: DATA.coats.default,
-                    traits: [TRAITS.Common_1],
-                    markings: [MARKINGS.Limited_1],
-                    mutations: [MUTATIONS.Test_One],
+                    traits: [TRAITS.Birthright],
+                    markings: [MARKINGS.Auribus],
+                    mutations: [MUTATIONS.Albinism],
                 }
                 const instance = new Nemeion(initialValues)
                 expect(instance).toEqual(initialValues)

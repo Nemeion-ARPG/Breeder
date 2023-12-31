@@ -401,8 +401,8 @@ describe('NemeionBreedingGround', () => {
 
     describe('_generateTraits', () => {
         it('returns a unique list of traits in the final result set', () => {
-            const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1] })
-            const mother = new Nemeion({ ...prototypeMother, traits: [TRAITS.Common_1] })
+            const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Birthright] })
+            const mother = new Nemeion({ ...prototypeMother, traits: [TRAITS.Birthright] })
             const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => true })
 
             const result = breedingGround._generateTraits()
@@ -428,8 +428,8 @@ describe('NemeionBreedingGround', () => {
 
         describe('when both parents have traits', () => {
             it('rolls to inherit all traits from both parents', () => {
-                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1] })
-                const mother = new Nemeion({ ...prototypeMother, traits: [TRAITS.Uncommon_1] })
+                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Birthright] })
+                const mother = new Nemeion({ ...prototypeMother, traits: [TRAITS.Big_Boned] })
 
                 const mockMethod = vi.fn().mockImplementation(() => true)
                 const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
@@ -440,7 +440,7 @@ describe('NemeionBreedingGround', () => {
 
             describe('and the traits are the exact same', () => {
                 it('rolls to inherit exactly once', () => {
-                    const traits = [TRAITS.Common_1, TRAITS.Uncommon_1]
+                    const traits = [TRAITS.Birthright, TRAITS.Big_Boned]
                     const father = new Nemeion({ ...prototypeFather, traits })
                     const mother = new Nemeion({ ...prototypeMother, traits })
 
@@ -454,7 +454,7 @@ describe('NemeionBreedingGround', () => {
                 })
 
                 it('rolls to inherit with the double rate', () => {
-                    const traits = [TRAITS.Common_1]
+                    const traits = [TRAITS.Birthright]
                     const father = new Nemeion({ ...prototypeFather, traits })
                     const mother = new Nemeion({ ...prototypeMother, traits })
 
@@ -471,7 +471,7 @@ describe('NemeionBreedingGround', () => {
 
         describe('when at least one parent has traits', () => {
             it('rolls to inherit the trait from the parent with the single rate', () => {
-                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1] })
+                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Birthright] })
 
                 const mockMethod = vi.fn().mockImplementation(() => true)
                 const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockMethod })
@@ -483,7 +483,7 @@ describe('NemeionBreedingGround', () => {
             })
 
             it('rolls to inherit the trait with the single rate even if the trait is accidentally duplicated', () => {
-                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1, TRAITS.Common_1] })
+                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Birthright, TRAITS.Birthright] })
 
                 const mockMethod = vi.fn().mockImplementation(() => true)
                 const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockMethod })
@@ -495,16 +495,16 @@ describe('NemeionBreedingGround', () => {
             })
 
             it('inherits the trait from the parent if the inherit roll is successful', () => {
-                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1] })
+                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Birthright] })
                 const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => true })
 
                 let result = breedingGround._generateTraits()
 
-                expect(result).toEqual([TRAITS.Common_1])
+                expect(result).toEqual([TRAITS.Birthright])
             })
 
             it('does not have any inherited traits if the inherit roll is unsuccessful', () => {
-                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1] })
+                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Birthright] })
                 const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => false })
 
                 let result = breedingGround._generateTraits()
@@ -515,7 +515,7 @@ describe('NemeionBreedingGround', () => {
 
         describe('when using the birthright addon', () => {
             it('increases the chance of receiving certain quality traits by a set amount in the data config', () => {
-                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Common_1, TRAITS.Uncommon_1, TRAITS.Rare_1] })
+                const father = new Nemeion({ ...prototypeFather, traits: [TRAITS.Birthright, TRAITS.Big_Boned, TRAITS.Clever] })
                 const mockShouldDoAction = vi.fn().mockImplementation(() => true)
                 const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockShouldDoAction })
 
@@ -539,8 +539,8 @@ describe('NemeionBreedingGround', () => {
 
     describe('_generateMarkings', () => {
         it('returns a unique list of markings in the final result set', () => {
-            const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Common_1] })
-            const mother = new Nemeion({ ...prototypeMother, markings: [MARKINGS.Common_1] })
+            const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Auribus] })
+            const mother = new Nemeion({ ...prototypeMother, markings: [MARKINGS.Auribus] })
             const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => true })
 
             const result = breedingGround._generateMarkings()
@@ -566,8 +566,8 @@ describe('NemeionBreedingGround', () => {
 
         describe('when both parents have markings', () => {
             it('rolls to inherit all markings from both parents', () => {
-                const father = new Nemeion({ ...prototypeFather, markings: [TRAITS.Common_1] })
-                const mother = new Nemeion({ ...prototypeMother, markings: [TRAITS.Uncommon_1] })
+                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Auribus] })
+                const mother = new Nemeion({ ...prototypeMother, markings: [MARKINGS.Alium] })
 
                 const mockMethod = vi.fn().mockImplementation(() => true)
                 const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
@@ -578,7 +578,7 @@ describe('NemeionBreedingGround', () => {
 
             describe('and the markings are the exact same', () => {
                 it('rolls to inherit exactly once', () => {
-                    const markings = [MARKINGS.Common_1, MARKINGS.Uncommon_1]
+                    const markings = [MARKINGS.Auribus, MARKINGS.Alium]
                     const father = new Nemeion({ ...prototypeFather, markings })
                     const mother = new Nemeion({ ...prototypeMother, markings })
 
@@ -592,7 +592,7 @@ describe('NemeionBreedingGround', () => {
                 })
 
                 it('rolls to inherit with the double rate', () => {
-                    const markings = [MARKINGS.Common_1]
+                    const markings = [MARKINGS.Auribus]
                     const father = new Nemeion({ ...prototypeFather, markings })
                     const mother = new Nemeion({ ...prototypeMother, markings })
 
@@ -609,7 +609,7 @@ describe('NemeionBreedingGround', () => {
 
         describe('when at least one parent has markings', () => {
             it('rolls to inherit the marking from the parent with the single rate', () => {
-                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Common_1] })
+                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Auribus] })
 
                 const mockMethod = vi.fn().mockImplementation(() => true)
                 const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockMethod })
@@ -621,7 +621,7 @@ describe('NemeionBreedingGround', () => {
             })
 
             it('rolls to inherit the marking with the single rate even if the marking is accidentally duplicated', () => {
-                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Common_1, MARKINGS.Common_1] })
+                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Auribus, MARKINGS.Auribus] })
 
                 const mockMethod = vi.fn().mockImplementation(() => true)
                 const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockMethod })
@@ -633,16 +633,16 @@ describe('NemeionBreedingGround', () => {
             })
 
             it('inherits the marking from the parent if the inherit roll is successful', () => {
-                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Common_1] })
+                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Auribus] })
                 const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => true })
 
                 let result = breedingGround._generateMarkings()
 
-                expect(result).toEqual([MARKINGS.Common_1])
+                expect(result).toEqual([MARKINGS.Auribus])
             })
 
             it('does not have any inherited markings if the inherit roll is unsuccessful', () => {
-                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Common_1] })
+                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Auribus] })
                 const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => false })
 
                 let result = breedingGround._generateMarkings()
@@ -654,11 +654,11 @@ describe('NemeionBreedingGround', () => {
 
     describe('_generateMutations', () => {
         it('returns a unique list of mutations in the final result set', () => {
-            const father = new Nemeion({ ...prototypeFather, mutations: [MUTATIONS.Test_One] })
-            const mother = new Nemeion({ ...prototypeMother, mutations: [MUTATIONS.Test_One] })
+            const father = new Nemeion({ ...prototypeFather, mutations: [MUTATIONS.Albinism] })
+            const mother = new Nemeion({ ...prototypeMother, mutations: [MUTATIONS.Albinism] })
             const breedingGround = new NemeionBreedingGround(father, mother, {
                 shouldDoAction: () => true,
-                randomSample: () => MUTATIONS.Test_One
+                randomSample: () => MUTATIONS.Albinism
             })
 
             const result = breedingGround._generateMutations()
@@ -676,7 +676,7 @@ describe('NemeionBreedingGround', () => {
             })
 
             it('returns a random mutation if the chance roll is successful', () => {
-                const expectedResult = MUTATIONS.Test_One
+                const expectedResult = MUTATIONS.Albinism
 
                 const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, {
                     shouldDoAction: () => true,
@@ -690,8 +690,8 @@ describe('NemeionBreedingGround', () => {
 
         describe('when either parent has mutations', () => {
             it('rolls for each mutation for inheritance individually', () => {
-                const father = new Nemeion({ ...prototypeFather, mutations: [MUTATIONS.Test_One] })
-                const mother = new Nemeion({ ...prototypeMother, mutations: [MUTATIONS.Test_One, MUTATIONS.Test_Two] })
+                const father = new Nemeion({ ...prototypeFather, mutations: [MUTATIONS.Albinism] })
+                const mother = new Nemeion({ ...prototypeMother, mutations: [MUTATIONS.Albinism, MUTATIONS.Auric] })
 
                 const mockMethod = vi.fn().mockImplementation(() => true)
                 const breedingGround = new NemeionBreedingGround(father, mother, {
@@ -705,8 +705,8 @@ describe('NemeionBreedingGround', () => {
             })
 
             it('rolls an inherit chance for each parent with a mutation', () => {
-                const father = new Nemeion({ ...prototypeFather, mutations: [MUTATIONS.Test_One] })
-                const mother = new Nemeion({ ...prototypeMother, mutations: [MUTATIONS.Test_One] })
+                const father = new Nemeion({ ...prototypeFather, mutations: [MUTATIONS.Albinism] })
+                const mother = new Nemeion({ ...prototypeMother, mutations: [MUTATIONS.Albinism] })
 
                 const mockMethod = vi.fn().mockImplementation(() => true)
                 const breedingGround = new NemeionBreedingGround(father, mother, {
@@ -732,10 +732,10 @@ describe('NemeionBreedingGround', () => {
             })
 
             it('only rolls for a random mutation once', () => {
-                const father = new Nemeion({ ...prototypeFather, mutations: [MUTATIONS.Test_One] })
-                const mother = new Nemeion({ ...prototypeMother, mutations: [MUTATIONS.Test_One] })
+                const father = new Nemeion({ ...prototypeFather, mutations: [MUTATIONS.Albinism] })
+                const mother = new Nemeion({ ...prototypeMother, mutations: [MUTATIONS.Albinism] })
 
-                const randomMutation = vi.fn().mockImplementation(() => MUTATIONS.Test_Two)
+                const randomMutation = vi.fn().mockImplementation(() => MUTATIONS.Auric)
                 const parentMutationsBreedingGround = new NemeionBreedingGround(father, mother, {
                     shouldDoAction: () => true,
                     randomSample: randomMutation
@@ -755,8 +755,8 @@ describe('NemeionBreedingGround', () => {
             })
 
             it('returns the parent mutations if the inherit roll is successful', () => {
-                const father = new Nemeion({ ...prototypeFather, mutations: [MUTATIONS.Test_One] })
-                const mother = new Nemeion({ ...prototypeMother, mutations: [MUTATIONS.Test_One] })
+                const father = new Nemeion({ ...prototypeFather, mutations: [MUTATIONS.Albinism] })
+                const mother = new Nemeion({ ...prototypeMother, mutations: [MUTATIONS.Albinism] })
 
                 const mockInheritRoll = vi.fn()
                     .mockImplementationOnce(() => true)
@@ -767,7 +767,7 @@ describe('NemeionBreedingGround', () => {
                 })
 
                 const result = breedingGround._generateMutations()
-                expect(result).toEqual([MUTATIONS.Test_One])
+                expect(result).toEqual([MUTATIONS.Albinism])
             })
         })
 

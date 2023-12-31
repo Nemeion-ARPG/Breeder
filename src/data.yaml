@@ -41,23 +41,182 @@ markings:
         single: 0.05
         double: 0.10
   available:
-    Limited_1:
-      display_name: Limited Marking 1
+    Roan:
+      display_name: Roan
       quality: Limited
-    Common_1:
-      display_name: Common Marking 1
+    Amare:
+      display_name: Amare
+      quality: Limited
+    Knife:
+      display_name: Knife
+      quality: Limited
+    Lashed:
+      display_name: Lashed
+      quality: Limited
+    Oryx:
+      display_name: Oryx
+      quality: Limited
+    Tear:
+      display_name: Tear
+      quality: Limited
+    Cloak:
+      display_name: Cloak
+      quality: Limited
+    Reaper:
+      display_name: Reaper
+      quality: Limited
+    Dapples:
+      display_name: Dapples
+      quality: Limited
+    Frostbite:
+      display_name: Frostbite
+      quality: Limited
+    Auribus:
+      display_name: Auribus
       quality: Common
-    Uncommon_1:
-      display_name: Uncommon Marking 1
+    Cauda:
+      display_name: Cauda
+      quality: Common
+    Crura:
+      display_name: Crura
+      quality: Common
+    Galea:
+      display_name: Galea
+      quality: Common
+    Oculos:
+      display_name: Oculos
+      quality: Common
+    Praefixa:
+      display_name: Praefixa
+      quality: Common
+    Tribus:
+      display_name: Tribus
+      quality: Common
+    Venter:
+      display_name: Venter
+      quality: Common
+    Viverra:
+      display_name: Viverra
+      quality: Common
+    Alium:
+      display_name: Alium
       quality: Uncommon
-    Rare_1:
-      display_name: Rare Marking 1
+    Canis:
+      display_name: Canis
+      quality: Uncommon
+    Cervus:
+      display_name: Cervus
+      quality: Uncommon
+    Cicatricum:
+      display_name: Cicatricum
+      quality: Uncommon
+    Griseo:
+      display_name: Griseo
+      quality: Uncommon
+    Habitu:
+      display_name: Habitu
+      quality: Uncommon
+    Hebetes:
+      display_name: Hebetes
+      quality: Uncommon
+    Livorem:
+      display_name: Livorem
+      quality: Uncommon
+    Mollis:
+      display_name: Mollis
+      quality: Uncommon
+    Petat:
+      display_name: Petat
+      quality: Uncommon
+    Sella:
+      display_name: Sella
+      quality: Uncommon
+    Stragulum:
+      display_name: Stragulum
+      quality: Uncommon
+    Summa:
+      display_name: Summa
+      quality: Uncommon
+    Addere:
+      display_name: Addere
       quality: Rare
-    Epic_1:
-      display_name: Epic Marking 1
+    Aspera:
+      display_name: Aspera
+      quality: Rare
+    Bellus:
+      display_name: Bellus
+      quality: Rare
+    Equus:
+      display_name: Equus
+      quality: Rare
+    Feles:
+      display_name: Feles
+      quality: Rare
+    Humero:
+      display_name: Humero
+      quality: Rare
+    Lupus:
+      display_name: Lupus
+      quality: Rare
+    Maculosa:
+      display_name: Maculosa
+      quality: Rare
+    Niveus:
+      display_name: Niveus
+      quality: Rare
+    Rubrum:
+      display_name: Rubrum
+      quality: Rare
+    Sigillum:
+      display_name: Sigillum
+      quality: Rare
+    Ursa:
+      display_name: Ursa
+      quality: Rare
+    Vulpes:
+      display_name: Vulpes
+      quality: Rare
+    Angelus:
+      display_name: Angelus
       quality: Epic
-    Legendary_1:
-      display_name: Legendary Marking 1
+    Aura:
+      display_name: Aura
+      quality: Epic
+    Avis:
+      display_name: Avis
+      quality: Epic
+    Cordis:
+      display_name: Cordis
+      quality: Epic
+    Latus:
+      display_name: Latus
+      quality: Epic
+    Melis:
+      display_name: Melis
+      quality: Epic
+    Pluma:
+      display_name: Pluma
+      quality: Epic
+    Solis:
+      display_name: Solis
+      quality: Epic
+    Umbra:
+      display_name: Umbra
+      quality: Epic
+    Vitta:
+      display_name: Vitta
+      quality: Epic
+    Corrupto:
+      display_name: Corrupto
+      quality: Legendary
+    Elemental:
+      display_name: Elemental
+      quality: Legendary
+    Glacies:
+      display_name: Glacies
+      quality: Legendary
+    Tenebris:
+      display_name: Tenebris
       quality: Legendary
 
 traits:
@@ -89,23 +248,155 @@ traits:
         single: 0.05
         double: 0.10
   available:
-    Common_1:
-      display_name: Common Trait 1
+    Birthright:
+      display_name: Birthright
       quality: Common
-    Uncommon_1:
-      display_name: Uncommon Trait 1
+    Challenger:
+      display_name: Challenger
+      quality: Common
+    Heat_Resistant:
+      display_name: Heat Resistant
+      quality: Common
+    Iron_Will:
+      display_name: Iron Will
+      quality: Common
+    Loner:
+      display_name: Loner
+      quality: Common
+    Popular:
+      display_name: Popular
+      quality: Common
+    Silver_Tongue:
+      display_name: Silver Tongue
+      quality: Common
+    Thick_Coat:
+      display_name: Thick Coat
+      quality: Common
+    Wild_Nature:
+      display_name: Wild Nature
+      quality: Common
+    Trader:
+      display_name: Trader
+      quality: Common
+    Big_Boned:
+      display_name: Big Boned
       quality: Uncommon
-    Rare_1:
-      display_name: Rare Trait 1
+    Blessing_of_the_Queen:
+      display_name: Blessing of the Queen
+      quality: Uncommon
+    Blessing_of_the_King:
+      display_name: Blessing of the King
+      quality: Uncommon
+    Critter_Keeper:
+      display_name: Critter Keeper
+      quality: Uncommon
+    Daywalker:
+      display_name: Daywalker
+      quality: Uncommon
+    Delicate:
+      display_name: Delicate
+      quality: Uncommon
+    Fertility_Treatment:
+      display_name: Fertility Treatment
+      quality: Uncommon
+    Lucky:
+      display_name: Lucky
+      quality: Uncommon
+    Nightbane:
+      display_name: Nightbane
+      quality: Uncommon
+    Primal_Instincts:
+      display_name: Primal Instincts
+      quality: Uncommon
+    Quick_Feet:
+      display_name: Quick Feet
+      quality: Uncommon
+    Rare_Blood:
+      display_name: Rare Blood
+      quality: Uncommon
+    Battleborn:
+      display_name: Battleborn
       quality: Rare
-    Epic_1:
-      display_name: Epic Trait 1
+    Casanova:
+      display_name: Casanova
+      quality: Rare
+    Clever:
+      display_name: Clever
+      quality: Rare
+    Favored:
+      display_name: Favored
+      quality: Rare
+    Fellowship:
+      display_name: Fellowship
+      quality: Rare
+    Fortune_Finder:
+      display_name: Fortune Finder
+      quality: Rare
+    Historian:
+      display_name: Historian
+      quality: Rare
+    Knowledge_Seeker:
+      display_name: Knowledge Seeker
+      quality: Rare
+    Short_Stature:
+      display_name: Short Stature
+      quality: Rare
+    Warmonger:
+      display_name: Warmonger
+      quality: Rare
+    Aphrodites_Lament:
+      display_name: Aphrodite's Lament
       quality: Epic
-    Legendary_1:
-      display_name: Legendary Trait 1
+    Artesian:
+      display_name: Artesian
+      quality: Epic
+    Gold_Digger:
+      display_name: Gold Digger
+      quality: Epic
+    Mark_of_the_Caver:
+      display_name: Mark of the Caver
+      quality: Epic
+    Maark_of_the_Fisher:
+      display_name: Mark of the Fisher
+      quality: Epic
+    Mark_of_the_Forager:
+      display_name: Mark of the Forager
+      quality: Epic
+    Mark_of_the_Hunter:
+      display_name: Mark of the Hunter
+      quality: Epic
+    Mark_of_the_Traveller:
+      display_name: Mark of the Traveller
+      quality: Epic
+    Noble_Blood:
+      display_name: Noble Blood
+      quality: Epic
+    One_with_Nature:
+      display_name: One with Nature
+      quality: Epic
+    Ambassador:
+      display_name: Ambassador
       quality: Legendary
-    Unique_1:
-      display_name: Unique Trait 1
+    Devoted:
+      display_name: Devoted
+      quality: Legendary
+    Natural_Leader:
+      display_name: Natural Leader
+      quality: Legendary
+    Time_Traveller:
+      display_name: Time Traveller
+      quality: Legendary
+    Supply_Seeker:
+      display_name: Supply Seeker
+      quality: Legendary
+    Transmutation:
+      display_name: Transmutation
+      quality: Legendary
+    Treasure_Tracker:
+      display_name: Treasure Tracker
+      quality: Legendary
+    Cryptic_Curse:
+      display_name: Cryptic Curse
       quality: Unique
 
 # each element represents a separate option, with the options repeated with their weight of recieving that alternative
@@ -185,13 +476,31 @@ mutations:
   random_cap: 2
   base_chance: 0.03
   inherit_chance:
-    single: 0.1
+    single: 1.00
   default: []
   available:
-    Test_One:
-      display_name: Test Mutation One
-    Test_Two:
-      display_name: Test Mutation Two
+    Albinism:
+      display_name: Albinism
+    Auric:
+      display_name: Auric
+    Chimerism:
+      display_name: Chimerism
+    Crucis:
+      display_name: Crucis
+    Erythrism:
+      display_name: Erythrism
+    Leucism:
+      display_name: Leucism
+    Maltese:
+      display_name: Maltese
+    Melanism:
+      display_name: Melanism
+    Sanguine:
+      display_name: Sanguine
+    Vitiligo:
+      display_name: Vitiligo
+    Polycaudal:
+      display_name: Polycaudal
 
 add_ons:
   AO_APHRO_PASSION:

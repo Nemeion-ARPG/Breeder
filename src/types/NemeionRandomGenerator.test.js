@@ -114,14 +114,14 @@ describe('NemeionRandomGenerator', () => {
         })
 
         it('should have a unique result set', () => {
-            const generator = new NemeionRandomGenerator(() => true, () => TRAITS.Common_1, () => 2)
+            const generator = new NemeionRandomGenerator(() => true, () => TRAITS.Birthright, () => 2)
 
             const result = generator._generateTraits()
-            expect(result).toEqual([TRAITS.Common_1])
+            expect(result).toEqual([TRAITS.Birthright])
         })
 
         it('should add a random trait for each count in the result set', () => {
-            const mockRandomSample = vi.fn().mockImplementation(() => TRAITS.Common_1)
+            const mockRandomSample = vi.fn().mockImplementation(() => TRAITS.Birthright)
             const generator = new NemeionRandomGenerator(() => true, mockRandomSample, () => 2)
 
             let _ = generator._generateTraits()
@@ -139,14 +139,14 @@ describe('NemeionRandomGenerator', () => {
         })
 
         it('should have a unique result set', () => {
-            const generator = new NemeionRandomGenerator(() => true, () => MARKINGS.Common_1, () => 2)
+            const generator = new NemeionRandomGenerator(() => true, () => MARKINGS.Auribus, () => 2)
 
             const result = generator._generateMarkings()
-            expect(result).toEqual([MARKINGS.Common_1])
+            expect(result).toEqual([MARKINGS.Auribus])
         })
 
         it('should add a random marking for each count in the result set', () => {
-            const mockRandomSample = vi.fn().mockImplementation(() => TRAITS.Common_1)
+            const mockRandomSample = vi.fn().mockImplementation(() => TRAITS.Birthright)
             const generator = new NemeionRandomGenerator(() => true, mockRandomSample, () => 2)
 
             let _ = generator._generateMarkings()
@@ -164,14 +164,14 @@ describe('NemeionRandomGenerator', () => {
         })
 
         it('should have a unique result set', () => {
-            const generator = new NemeionRandomGenerator(() => true, () => MUTATIONS.Test_One, () => 2)
+            const generator = new NemeionRandomGenerator(() => true, () => MUTATIONS.Albinism, () => 2)
 
             const result = generator._generateMutations()
-            expect(result).toEqual([MUTATIONS.Test_One])
+            expect(result).toEqual([MUTATIONS.Albinism])
         })
 
         it('should add a random mutation for each count in the result set', () => {
-            const mockRandomSample = vi.fn().mockImplementation(() => MUTATIONS.Test_One)
+            const mockRandomSample = vi.fn().mockImplementation(() => MUTATIONS.Albinism)
             const generator = new NemeionRandomGenerator(() => true, mockRandomSample, () => 2)
 
             let _ = generator._generateMutations()

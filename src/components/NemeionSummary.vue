@@ -1,17 +1,13 @@
 <template>
     <div class="nemeion-summary">
-        <h3>
-            {{ headerText }}
-        </h3>
-
         <div class="content">
-            <label>GENDER: {{ reference.gender }}</label>
-            <label>BUILD: {{ reference.build }}</label>
-            <label>FUR: {{ reference.fur }}</label>
-            <label>COAT: {{ reference.coat }}</label>
-            <label>TRAITS: {{ selectedTraits }}</label>
-            <label>MARKINGS: {{ selectedMarkings }}</label>
-            <label>MUTATIONS: {{ selectedMutations }}</label>
+            <label>{{ headerText }}</label>
+            <label>B: {{ reference.build }} Build</label>
+            <label>F: {{ reference.fur }} Fur</label>
+            <label>C: {{ reference.coat }} Coat</label>
+            <label>[Hereditary Markings]: {{ selectedMarkings }}</label>
+            <label>[Mutations]: {{ selectedMutations }}</label>
+            <label>[Traits]: {{ selectedTraits }}</label>
         </div>
     </div>
 </template>
@@ -37,7 +33,7 @@ const headerText = computed(() => {
     if (props.index === undefined || props.index === null) {
         return 'Summary'
     }
-    return `#${props.index + 1} Summary`
+    return `${props.index + 1}) ${props.reference.gender} Cub`
 })
 const selectedTraits = computed(() => {
     return props.reference.traits
