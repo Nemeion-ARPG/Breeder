@@ -47,7 +47,7 @@ export default class NemeionRandomGenerator extends NemeionGenerator {
         return this.#_generateRandomAspects(DATA.markings.random_cap, MARKINGS.allValues)
     }
     _generateMutations() {
-        return this.#_generateRandomAspects(DATA.mutations.random_cap, MUTATIONS.allValues)
+        return this.#_generateRandomAspects(DATA.mutations.random_cap, MUTATIONS.allValues, () => this.shouldDoAction(DATA.mutations.base_chance))
     }
 
     #_generateWeightedRandom(weights) {
@@ -63,12 +63,14 @@ export default class NemeionRandomGenerator extends NemeionGenerator {
         }
     }
 
-    #_generateRandomAspects(maxCount, dataset) {
+    #_generateRandomAspects(maxCount, dataset, shouldDoAction = () => true) {
         const totalCount = this.randomInt(maxCount)
         const result = []
 
         for (let i = 0; i < totalCount; i++) {
-            result.push(this.randomSample(dataset))
+            if (shouldDoAction()) {
+                result.push(this.randomSample(dataset))
+            }
         }
 
         return [...new Set(result)]

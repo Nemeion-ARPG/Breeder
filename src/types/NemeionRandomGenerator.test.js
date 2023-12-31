@@ -67,7 +67,7 @@ describe('NemeionRandomGenerator', () => {
     describe('_generateCoat', () => {
         it('should roll a chance once', () => {
             const mockRandomChance = vi.fn().mockImplementation(() => 0.5)
-            const generator = new NemeionRandomGenerator(() => true, () => {}, () => 1, mockRandomChance)
+            const generator = new NemeionRandomGenerator(() => true, () => { }, () => 1, mockRandomChance)
 
             let _ = generator._generateCoat()
             expect(mockRandomChance).toHaveBeenCalledTimes(1)
@@ -76,7 +76,7 @@ describe('NemeionRandomGenerator', () => {
         it('should return a coat based on the weighted chance in the data table', () => {
             for (const [coat, chance] of Object.entries(DATA.coats.random_chance)) {
                 const mockRandomChance = vi.fn().mockImplementation(() => chance)
-                const generator = new NemeionRandomGenerator(() => true, () => {}, () => 1, mockRandomChance)
+                const generator = new NemeionRandomGenerator(() => true, () => { }, () => 1, mockRandomChance)
 
                 const result = generator._generateCoat()
                 expect(result).toEqual(coat)
@@ -87,7 +87,7 @@ describe('NemeionRandomGenerator', () => {
     describe('_generateBuild', () => {
         it('should roll a chance once', () => {
             const mockRandomChance = vi.fn().mockImplementation(() => 0.5)
-            const generator = new NemeionRandomGenerator(() => true, () => {}, () => 1, mockRandomChance)
+            const generator = new NemeionRandomGenerator(() => true, () => { }, () => 1, mockRandomChance)
 
             let _ = generator._generateBuild()
             expect(mockRandomChance).toHaveBeenCalledTimes(1)
@@ -96,7 +96,7 @@ describe('NemeionRandomGenerator', () => {
         it('should return a build based on the weighted chance in the data table', () => {
             for (const [build, chance] of Object.entries(DATA.builds.random_chance)) {
                 const mockRandomChance = vi.fn().mockImplementation(() => chance)
-                const generator = new NemeionRandomGenerator(() => true, () => {}, () => 1, mockRandomChance)
+                const generator = new NemeionRandomGenerator(() => true, () => { }, () => 1, mockRandomChance)
 
                 const result = generator._generateBuild()
                 expect(result).toEqual(build)
@@ -107,7 +107,7 @@ describe('NemeionRandomGenerator', () => {
     describe('_generateTraits', () => {
         it('should roll a random number up to the max defined in the dataset', () => {
             const mockRandomInt = vi.fn().mockImplementation(() => 0)
-            const generator = new NemeionRandomGenerator(() => true, () => {}, mockRandomInt)
+            const generator = new NemeionRandomGenerator(() => true, () => { }, mockRandomInt)
 
             let _ = generator._generateTraits()
             expect(mockRandomInt).toHaveBeenCalledWith(DATA.traits.random_cap)
@@ -132,7 +132,7 @@ describe('NemeionRandomGenerator', () => {
     describe('_generateMarkings', () => {
         it('should roll a random number up to the max defined in the dataset', () => {
             const mockRandomInt = vi.fn().mockImplementation(() => 0)
-            const generator = new NemeionRandomGenerator(() => true, () => {}, mockRandomInt)
+            const generator = new NemeionRandomGenerator(() => true, () => { }, mockRandomInt)
 
             let _ = generator._generateMarkings()
             expect(mockRandomInt).toHaveBeenCalledWith(DATA.markings.random_cap)
@@ -157,7 +157,7 @@ describe('NemeionRandomGenerator', () => {
     describe('_generateMutations', () => {
         it('should roll a random number up to the max defined in the dataset', () => {
             const mockRandomInt = vi.fn().mockImplementation(() => 0)
-            const generator = new NemeionRandomGenerator(() => true, () => {}, mockRandomInt)
+            const generator = new NemeionRandomGenerator(() => true, () => { }, mockRandomInt)
 
             let _ = generator._generateMutations()
             expect(mockRandomInt).toHaveBeenCalledWith(DATA.mutations.random_cap)
@@ -176,6 +176,39 @@ describe('NemeionRandomGenerator', () => {
 
             let _ = generator._generateMutations()
             expect(mockRandomSample).toHaveBeenCalled(2)
+        })
+
+        it('should roll a base chance for each mutation opportunity', () => {
+            const mockShouldDoAction = vi.fn()
+            const expectedCallCount = 3
+            const generator = new NemeionRandomGenerator(mockShouldDoAction, () => MUTATIONS.Albinism, () => expectedCallCount)
+
+            let _ = generator._generateMutations()
+            expect(mockShouldDoAction).toHaveBeenCalledTimes(expectedCallCount)
+        })
+
+        it('should only add mutations if the chance roll is successful', () => {
+            const mockShouldDoAction = vi.fn()
+                .mockImplementationOnce(() => false)
+                .mockImplementationOnce(() => true)
+                .mockImplementationOnce(() => true)
+            const mockRandomSample = vi.fn()
+                .mockImplementationOnce(() => MUTATIONS.Albinism)
+                .mockImplementationOnce(() => MUTATIONS.Auric)
+                .mockImplementationOnce(() => MUTATIONS.Chimerism)
+            const generator = new NemeionRandomGenerator(mockShouldDoAction, mockRandomSample, () => 3)
+
+            const result = generator._generateMutations()
+            expect(mockRandomSample).toHaveBeenCalledTimes(2)
+            expect(result).toEqual([MUTATIONS.Albinism, MUTATIONS.Auric])
+        })
+
+        it('should pass the base chance defined in the data config to the chance roll', () => {
+            const mockShouldDoAction = vi.fn()
+            const generator = new NemeionRandomGenerator(mockShouldDoAction, () => MUTATIONS.Albinism, () => 1)
+
+            let _ = generator._generateMutations()
+            expect(mockShouldDoAction).toHaveBeenCalledWith(DATA.mutations.base_chance)
         })
     })
 })
