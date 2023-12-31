@@ -7,8 +7,10 @@ import { describe, expect, it, beforeEach, vi } from "vitest"
 
 import denStore from "./den"
 
+import { DEFAULT_SHOULD_DO_ACTION } from './den'
+
 import DATA from '@/data.yaml'
-import { GENDERS, ADDONS, BUILDS } from '@/Constants'
+import { GENDERS, ADDONS, BUILDS, MUTATIONS } from '@/Constants'
 
 describe("den store", () => {
     beforeEach(() => {
@@ -219,7 +221,7 @@ describe("den store", () => {
                     breedingGround,
                     () => DATA.litters.weights[1], // make 2 by default
                     {
-                        rollLitterSize:  mockFertilityTreatmentLitterSize,
+                        rollLitterSize: mockFertilityTreatmentLitterSize,
                         shouldDoAction: () => true
                     }
                 )
@@ -254,6 +256,78 @@ describe("den store", () => {
                 })
 
                 expect(mockShouldDoAction).toHaveBeenCalledWith(DATA.add_ons.AO_FERTILITY_TREATMENT.options.chance)
+            })
+        })
+
+        describe('with the mutation stone', () => {
+            const mockLitterSizeChance = () => DATA.litters.weights[2]
+
+            class MockBreedingGround extends NemeionBreedingGround {
+                constructor(father, mother, makeOffspring = () => new Nemeion()) {
+                    super(father, mother)
+                    this._makeOffspring = makeOffspring
+                }
+                makeOffspring() {
+                    return this._makeOffspring()
+                }
+            }
+
+            it('should pull a random mutation if needed', () => {
+                const den = denStore()
+                den.selectedAddons = [ADDONS.AO_MUTATION_STONE]
+
+                const mockRandomSample = vi.fn().mockImplementation(() => MUTATIONS.Albinism)
+                const breedingGround = new MockBreedingGround(den.father, den.mother)
+
+                den.makeOffspring(breedingGround, mockLitterSizeChance, undefined, mockRandomSample)
+
+                expect(mockRandomSample).toHaveBeenCalledWith(MUTATIONS.allValues)
+                expect(den.offspring[0].mutations).toEqual([MUTATIONS.Albinism])
+            })
+
+            it('should only assign to the first child', () => {
+                const den = denStore()
+                den.selectedAddons = [ADDONS.AO_MUTATION_STONE]
+
+                const mockRandomSample = vi.fn().mockImplementation(() => MUTATIONS.Albinism)
+                const breedingGround = new MockBreedingGround(den.father, den.mother)
+
+                den.makeOffspring(breedingGround, mockLitterSizeChance, undefined, mockRandomSample)
+
+                expect(mockRandomSample).toHaveBeenCalled()
+                expect(den.offspring.length).toBe(3)
+                expect(den.offspring[1].hasMutations).toBe(false)
+                expect(den.offspring[2].hasMutations).toBe(false)
+            })
+
+            it('should only roll once', () => {
+                const den = denStore()
+                den.selectedAddons = [ADDONS.AO_MUTATION_STONE]
+
+                const mockRandomSample = vi.fn()
+                const breedingGround = new MockBreedingGround(den.father, den.mother)
+
+                den.makeOffspring(breedingGround, mockLitterSizeChance, undefined, mockRandomSample)
+
+                expect(den.offspring.length).toBe(3)
+                expect(mockRandomSample).toHaveBeenCalledTimes(1)
+            })
+
+            it('should not roll if any children have mutations', () => {
+                const den = denStore()
+                den.selectedAddons = [ADDONS.AO_MUTATION_STONE]
+
+                const mockMakeOffspring = vi.fn()
+                    .mockImplementationOnce(() => new Nemeion())
+                    .mockImplementationOnce(() => new Nemeion({ mutations: [MUTATIONS.Leucism] }))
+                    .mockImplementationOnce(() => new Nemeion())
+                const mockRandomSample = vi.fn()
+                const breedingGround = new MockBreedingGround(den.father, den.mother, mockMakeOffspring)
+
+                den.makeOffspring(breedingGround, mockLitterSizeChance, undefined, mockRandomSample)
+
+                expect(mockMakeOffspring).toHaveBeenCalledTimes(3)
+                expect(mockRandomSample).not.toHaveBeenCalled()
             })
         })
     })

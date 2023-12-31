@@ -548,9 +548,9 @@ add_ons:
     display_name: Hephaestus' Fervor
     description: When selected, all cubs are guaranteed to be male.
     mutually_exclusive: AO_APHRO_PASSION
-  # AO_MUTATION_STONE:
-  #   display_name: Mutation Stone
-  #   description: Guarantees at least 1 cub will have a random mutation.
+  AO_MUTATION_STONE:
+    display_name: Mutation Stone
+    description: Guarantees at least 1 cub will have a random mutation.
   AO_REGAL_POTION:
     display_name: Regal Potion
     description: Guarantees at least 1 cub will be a Regal build.

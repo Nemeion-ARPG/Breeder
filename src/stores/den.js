@@ -8,14 +8,16 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 import _random from 'lodash/random'
+import _sample from 'lodash/sample'
 
 import { rollForThreshold } from '@/utils'
 
 import DATA from '@/data.yaml'
-import { GENDERS, BUILDS, ADDONS } from '@/Constants'
+import { GENDERS, BUILDS, ADDONS, MUTATIONS } from '@/Constants'
 
 const DEFAULT_CHANCE_ROLL = () => _random(0, 1, true)
 const DEFAULT_SHOULD_DO_ACTION = rollForThreshold
+const DEFAULT_RANDOM_SAMPLE = _sample
 
 export default defineStore('den', () => {
     const father = ref(new Nemeion({ gender: GENDERS.Male }))
@@ -70,7 +72,8 @@ export default defineStore('den', () => {
         fertilityTreatmentOverrides = {
             rollLitterSize: (min, max) => _random(min, max),
             shouldDoAction: DEFAULT_SHOULD_DO_ACTION
-        }
+        },
+        randomSample = DEFAULT_RANDOM_SAMPLE
     ) {
         if (!breedingGround) {
             throw new Error('Cannot breed just anywhere')
@@ -92,7 +95,7 @@ export default defineStore('den', () => {
         }
 
         let remainingItems = selectedAddons.value
-        offspring.value = _generateLitter(litterSize, () => {
+        const newLitter = _generateLitter(litterSize, () => {
             const newChild = breedingGround.makeOffspring(remainingItems)
 
             if (remainingItems.includes(ADDONS.AO_TINCTURE_TRANSFORMATION)) {
@@ -114,6 +117,15 @@ export default defineStore('den', () => {
 
             return newChild
         })
+
+        if (selectedAddons.value.includes(ADDONS.AO_MUTATION_STONE)) {
+            const litterWithZeroMutations = newLitter.every((child) => !child.hasMutations)
+            if (litterWithZeroMutations) {
+                newLitter[0].mutations = [randomSample(MUTATIONS.allValues)]
+            }
+        }
+
+        offspring.value = newLitter
     }
 
     return {
