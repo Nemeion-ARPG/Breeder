@@ -774,7 +774,7 @@ describe('NemeionBreedingGround', () => {
         describe('when using the wereworm addon', () => {
             const INCREASED_RATE = DATA.add_ons.AO_WEREWORM.options.increased_chance
 
-            it(`increases the chance of a mutation roll by ${INCREASED_RATE * 100}%`, () => {
+            it(`increases the chance of a random mutation roll by ${INCREASED_RATE * 100}%`, () => {
                 const expectedChance = DATA.mutations.base_chance + INCREASED_RATE
                 const mockShouldDoAction = vi.fn().mockImplementation(() => true)
                 const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, {
@@ -783,6 +783,32 @@ describe('NemeionBreedingGround', () => {
                 })
 
                 let _ = breedingGround._generateMutations([ADDONS.AO_WEREWORM])
+                expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChance)
+            })
+
+            it(`increases the chance of an inherit mutation roll by ${INCREASED_RATE * 100}%`, () => {
+                const expectedChance = DATA.mutations.inherit_chance.single + INCREASED_RATE
+                const father = new Nemeion({ ...prototypeFather, mutations: [MUTATIONS.Albinism] })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, {
+                    shouldDoAction: mockShouldDoAction,
+                    randomSample: DEFAULT_RANDOM_SAMPLE
+                })
+
+                let _ = breedingGround._generateMutations([ADDONS.AO_WEREWORM])
+                expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChance)
+            })
+
+            it('works with the Rare Blood addon for inherit mutation rolls', () => {
+                const expectedChance = DATA.mutations.inherit_chance.single + INCREASED_RATE + DATA.add_ons.AO_RARE_BLOOD.options.increased_chance
+                const father = new Nemeion({ ...prototypeFather, mutations: [MUTATIONS.Albinism] })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, {
+                    shouldDoAction: mockShouldDoAction,
+                    randomSample: DEFAULT_RANDOM_SAMPLE
+                })
+
+                let _ = breedingGround._generateMutations([ADDONS.AO_WEREWORM, ADDONS.AO_RARE_BLOOD])
                 expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChance)
             })
         })
