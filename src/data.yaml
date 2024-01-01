@@ -476,7 +476,7 @@ mutations:
   random_cap: 2
   base_chance: 0.03
   inherit_chance:
-    single: 1.00
+    single: 0.1
   default: []
   available:
     Albinism:
