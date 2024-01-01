@@ -18,11 +18,17 @@ import Nemeion from '@/types/Nemeion'
 import { computed } from 'vue'
 
 import DATA from '@/data.yaml'
+import { MARKING_QUALITIES } from '@/Constants';
 
 const props = defineProps({
     index: {
         type: Number,
         required: false
+    },
+    filterLimitedMarkings: {
+        type: Boolean,
+        required: false,
+        default: false
     },
     reference: {
         type: Nemeion,
@@ -42,6 +48,12 @@ const selectedTraits = computed(() => {
 })
 const selectedMarkings = computed(() => {
     return props.reference.markings
+        .filter(marking => {
+            console.log('fizz', props.reference.limitedMarkings)
+            return props.filterLimitedMarkings
+                ? !props.reference.limitedMarkings.includes(marking)
+                : true
+        })
         .map(marking => DATA.markings.available[marking].display_name)
         .join(', ')
 })

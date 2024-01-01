@@ -11,7 +11,14 @@
             <NemeionSummary
                 :index="index"
                 :reference="offspring"
+                :filter-limited-markings="true"
             />
+
+            <p v-if="limitedMarkings">
+                The following <b>Limited Markings</b> may be applied freely to any cub in this litter at any time throughout the year:
+                <br />
+                <b>{{ limitedMarkings.join(',') }}</b>
+            </p>
 
             <hr />
         </div>
@@ -39,6 +46,7 @@
 </template>
 
 <script setup>
+import { LIMITED_MARKINGS } from '@/Constants';
 import NemeionSummary from '@/components/NemeionSummary.vue'
 
 import Nemeion from '@/types/Nemeion'
@@ -53,6 +61,14 @@ defineProps({
         required: true,
         validator(value) {
             return value.every((element) => element instanceof Nemeion)
+        }
+    },
+    limitedMarkings: {
+        type: Array,
+        required: true,
+        validator(value) {
+            return value.every(element => typeof element === 'string')
+                && value.every(element => LIMITED_MARKINGS.allValues.includes(element))
         }
     }
 })

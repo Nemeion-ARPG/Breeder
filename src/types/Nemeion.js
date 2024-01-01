@@ -1,4 +1,5 @@
 import DATA from '@/data.yaml'
+import { LIMITED_MARKINGS } from '@/Constants.js'
 
 export default class Nemeion {
     constructor(initialValues = {}) {
@@ -14,5 +15,12 @@ export default class Nemeion {
     get hasRareFur() { return DATA.furs.rare_options.includes(this.fur) }
     get hasTraits() { return this.traits.length > 0 }
     get hasMarkings() { return this.markings.length > 0 }
+    get hasLimitedMarkings() {
+        return this.markings.some(marking => LIMITED_MARKINGS.allValues.includes(marking))
+    }
     get hasMutations() { return this.mutations.length > 0 }
+
+    get limitedMarkings() {
+        return this.markings.filter(marking => LIMITED_MARKINGS.allValues.includes(marking))
+    }
 }

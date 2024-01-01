@@ -29,6 +29,7 @@
       class="full-width-column"
       title="Offspring"
       :offspring="den.offspring"
+      :limited-markings="[...den.father.limitedMarkings, ...den.mother.limitedMarkings]"
       @generateOffspring="den.makeOffspring()"
       @reset="den.$reset()"
       @generateRandom="den.makeRandom()"

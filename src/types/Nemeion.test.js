@@ -80,5 +80,16 @@ describe('Nemeion', () => {
             instance.fur = DATA.furs.rare_options[0]
             expect(instance.hasRareFur).toBe(true)
         })
+
+        test('hasLimitedMarkings is based on the markings array', () => {
+            expect(instance.hasLimitedMarkings).toBe(false)
+            instance.markings = [MARKINGS.Tear]
+            expect(instance.hasLimitedMarkings).toBe(true)
+        })
+
+        test('limitedMarkings returns only markings that are limited', () => {
+            instance.markings = [MARKINGS.Tear, MARKINGS.Auribus]
+            expect(instance.limitedMarkings).toEqual([MARKINGS.Tear])
+        })
     })
 })
