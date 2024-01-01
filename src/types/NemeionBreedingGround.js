@@ -146,7 +146,12 @@ export default class NemeionBreedingGround extends NemeionGenerator {
             // build a super-set list of mutations to inherit from both parents
             const mutations = [...this.father.mutations, ...this.mother.mutations]
             for (const mutation of mutations) {
-                if (this.shouldDoAction(DATA.mutations.inherit_chance)) {
+                let mutationChance = DATA.mutations.inherit_chance.single
+                if (addons.includes(ADDONS.AO_RARE_BLOOD)) {
+                    mutationChance += DATA.add_ons.AO_RARE_BLOOD.options.increased_chance
+                }
+
+                if (this.shouldDoAction(mutationChance)) {
                     result.push(mutation)
                 }
             }

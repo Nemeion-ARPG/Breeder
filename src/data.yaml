@@ -551,6 +551,11 @@ add_ons:
   AO_MUTATION_STONE:
     display_name: Mutation Stone
     description: Guarantees at least 1 cub will have a random mutation.
+  AO_RARE_BLOOD:
+    display_name: Rare Blood
+    description: Increases chance of a parent passing a mutation to their cubs by 25%.
+    options:
+      increased_chance: 0.25
   AO_REGAL_POTION:
     display_name: Regal Potion
     description: Guarantees at least 1 cub will be a Regal build.

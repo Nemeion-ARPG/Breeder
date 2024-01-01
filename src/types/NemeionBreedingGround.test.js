@@ -786,5 +786,22 @@ describe('NemeionBreedingGround', () => {
                 expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChance)
             })
         })
+
+        describe('when using the rare blood addon', () => {
+            const INCREASED_RATE = DATA.add_ons.AO_RARE_BLOOD.options.increased_chance
+
+            it(`increase the chance of an inherit mutation roll by ${INCREASED_RATE * 100}%`, () => {
+                const expectedChance = DATA.mutations.inherit_chance.single + INCREASED_RATE
+                const father = new Nemeion({ ...prototypeFather, mutations: [MUTATIONS.Albinism] })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, prototypeMother, {
+                    shouldDoAction: mockShouldDoAction,
+                    randomSample: DEFAULT_RANDOM_SAMPLE
+                })
+
+                let _ = breedingGround._generateMutations([ADDONS.AO_RARE_BLOOD])
+                expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChance)
+            })
+        })
     })
 })
