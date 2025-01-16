@@ -2,9 +2,9 @@
     <div class="nemeion-summary">
         <div class="content">
             <label>{{ headerText }}</label>
-            <label>B: {{ reference.build }} Build</label>
-            <label>F: {{ reference.fur }} Fur</label>
-            <label>C: {{ reference.coat }} Coat</label>
+            <label>{{ reference.build }} Build</label>
+            <label>{{ reference.fur }} Fur</label>
+            <label>{{ reference.coat }} Coat</label>
             <label>[Hereditary Markings]: {{ selectedMarkings }}</label>
             <label>[Mutations]: {{ selectedMutations }}</label>
             <label>[Traits]: {{ selectedTraits }}</label>
