@@ -8,7 +8,7 @@ export default class Enum {
             throw new Error('Enum source must be an Array or Object.')
         }
         const values = source.constructor.name === 'Array' ? source : Object.keys(source)
-        for (const key of values) {
+        for (const key of values.sort()) {
             this[key] = key
         }
         Object.freeze(this)
@@ -31,7 +31,7 @@ export default class Enum {
      * An array of all possible values.
      * @returns {String[]} An array of all the values in the enum.
      */
-    get allValues() { return Object.keys(this).sort() }
+    get allValues() { return Object.keys(this) }
 
     get firstValue() { return this.allValues[0] }
 }

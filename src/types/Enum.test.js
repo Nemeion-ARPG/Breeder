@@ -14,6 +14,11 @@ describe('Enum', () => {
                 expect(enumInstance).toHaveProperty('b')
                 expect(enumInstance).toHaveProperty('c')
             })
+
+            it('sorts the values in the enum', () => {
+                const enumInstance = new Enum(['c', 'a', 'b'])
+                expect(enumInstance.allValues).toEqual(['a', 'b', 'c'])
+            })
         })
 
         describe('with an object', () => {
@@ -22,6 +27,11 @@ describe('Enum', () => {
                 expect(enumInstance).toHaveProperty('a')
                 expect(enumInstance).toHaveProperty('b')
                 expect(enumInstance).toHaveProperty('c')
+            })
+
+            it('sorts the values in the enum', () => {
+                const enumInstance = new Enum({ c: 'c', a: 'a', b: 'b' })
+                expect(enumInstance.allValues).toEqual(['a', 'b', 'c'])
             })
         })
     })
