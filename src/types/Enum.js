@@ -31,7 +31,7 @@ export default class Enum {
      * An array of all possible values.
      * @returns {String[]} An array of all the values in the enum.
      */
-    get allValues() { return Object.keys(this) }
+    get allValues() { return Object.keys(this).sort() }
 
     get firstValue() { return this.allValues[0] }
 }
