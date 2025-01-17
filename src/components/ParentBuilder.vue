@@ -128,6 +128,7 @@ import { ref, computed } from 'vue'
 
 import DATA from '@/data.yaml'
 import { BUILDS, FURS, COATS, TRAITS, MARKINGS, MUTATIONS } from '@/Constants';
+import { sortData } from '@/utils'
 
 const props = defineProps({
     title: {
@@ -161,7 +162,7 @@ const availableTraits = computed(() => {
 })
 const availableMarkings = computed(() => {
     let options = []
-    for (const marking in DATA.markings.available) {
+    for (const marking in sortData(DATA.markings.available)) {
         options.push({
             value: marking,
             text: DATA.markings.available[marking].display_name
