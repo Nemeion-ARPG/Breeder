@@ -14,7 +14,7 @@ genders:
     base_chance: 0.4
 
 markings:
-  random_cap: 12
+  random_cap: 10
   default: []
   qualities:
     Limited:
@@ -486,16 +486,34 @@ mutations:
       display_name: Albinism
     Auric:
       display_name: Auric
+    Blistering:
+      display_name: Blistering Bile (Curse)  
     Chimerism:
-      display_name: Chimerism
+      display_name: Chimerism (Tan)
+    Chimerism2:
+      display_name: Chimerism (Cream)
+    Chimerism3:
+      display_name: Chimerism (Agouti)    
+    Chimerism4: 
+      display_name: Chimerism (Albino)  
     Crucis:
       display_name: Crucis
+    DionysusD:
+      display_name: Dionysus' Divergence (Blessing)  
     Erythrism:
       display_name: Erythrism
+    FreakishFangs:
+      display_name: Freakish Fangs (Curse)  
+    Hellborn:
+      display_name: Hellborn (Curse)  
     Leucism:
       display_name: Leucism
     Maltese:
       display_name: Maltese
+    Mantle:
+      display_name: Mantle of Athena (Blessing)  
+    MedusaMantle:
+      display_name: Medusa's Mantle (Curse)  
     Melanism:
       display_name: Melanism
     Sanguine:
