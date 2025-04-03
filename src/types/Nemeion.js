@@ -4,7 +4,7 @@ import { LIMITED_MARKINGS } from '@/Constants.js'
 export default class Nemeion {
     constructor(initialValues = {}) {
         this.gender = initialValues.gender || null
-        //this.fur = initialValues.fur || DATA.furs.default
+        this.fur = initialValues.fur || DATA.furs.default
         this.coat = initialValues.coat || DATA.coats.default
         this.build = initialValues.build || DATA.builds.default
         this.traits = initialValues.traits || DATA.traits.default

@@ -148,7 +148,6 @@ const props = defineProps({
 defineEmits(['update:parentRef'])
 
 const showSummary = ref(false)
-// const availableFurs = computed(() => FURS.allValues)
 const availableCoats = computed(() => COATS.allValues)
 const availableTraits = computed(() => {
     let options = []
@@ -180,6 +179,17 @@ const availableMutations = computed(() => {
     }
     return options
 })
+const availableFurs = computed(() => {
+    let options = []
+    for (const furs in DATA.furs.available) {
+        options.push({
+            value: furs,
+            text: DATA.furs.available[furs].display_name
+        })
+    }
+    return options
+})
+
 const availableBuilds = computed(() => {
     let otherParentBuild = props.otherParentRef.build
     return BUILDS.allValues
