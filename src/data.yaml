@@ -122,6 +122,9 @@ markings:
     Livorem:
       display_name: Livorem
       quality: Uncommon
+    Manicae:
+      display_name: Manicae
+      quality: Uncommon  
     Mollis:
       display_name: Mollis
       quality: Uncommon
@@ -167,6 +170,9 @@ markings:
     Rubrum:
       display_name: Rubrum
       quality: Rare
+    Sidereum:
+      display_name: Sidereum
+      quality: Rare  
     Sigillum:
       display_name: Sigillum
       quality: Rare
@@ -188,6 +194,9 @@ markings:
     Avis:
       display_name: Avis
       quality: Epic
+    Caenum:
+      display_name: Caenum
+      quality: Epic  
     Cordis:
       display_name: Cordis
       quality: Epic
