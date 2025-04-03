@@ -25,20 +25,6 @@
                     />
                 </div>
 
-                <div class="fur-selector">
-                    <div>
-                        <label>Fur</label>
-                    </div>
-                    
-                    <BFormRadioGroup
-                        v-model="parentRef.fur"
-                        :options="availableFurs"
-                        :name="`${title}-fur`"
-                        buttons
-                        button-variant="dark"
-                    />
-                </div>
-
                 <div class="coat-selector">
                     <div>
                         <label>Coat</label>
@@ -89,6 +75,19 @@
                         multiple
                         v-model="parentRef.mutations"
                         :options="availableMutations"
+                    />
+                </div>
+
+                <div class="fur-selector">
+                    <div>
+                        <label>Gifts</label>
+                    </div>
+                    
+                    <BFormRadioGroup
+                        class="form-selector"
+                        multiple
+                        v-model="parentRef.furs"
+                        :options="availableFurs"
                     />
                 </div>
 
@@ -148,6 +147,7 @@ const props = defineProps({
 defineEmits(['update:parentRef'])
 
 const showSummary = ref(false)
+const availableFurs = computed(() => FURS.allValues)
 const availableCoats = computed(() => COATS.allValues)
 const availableTraits = computed(() => {
     let options = []
@@ -179,17 +179,6 @@ const availableMutations = computed(() => {
     }
     return options
 })
-const availableFurs = computed(() => {
-    let options = []
-    for (const furs in DATA.furs.available) {
-        options.push({
-            value: furs,
-            text: DATA.furs.available[furs].display_name
-        })
-    }
-    return options
-})
-
 const availableBuilds = computed(() => {
     let otherParentBuild = props.otherParentRef.build
     return BUILDS.allValues
