@@ -3,11 +3,12 @@
         <div class="content">
             <label>{{ headerText }}</label>
             <label>B: {{ reference.build }} Build</label>
-            <label>F: {{ reference.fur }} Fur</label>
             <label>C: {{ reference.coat }} Coat</label>
             <label>[Hereditary Markings]: {{ selectedMarkings }}</label>
             <label>[Mutations]: {{ selectedMutations }}</label>
             <label>[Traits]: {{ selectedTraits }}</label>
+            <label>[Gift]: {{ reference.fur }} </label>
+
         </div>
     </div>
 </template>

@@ -495,12 +495,20 @@ furs:
   inherit_chance:
     single: 0.25
     double: 0.40
-  default: Sleek
+  default: []
   rare_options:
-    - Curly
-    - Polar
-    - Silky
-    - Sphynx
+    - Apollo's Ascension (Blessing)
+    - Artemis' Ambition (Blessing)
+    - Poseidon's Purity (Blessing)
+    - Athena's Anguish (Curse)
+    - Hellborn of Hades (Curse)
+    - Hera's Hatred (Curse)
+    - Medusa's Malice (Curse)
+    - Mark of the Gorgon (Curse)
+    - Blanket of Boreas (Blessing)
+    - Cloak of Dionysus (Blessing)
+    - Helm of Hephaestus (Blessing)
+    - Mantle of Athena (Blessing)
 
 mutations:
   random_cap: 2
