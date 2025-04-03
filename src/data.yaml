@@ -495,7 +495,7 @@ furs:
   inherit_chance:
     single: 0.25
     double: 0.40
-  default: []
+  default: 
   rare_options:
     - Apollo's Ascension (Blessing)
     - Artemis' Ambition (Blessing)
