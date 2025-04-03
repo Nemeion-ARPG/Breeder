@@ -250,7 +250,7 @@ markings:
       quality: Legendary
 
 traits:
-  random_cap: 6
+  random_cap: 2
   default: []
   qualities:
     Common:
