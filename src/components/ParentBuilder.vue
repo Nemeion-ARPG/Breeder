@@ -148,7 +148,7 @@ const props = defineProps({
 defineEmits(['update:parentRef'])
 
 const showSummary = ref(false)
-const availableFurs = computed(() => FURS.allValues)
+// const availableFurs = computed(() => FURS.allValues)
 const availableCoats = computed(() => COATS.allValues)
 const availableTraits = computed(() => {
     let options = []
