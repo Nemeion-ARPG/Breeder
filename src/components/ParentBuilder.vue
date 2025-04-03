@@ -83,7 +83,7 @@
                         <label>Gifts</label>
                     </div>
                     
-                    <BFormRadioGroup
+                    <BFormSelect
                         class="form-selector"
                         multiple
                         v-model="parentRef.furs"
