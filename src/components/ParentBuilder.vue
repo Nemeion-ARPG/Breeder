@@ -152,7 +152,7 @@ const availableFurs = computed(() => FURS.allValues)
 const availableCoats = computed(() => COATS.allValues)
 const availableTraits = computed(() => {
     let options = []
-    for (const trait in DATA.traits.available) {
+    for (const trait in sortData(DATA.traits.available)) {
         options.push({
             value: trait,
             text: DATA.traits.available[trait].display_name
