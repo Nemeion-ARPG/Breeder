@@ -124,22 +124,22 @@ markings:
       quality: Uncommon
     Manicae1:
       display_name: Agouti Manicae
-      quality: Uncommon  
+      quality: Legendary  
     Manicae2:
       display_name: Auric Manicae
-      quality: Uncommon
+      quality: Legendary
     Manicae3:
       display_name: Cream Manicae  
-      quality: Uncommon    
+      quality: Legendary    
     Manicae4:
       display_name: Erythristic Manicae
-      quality: Uncommon    
+      quality: Legendary    
     Manicae5:
       display_name: Maltese Manicae
-      quality: Uncommon    
+      quality: Legendary    
     Manicae6:
       display_name: Melanistic Manicae
-      quality: Uncommon    
+      quality: Legendary    
     Manicae7:
       display_name: Tan Manicae
       quality: Uncommon  
@@ -509,6 +509,7 @@ furs:
     - Cloak of Dionysus (Blessing)
     - Helm of Hephaestus (Blessing)
     - Mantle of Athena (Blessing)
+    - Plucky Plumes (Blessing)
 
 mutations:
   random_cap: 2
