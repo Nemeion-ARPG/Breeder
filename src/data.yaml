@@ -471,9 +471,9 @@ builds:
         Pharaoh: 0.30
     Pharaoh:    
       inherit_chance:
-        Brute: 0.10
-        Regal: 0.15
-        Dwarf: 0.05
+        Brute: 0.60
+        Regal: 0.50
+        Dwarf: 0.40
         Domestic: 0.30
         Pharaoh: 1.00
 
