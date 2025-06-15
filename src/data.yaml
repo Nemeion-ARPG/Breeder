@@ -447,7 +447,7 @@ builds:
         Regal: 0.40
         Dwarf: 0.20
         Domestic: null
-        Pharaoh: 0.10
+        Pharaoh: 0.05
     Regal:
       inherit_chance:
         Brute: 0.60
@@ -461,7 +461,7 @@ builds:
         Regal: 0.60
         Dwarf: 1.00
         Domestic: 0.40
-        Pharaoh: 0.05
+        Pharaoh: 0.10
     Domestic:
       inherit_chance:
         Brute: null
@@ -471,10 +471,10 @@ builds:
         Pharaoh: 0.30
     Pharaoh:    
       inherit_chance:
-        Brute: 0.60
-        Regal: 0.50
-        Dwarf: 0.40
-        Domestic: 0.30
+        Brute: 0.95
+        Regal: 0.85
+        Dwarf: 0.90
+        Domestic: 0.70
         Pharaoh: 1.00
 
 # each element represents a separate option, with the options repeated with their weight of receiving that alternative
