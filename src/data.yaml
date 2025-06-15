@@ -435,10 +435,11 @@ traits:
 builds:
   default: Brute
   random_chance: # these need to total 1.00 (100)
-    Brute: 0.50
+    Brute: 0.45
     Regal: 0.30
     Dwarf: 0.15
-    Domestic: 0.05
+    Domestic: 0.08
+    Pharaoh: 0.02
   available:
     Brute:
       inherit_chance:
@@ -446,24 +447,35 @@ builds:
         Regal: 0.40
         Dwarf: 0.20
         Domestic: null
+        Pharaoh: 0.10
     Regal:
       inherit_chance:
         Brute: 0.60
         Regal: 1.00
         Dwarf: 0.40
         Domestic: 0.20
+        Pharaoh: 0.15
     Dwarf:
       inherit_chance:
         Brute: 0.80
         Regal: 0.60
         Dwarf: 1.00
         Domestic: 0.40
+        Pharaoh: 0.05
     Domestic:
       inherit_chance:
         Brute: null
         Regal: 0.80
         Dwarf: 0.60
         Domestic: 1.00
+        Pharaoh: 0.30
+    Pharaoh:    
+      inherit_chance:
+        Brute: 0.10
+        Regal: 0.15
+        Dwarf: 0.05
+        Domestic: 0.30
+        Pharaoh: 1.00
 
 # each element represents a separate option, with the options repeated with their weight of receiving that alternative
 # for example, if one parent is Tan, and the second is Cream, the offspring's chance of being Cream is based on the weight listed for Tan>Cream
