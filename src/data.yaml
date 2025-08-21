@@ -275,8 +275,8 @@ traits:
         double: 0.10
     Unique:
       inherit_chance:
-        single: 0.05
-        double: 0.10
+        single: 0.01
+        double: 0.02
   available:
     Birthright:
       display_name: Birthright
@@ -445,8 +445,8 @@ builds:
       inherit_chance:
         Brute: 1.00
         Regal: 0.40
-        Dwarf: 0.20
-        Domestic: null
+        Dwarf: 0.30
+        Domestic: 0.25
         Pharaoh: 0.05
     Regal:
       inherit_chance:
@@ -464,7 +464,7 @@ builds:
         Pharaoh: 0.10
     Domestic:
       inherit_chance:
-        Brute: null
+        Brute: 0.75
         Regal: 0.80
         Dwarf: 0.60
         Domestic: 1.00
