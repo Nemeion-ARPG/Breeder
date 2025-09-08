@@ -224,6 +224,12 @@ markings:
     Melis:
       display_name: Melis
       quality: Epic
+    Rex:
+      display_name: Rex
+      quality: Epic  
+    Varia:
+      display_name: Varia
+      quality: Epic  
     Pluma:
       display_name: Pluma
       quality: Epic
@@ -245,6 +251,12 @@ markings:
     Glacies:
       display_name: Glacies
       quality: Legendary
+    Aetherius:
+      display_name: Aetherius
+      quality: Legendary  
+    Jester:
+      display_name: Jester
+      quality: Legendary  
     Tenebris:
       display_name: Tenebris
       quality: Legendary
