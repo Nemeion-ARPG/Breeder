@@ -276,24 +276,24 @@ traits:
   qualities:
     Common:
       inherit_chance:
-        single: 0.50
-        double: 0.75
+        single: 0.30
+        double: 0.55
     Uncommon:
-      inherit_chance:
-        single: 0.25
-        double: 0.50
-    Rare:
       inherit_chance:
         single: 0.15
         double: 0.30
-    Epic:
+    Rare:
       inherit_chance:
         single: 0.10
         double: 0.20
-    Legendary:
+    Epic:
       inherit_chance:
         single: 0.05
         double: 0.10
+    Legendary:
+      inherit_chance:
+        single: 0.02
+        double: 0.05
     Unique:
       inherit_chance:
         single: 0.01
