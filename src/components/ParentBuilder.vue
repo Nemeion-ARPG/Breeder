@@ -222,10 +222,14 @@ label {
     overflow-y: auto;
     border: 1px solid var(--color-border);
     border-radius: 0.25rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.25rem;
 }
 
 :deep(.form-check) {
-    margin-bottom: 0.25rem;
+    margin-bottom: 0;
+    white-space: nowrap;
 }
 
 :deep(.form-check-input) {
