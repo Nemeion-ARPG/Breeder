@@ -144,10 +144,12 @@ defineEmits(['update:parentRef'])
 
 const showSummary = ref(false)
 const availableFurs = computed(() => {
-    return FURS.allValues.map(fur => ({
-        value: fur,
-        text: fur
-    }))
+    return FURS.allValues
+        .filter(fur => fur !== null && fur !== undefined && fur !== '')
+        .map(fur => ({
+            value: fur,
+            text: fur
+        }))
 })
 const availableCoats = computed(() => COATS.allValues)
 const availableTraits = computed(() => {
@@ -218,7 +220,7 @@ label {
     color: var(--color-text);
     background: var(--color-background-soft);
     padding: 0.5rem;
-    max-height: 300px;
+    max-height: 150px;
     overflow-y: auto;
     border: 1px solid var(--color-border);
     border-radius: 0.25rem;
