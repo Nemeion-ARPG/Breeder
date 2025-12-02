@@ -650,6 +650,44 @@ describe('NemeionBreedingGround', () => {
                 expect(result).toEqual([])
             })
         })
+
+        describe('exclusive groups', () => {
+            it('only allows one marking from an exclusive group to be inherited', () => {
+                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Manicae1, MARKINGS.Manicae2] })
+                const mother = new Nemeion({ ...prototypeMother, markings: [MARKINGS.Manicae3] })
+                
+                const mockRandomSample = vi.fn().mockImplementation(() => MARKINGS.Manicae1)
+                const breedingGround = new NemeionBreedingGround(father, mother, { 
+                    shouldDoAction: () => true,
+                    randomSample: mockRandomSample
+                })
+
+                const result = breedingGround._generateMarkings()
+                
+                // Should have exactly one Manicae marking
+                const manicaeMarkings = result.filter(m => m.startsWith('Manicae'))
+                expect(manicaeMarkings.length).toBe(1)
+            })
+
+            it('allows non-exclusive markings to be inherited alongside exclusive ones', () => {
+                const father = new Nemeion({ ...prototypeFather, markings: [MARKINGS.Manicae1, MARKINGS.Auribus] })
+                const mother = new Nemeion({ ...prototypeMother, markings: [MARKINGS.Manicae2, MARKINGS.Alium] })
+                
+                const mockRandomSample = vi.fn().mockImplementation(() => MARKINGS.Manicae1)
+                const breedingGround = new NemeionBreedingGround(father, mother, { 
+                    shouldDoAction: () => true,
+                    randomSample: mockRandomSample
+                })
+
+                const result = breedingGround._generateMarkings()
+                
+                // Should have exactly one Manicae marking but both other markings
+                const manicaeMarkings = result.filter(m => m.startsWith('Manicae'))
+                expect(manicaeMarkings.length).toBe(1)
+                expect(result).toContain(MARKINGS.Auribus)
+                expect(result).toContain(MARKINGS.Alium)
+            })
+        })
     })
 
     describe('_generateMutations', () => {

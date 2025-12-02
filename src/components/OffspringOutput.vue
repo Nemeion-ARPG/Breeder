@@ -14,7 +14,7 @@
                 :filter-limited-markings="true"
             />
 
-            <p v-if="limitedMarkings">
+            <p v-if="limitedMarkings.length > 0">
                 The following <b>Limited Markings</b> may be applied freely to any cub in this litter at any time throughout the year:
                 <br />
                 <b>{{ limitedMarkings.join(',') }}</b>

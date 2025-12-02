@@ -44,9 +44,8 @@
                         <label>Traits</label>
                     </div>
 
-                    <BFormSelect
-                        class="form-selector"
-                        multiple
+                    <BFormCheckboxGroup
+                        class="form-checkbox-group"
                         v-model="parentRef.traits"
                         :options="availableTraits"
                     />
@@ -57,9 +56,8 @@
                         <label>Markings</label>
                     </div>
 
-                    <BFormSelect
-                        class="form-selector"
-                        multiple
+                    <BFormCheckboxGroup
+                        class="form-checkbox-group"
                         v-model="parentRef.markings"
                         :options="availableMarkings"
                     />
@@ -70,9 +68,8 @@
                         <label>Mutations</label>
                     </div>
 
-                    <BFormSelect
-                        class="form-selector"
-                        multiple
+                    <BFormCheckboxGroup
+                        class="form-checkbox-group"
                         v-model="parentRef.mutations"
                         :options="availableMutations"
                     />
@@ -83,9 +80,8 @@
                         <label>Gifts</label>
                     </div>
                     
-                    <BFormSelect
-                        class="form-selector"
-                        multiple
+                    <BFormCheckboxGroup
+                        class="form-checkbox-group"
                         v-model="parentRef.furs"
                         :options="availableFurs"
                     />
@@ -147,7 +143,12 @@ const props = defineProps({
 defineEmits(['update:parentRef'])
 
 const showSummary = ref(false)
-const availableFurs = computed(() => FURS.allValues)
+const availableFurs = computed(() => {
+    return FURS.allValues.map(fur => ({
+        value: fur,
+        text: fur
+    }))
+})
 const availableCoats = computed(() => COATS.allValues)
 const availableTraits = computed(() => {
     let options = []
@@ -211,6 +212,35 @@ label {
     color: var(--color-text);
     background: var(--color-background-soft);
     padding: 0.5rem;
+}
+
+.form-checkbox-group {
+    color: var(--color-text);
+    background: var(--color-background-soft);
+    padding: 0.5rem;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+}
+
+:deep(.form-check) {
+    margin-bottom: 0.25rem;
+}
+
+:deep(.form-check-input) {
+    background-color: var(--color-background-mute);
+    border-color: var(--color-border);
+}
+
+:deep(.form-check-input:checked) {
+    background-color: var(--color-border-hover);
+    border-color: var(--color-border-hover);
+}
+
+:deep(.form-check-label) {
+    color: var(--color-text);
+    margin-left: 0.5rem;
 }
 
 :deep(.btn-check:checked + .btn) {

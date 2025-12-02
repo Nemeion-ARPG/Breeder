@@ -137,7 +137,8 @@ export default class NemeionBreedingGround extends NemeionGenerator {
             return []
         }
 
-        return this.#_generateInheritedAspects(ASPECT_KEYS.markings, DATA.markings, addons)
+        const markings = this.#_generateInheritedAspects(ASPECT_KEYS.markings, DATA.markings, addons)
+        return this.#_filterExclusiveMarkings(markings)
     }
     _generateMutations(addons = []) {
         let result = []
@@ -172,6 +173,36 @@ export default class NemeionBreedingGround extends NemeionGenerator {
         }
 
         return [...new Set(result)]
+    }
+
+    #_filterExclusiveMarkings(markings) {
+        if (!DATA.markings.exclusive_groups) {
+            return markings
+        }
+
+        const result = [...markings]
+        const exclusiveGroups = DATA.markings.exclusive_groups
+
+        for (const groupName in exclusiveGroups) {
+            const groupMarkings = exclusiveGroups[groupName]
+            const foundMarkings = result.filter(marking => groupMarkings.includes(marking))
+            
+            if (foundMarkings.length > 1) {
+                // Keep only one marking from this group (randomly selected)
+                const keepMarking = this.randomSample(foundMarkings)
+                // Remove all others from the result
+                for (const marking of foundMarkings) {
+                    if (marking !== keepMarking) {
+                        const index = result.indexOf(marking)
+                        if (index > -1) {
+                            result.splice(index, 1)
+                        }
+                    }
+                }
+            }
+        }
+
+        return result
     }
 
     #_generateInheritedAspects(aspectKey, dataset, addons) {

@@ -16,6 +16,15 @@ genders:
 markings:
   random_cap: 10
   default: []
+  exclusive_groups:
+    manicae:
+      - Manicae1
+      - Manicae2
+      - Manicae3
+      - Manicae4
+      - Manicae5
+      - Manicae6
+      - Manicae7
   qualities:
     Limited:
       inherit_chance:

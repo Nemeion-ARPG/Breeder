@@ -44,7 +44,8 @@ export default class NemeionRandomGenerator extends NemeionGenerator {
         return this.#_generateRandomAspects(DATA.traits.random_cap, TRAITS.allValues)
     }
     _generateMarkings() {
-        return this.#_generateRandomAspects(DATA.markings.random_cap, MARKINGS.allValues)
+        const markings = this.#_generateRandomAspects(DATA.markings.random_cap, MARKINGS.allValues)
+        return this.#_filterExclusiveMarkings(markings)
     }
     _generateMutations() {
         return this.#_generateRandomAspects(DATA.mutations.random_cap, MUTATIONS.allValues, () => this.shouldDoAction(DATA.mutations.base_chance))
@@ -74,5 +75,35 @@ export default class NemeionRandomGenerator extends NemeionGenerator {
         }
 
         return [...new Set(result)]
+    }
+
+    #_filterExclusiveMarkings(markings) {
+        if (!DATA.markings.exclusive_groups) {
+            return markings
+        }
+
+        const result = [...markings]
+        const exclusiveGroups = DATA.markings.exclusive_groups
+
+        for (const groupName in exclusiveGroups) {
+            const groupMarkings = exclusiveGroups[groupName]
+            const foundMarkings = result.filter(marking => groupMarkings.includes(marking))
+            
+            if (foundMarkings.length > 1) {
+                // Keep only one marking from this group (randomly selected)
+                const keepMarking = this.randomSample(foundMarkings)
+                // Remove all others from the result
+                for (const marking of foundMarkings) {
+                    if (marking !== keepMarking) {
+                        const index = result.indexOf(marking)
+                        if (index > -1) {
+                            result.splice(index, 1)
+                        }
+                    }
+                }
+            }
+        }
+
+        return result
     }
 }

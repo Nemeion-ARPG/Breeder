@@ -152,6 +152,22 @@ describe('NemeionRandomGenerator', () => {
             let _ = generator._generateMarkings()
             expect(mockRandomSample).toHaveBeenCalled(2)
         })
+
+        it('should only keep one marking from exclusive groups', () => {
+            // Set up a mock that returns Manicae markings alternately
+            const mockRandomSample = vi.fn()
+                .mockImplementationOnce(() => MARKINGS.Manicae1)
+                .mockImplementationOnce(() => MARKINGS.Manicae2)
+                .mockImplementationOnce(() => MARKINGS.Manicae3)
+                .mockImplementationOnce(() => MARKINGS.Manicae2) // When filtering picks one to keep
+            const generator = new NemeionRandomGenerator(() => true, mockRandomSample, () => 3)
+
+            const result = generator._generateMarkings()
+            
+            // Should have exactly one Manicae marking
+            const manicaeMarkings = result.filter(m => m.startsWith('Manicae'))
+            expect(manicaeMarkings.length).toBe(1)
+        })
     })
 
     describe('_generateMutations', () => {
