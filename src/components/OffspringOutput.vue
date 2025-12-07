@@ -17,7 +17,7 @@
             <hr />
         </div>
 
-        <p v-if="limitedMarkings.length > 0" class="limited-markings-section">
+        <p v-if="offspring.length > 0 && limitedMarkings.length > 0" class="limited-markings-section">
             The following <b>Limited Markings</b> may be applied freely to any cub in this litter at any time throughout the year:
             <br />
             <b>{{ limitedMarkings.join(', ') }}</b>
