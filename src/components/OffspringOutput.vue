@@ -106,7 +106,7 @@ const copyResults = async () => {
                 return displayName
             })
         const hereditaryMarkings = hereditaryMarkingsArray.length > 0 ? hereditaryMarkingsArray.join(', ') : 'None'
-        text += `**[Hereditary Markings]:**\n${hereditaryMarkings}\n`
+        text += `**[Hereditary Markings]:** ${hereditaryMarkings}\n`
         
         // Mutations (if present)
         if (cub.mutations.length > 0) {
