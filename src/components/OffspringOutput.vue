@@ -4,6 +4,10 @@
             <h2>{{ title }}</h2>
         </header>
 
+        <p v-if="hasGift" class="gift-blessing-section">
+            🌟 A god has blessed this litter! 🌟
+        </p>
+
         <div
             class="offspring-list"
             v-for="(offspring, index) in offspring"
@@ -82,8 +86,19 @@ const props = defineProps({
 })
 defineEmits(['generateOffspring', 'reset', 'generateRandom'])
 
+import { computed } from 'vue'
+
+const hasGift = computed(() => {
+    return props.offspring.some(cub => cub.fur)
+})
+
 const copyResults = async () => {
     let text = ''
+    
+    // Add blessing message if any cub has a gift
+    if (hasGift.value) {
+        text += '🌟 A god has blessed this litter! At least one cub in this litter bears the mark of divine favor. 🌟\n.\n\n'
+    }
     
     props.offspring.forEach((cub, index) => {
         // Header
@@ -190,5 +205,17 @@ footer {
     padding: 0.75rem;
     background-color: var(--color-background-soft);
     border-left: 3px solid var(--color-border-hover);
+}
+
+.gift-blessing-section {
+    margin: 1rem 0;
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--color-heading);
+    background: linear-gradient(135deg, var(--color-background-soft) 0%, var(--color-background-mute) 100%);
+    border: 2px solid var(--color-border-hover);
+    border-radius: 0.5rem;
 }
 </style>

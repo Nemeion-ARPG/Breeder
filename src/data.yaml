@@ -49,6 +49,10 @@ markings:
       inherit_chance:
         single: 0.05
         double: 0.10
+    Dupes:
+      inherit_chance:
+        single: 0.10
+        double: 0.20
   available:
     Roan:
       display_name: Roan
@@ -139,25 +143,25 @@ markings:
       quality: Uncommon
     Manicae1:
       display_name: Agouti Manicae
-      quality: Legendary  
+      quality: Dupes  
     Manicae2:
       display_name: Auric Manicae
-      quality: Legendary
+      quality: Dupes
     Manicae3:
       display_name: Cream Manicae  
-      quality: Legendary    
+      quality: Dupes    
     Manicae4:
       display_name: Erythristic Manicae
-      quality: Legendary    
+      quality: Dupes    
     Manicae5:
       display_name: Maltese Manicae
-      quality: Legendary    
+      quality: Dupes    
     Manicae6:
       display_name: Melanistic Manicae
-      quality: Legendary    
+      quality: Dupes    
     Manicae7:
       display_name: Tan Manicae
-      quality: Uncommon  
+      quality: Dupes 
     Mollis:
       display_name: Mollis
       quality: Uncommon
