@@ -99,9 +99,9 @@ const copyResults = async () => {
             .map(marking => {
                 const markingData = DATA.markings.available[marking]
                 const displayName = markingData.display_name
-                // Bold Legendary markings - use zero-width space to prevent ** collision
+                // Italicize Legendary markings
                 if (markingData.quality === 'Legendary') {
-                    return `\u200B**${displayName}**`
+                    return `*${displayName}*`
                 }
                 return displayName
             })
@@ -139,9 +139,9 @@ const copyResults = async () => {
             .map(marking => {
                 const markingData = DATA.markings.available[marking]
                 const displayName = markingData.display_name
-                // Bold Legendary markings
+                // Italicize Legendary markings
                 if (markingData.quality === 'Legendary') {
-                    return `**${displayName}**`
+                    return `*${displayName}*`
                 }
                 return displayName
             })

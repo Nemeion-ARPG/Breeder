@@ -58,9 +58,9 @@ const selectedMarkings = computed(() => {
         .map(marking => {
             const markingData = DATA.markings.available[marking]
             const displayName = markingData.display_name
-            // Bold Legendary markings
+            // Italicize Legendary markings
             if (markingData.quality === 'Legendary') {
-                return `<b>${displayName}</b>`
+                return `<i>${displayName}</i>`
             }
             return displayName
         })
