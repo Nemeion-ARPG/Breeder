@@ -53,6 +53,12 @@ markings:
     Roan:
       display_name: Roan
       quality: Limited
+    Gilded:
+      display_name: Gilded
+      quality: Limited  
+    Harpy:
+      display_name: Harpy
+      quality: Limited    
     Amare:
       display_name: Amare
       quality: Limited

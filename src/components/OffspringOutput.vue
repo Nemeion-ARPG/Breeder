@@ -94,7 +94,7 @@ const copyResults = async () => {
         text += `**C:** ${cub.coat} Coat\n`
         
         // Hereditary Markings
-        const hereditaryMarkings = cub.markings
+        const hereditaryMarkingsArray = cub.markings
             .filter(marking => !cub.limitedMarkings.includes(marking))
             .map(marking => {
                 const markingData = DATA.markings.available[marking]
@@ -105,8 +105,8 @@ const copyResults = async () => {
                 }
                 return displayName
             })
-            .join(', ')
-        text += `**[Hereditary Markings]:** ${hereditaryMarkings || 'None'}\n`
+        const hereditaryMarkings = hereditaryMarkingsArray.length > 0 ? hereditaryMarkingsArray.join(', ') : 'None'
+        text += `**[Hereditary Markings]:**\n${hereditaryMarkings}\n`
         
         // Mutations (if present)
         if (cub.mutations.length > 0) {
