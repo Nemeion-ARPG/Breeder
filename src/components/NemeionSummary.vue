@@ -48,7 +48,7 @@ const selectedTraits = computed(() => {
         .join(', ')
 })
 const selectedMarkings = computed(() => {
-    return props.reference.markings
+    const markings = props.reference.markings
         .filter(marking => {
             console.log('fizz', props.reference.limitedMarkings)
             return props.filterLimitedMarkings
@@ -57,6 +57,8 @@ const selectedMarkings = computed(() => {
         })
         .map(marking => DATA.markings.available[marking].display_name)
         .join(', ')
+    
+    return markings || 'None'
 })
 const selectedMutations = computed(() => {
     return props.reference.mutations

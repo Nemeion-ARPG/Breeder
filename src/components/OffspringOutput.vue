@@ -14,14 +14,14 @@
                 :filter-limited-markings="true"
             />
 
-            <p v-if="limitedMarkings.length > 0">
-                The following <b>Limited Markings</b> may be applied freely to any cub in this litter at any time throughout the year:
-                <br />
-                <b>{{ limitedMarkings.join(',') }}</b>
-            </p>
-
             <hr />
         </div>
+
+        <p v-if="limitedMarkings.length > 0" class="limited-markings-section">
+            The following <b>Limited Markings</b> may be applied freely to any cub in this litter at any time throughout the year:
+            <br />
+            <b>{{ limitedMarkings.join(', ') }}</b>
+        </p>
 
         <footer>
             <BButton
@@ -99,5 +99,12 @@ footer {
 :deep(.btn-secondary) {
     color: var(--color-heading);
     background-color: var(--color-background-mute);
+}
+
+.limited-markings-section {
+    margin: 1rem 0;
+    padding: 0.75rem;
+    background-color: var(--color-background-soft);
+    border-left: 3px solid var(--color-border-hover);
 }
 </style>
