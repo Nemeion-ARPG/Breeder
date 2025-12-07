@@ -646,7 +646,7 @@ add_ons:
     display_name: Regal Potion
     description: Guarantees at least 1 cub will be a Regal build.
   AO_TINCTURE_TRANSFORMATION:
-    display_name: Tincture of Transformation
+    display_name: Dwarfish Drought
     description: Guarantees at least 1 cub will be a Dwarf build.
   AO_WEREWORM:
     display_name: Wereworm
