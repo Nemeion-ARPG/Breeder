@@ -37,6 +37,13 @@
             >Random</BButton>
 
             <BButton
+                v-if="offspring.length > 0"
+                class="primary-button"
+                @click="copyResults"
+                variant="secondary"
+            >Copy Results</BButton>
+
+            <BButton
                 class="secondary-button"
                 @click="$emit('reset')"
                 variant="dark"
@@ -50,8 +57,9 @@ import { LIMITED_MARKINGS } from '@/Constants';
 import NemeionSummary from '@/components/NemeionSummary.vue'
 
 import Nemeion from '@/types/Nemeion'
+import DATA from '@/data.yaml'
 
-defineProps({
+const props = defineProps({
     title: {
         type: String,
         required: true
@@ -73,6 +81,66 @@ defineProps({
     }
 })
 defineEmits(['generateOffspring', 'reset', 'generateRandom'])
+
+const copyResults = async () => {
+    let text = ''
+    
+    props.offspring.forEach((cub, index) => {
+        // Header
+        text += `${index + 1}) ${cub.gender} Cub\n`
+        
+        // Build and Coat
+        text += `B: ${cub.build} Build\n`
+        text += `C: ${cub.coat} Coat\n`
+        
+        // Hereditary Markings
+        const hereditaryMarkings = cub.markings
+            .filter(marking => !cub.limitedMarkings.includes(marking))
+            .map(marking => DATA.markings.available[marking].display_name)
+            .join(', ')
+        text += `[Hereditary Markings]: ${hereditaryMarkings || 'None'}\n`
+        
+        // Mutations (if present)
+        if (cub.mutations.length > 0) {
+            const mutations = cub.mutations
+                .map(mutation => DATA.mutations.available[mutation].display_name)
+                .join(', ')
+            text += `[Mutations]: ${mutations}\n`
+        }
+        
+        // Traits (if present)
+        if (cub.traits.length > 0) {
+            const traits = cub.traits
+                .map(trait => DATA.traits.available[trait].display_name)
+                .join(', ')
+            text += `[Traits]: ${traits}\n`
+        }
+        
+        // Gift (if present)
+        if (cub.fur) {
+            text += `[Gift]: ${cub.fur}\n`
+        }
+        
+        text += '\n'
+    })
+    
+    // Limited Markings section
+    if (props.limitedMarkings.length > 0) {
+        text += 'The following Limited Markings may be applied freely to any cub in this litter at any time throughout the year:\n'
+        const limitedMarkingsText = props.limitedMarkings
+            .map(marking => DATA.markings.available[marking].display_name)
+            .join(', ')
+        text += limitedMarkingsText + '\n'
+    }
+    
+    try {
+        await navigator.clipboard.writeText(text)
+        alert('Results copied to clipboard!')
+    } catch (err) {
+        console.error('Failed to copy:', err)
+        alert('Failed to copy results to clipboard')
+    }
+}
 </script>
 
 <style scoped>

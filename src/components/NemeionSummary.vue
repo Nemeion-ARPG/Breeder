@@ -5,9 +5,9 @@
             <label>B: {{ reference.build }} Build</label>
             <label>C: {{ reference.coat }} Coat</label>
             <label>[Hereditary Markings]: {{ selectedMarkings }}</label>
-            <label>[Mutations]: {{ selectedMutations }}</label>
-            <label>[Traits]: {{ selectedTraits }}</label>
-            <label>[Gift]: {{ reference.fur }} </label>
+            <label v-if="reference.mutations.length > 0">[Mutations]: {{ selectedMutations }}</label>
+            <label v-if="reference.traits.length > 0">[Traits]: {{ selectedTraits }}</label>
+            <label v-if="reference.fur">[Gift]: {{ reference.fur }}</label>
 
         </div>
     </div>
