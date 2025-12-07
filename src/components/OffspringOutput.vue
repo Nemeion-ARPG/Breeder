@@ -87,7 +87,7 @@ const copyResults = async () => {
     
     props.offspring.forEach((cub, index) => {
         // Header
-        text += `**${index + 1}) ${cub.gender} Cub**\n`
+        text += `${index + 1}) ${cub.gender} Cub\n`
         
         // Build and Coat
         text += `**B:** ${cub.build} Build\n`
@@ -96,7 +96,15 @@ const copyResults = async () => {
         // Hereditary Markings
         const hereditaryMarkings = cub.markings
             .filter(marking => !cub.limitedMarkings.includes(marking))
-            .map(marking => DATA.markings.available[marking].display_name)
+            .map(marking => {
+                const markingData = DATA.markings.available[marking]
+                const displayName = markingData.display_name
+                // Bold Legendary markings
+                if (markingData.quality === 'Legendary') {
+                    return `**${displayName}**`
+                }
+                return displayName
+            })
             .join(', ')
         text += `**[Hereditary Markings]:** ${hereditaryMarkings || 'None'}\n`
         
@@ -121,16 +129,24 @@ const copyResults = async () => {
             text += `**[Gift]:** ${cub.fur}\n`
         }
         
-        text += '\n---\n\n'
+        text += '\n.\n\n'
     })
     
     // Limited Markings section
     if (props.limitedMarkings.length > 0) {
         text += 'The following **Limited Markings** may be applied freely to any cub in this litter at any time throughout the year:\n'
         const limitedMarkingsText = props.limitedMarkings
-            .map(marking => DATA.markings.available[marking].display_name)
+            .map(marking => {
+                const markingData = DATA.markings.available[marking]
+                const displayName = markingData.display_name
+                // Bold Legendary markings
+                if (markingData.quality === 'Legendary') {
+                    return `**${displayName}**`
+                }
+                return displayName
+            })
             .join(', ')
-        text += `**${limitedMarkingsText}**\n`
+        text += `${limitedMarkingsText}\n`
     }
     
     try {
