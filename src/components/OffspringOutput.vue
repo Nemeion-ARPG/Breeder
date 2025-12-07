@@ -87,25 +87,25 @@ const copyResults = async () => {
     
     props.offspring.forEach((cub, index) => {
         // Header
-        text += `${index + 1}) ${cub.gender} Cub\n`
+        text += `**${index + 1}) ${cub.gender} Cub**\n`
         
         // Build and Coat
-        text += `B: ${cub.build} Build\n`
-        text += `C: ${cub.coat} Coat\n`
+        text += `**B:** ${cub.build} Build\n`
+        text += `**C:** ${cub.coat} Coat\n`
         
         // Hereditary Markings
         const hereditaryMarkings = cub.markings
             .filter(marking => !cub.limitedMarkings.includes(marking))
             .map(marking => DATA.markings.available[marking].display_name)
             .join(', ')
-        text += `[Hereditary Markings]: ${hereditaryMarkings || 'None'}\n`
+        text += `**[Hereditary Markings]:** ${hereditaryMarkings || 'None'}\n`
         
         // Mutations (if present)
         if (cub.mutations.length > 0) {
             const mutations = cub.mutations
                 .map(mutation => DATA.mutations.available[mutation].display_name)
                 .join(', ')
-            text += `[Mutations]: ${mutations}\n`
+            text += `**[Mutations]:** ${mutations}\n`
         }
         
         // Traits (if present)
@@ -113,24 +113,24 @@ const copyResults = async () => {
             const traits = cub.traits
                 .map(trait => DATA.traits.available[trait].display_name)
                 .join(', ')
-            text += `[Traits]: ${traits}\n`
+            text += `**[Traits]:** ${traits}\n`
         }
         
         // Gift (if present)
         if (cub.fur) {
-            text += `[Gift]: ${cub.fur}\n`
+            text += `**[Gift]:** ${cub.fur}\n`
         }
         
-        text += '\n'
+        text += '\n---\n\n'
     })
     
     // Limited Markings section
     if (props.limitedMarkings.length > 0) {
-        text += 'The following Limited Markings may be applied freely to any cub in this litter at any time throughout the year:\n'
+        text += 'The following **Limited Markings** may be applied freely to any cub in this litter at any time throughout the year:\n'
         const limitedMarkingsText = props.limitedMarkings
             .map(marking => DATA.markings.available[marking].display_name)
             .join(', ')
-        text += limitedMarkingsText + '\n'
+        text += `**${limitedMarkingsText}**\n`
     }
     
     try {
