@@ -28,11 +28,8 @@ export default class NemeionRandomGenerator extends NemeionGenerator {
     }
 
     _generateFur() {
-        if (this.shouldDoAction(DATA.furs.rare_chance)) {
-            return this.randomSample(DATA.furs.rare_options)
-        } else {
-            return DATA.furs.default
-        }
+        // Random generation does not include gifts/furs
+        return DATA.furs.default
     }
     _generateCoat() {
         return this.#_generateWeightedRandom(DATA.coats.random_chance)

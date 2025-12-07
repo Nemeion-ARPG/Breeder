@@ -3,6 +3,8 @@ import { LIMITED_MARKINGS } from '@/Constants.js'
 
 export default class Nemeion {
     constructor(initialValues = {}) {
+        this.name = initialValues.name || ''
+        this.url = initialValues.url || ''
         this.gender = initialValues.gender || null
         this.fur = initialValues.fur || DATA.furs.default
         this.coat = initialValues.coat || DATA.coats.default

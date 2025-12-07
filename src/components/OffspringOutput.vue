@@ -4,8 +4,19 @@
             <h2>{{ title }}</h2>
         </header>
 
-        <p v-if="hasGift" class="gift-blessing-section">
+        <p v-if="hasBlessing" class="gift-blessing-section">
             🌟 A god has blessed this litter! 🌟
+        </p>
+        <p v-if="hasCurse" class="gift-curse-section">
+            ⚡ A god has cursed this litter! ⚡
+        </p>
+
+        <p v-if="offspring.length > 0 && (fatherName || motherName)" class="parent-names-section">
+            <a v-if="fatherUrl" :href="fatherUrl" target="_blank" class="parent-link">{{ fatherName || 'Unknown' }}</a>
+            <span v-else>{{ fatherName || 'Unknown' }}</span>
+            X 
+            <a v-if="motherUrl" :href="motherUrl" target="_blank" class="parent-link">{{ motherName || 'Unknown' }}</a>
+            <span v-else>{{ motherName || 'Unknown' }}</span>
         </p>
 
         <div
@@ -82,6 +93,22 @@ const props = defineProps({
             return value.every(element => typeof element === 'string')
                 && value.every(element => LIMITED_MARKINGS.allValues.includes(element))
         }
+    },
+    fatherName: {
+        type: String,
+        required: true
+    },
+    motherName: {
+        type: String,
+        required: true
+    },
+    fatherUrl: {
+        type: String,
+        required: true
+    },
+    motherUrl: {
+        type: String,
+        required: true
     }
 })
 defineEmits(['generateOffspring', 'reset', 'generateRandom'])
@@ -92,12 +119,34 @@ const hasGift = computed(() => {
     return props.offspring.some(cub => cub.fur)
 })
 
+const hasBlessing = computed(() => {
+    return props.offspring.some(cub => cub.fur && cub.fur.includes('(Blessing)'))
+})
+
+const hasCurse = computed(() => {
+    return props.offspring.some(cub => cub.fur && cub.fur.includes('(Curse)'))
+})
+
 const copyResults = async () => {
     let text = ''
     
-    // Add blessing message if any cub has a gift
-    if (hasGift.value) {
-        text += '🌟 A god has blessed this litter! At least one cub in this litter bears the mark of divine favor. 🌟\n.\n\n'
+    // Add blessing/curse message if any cub has a gift
+    if (hasBlessing.value) {
+        text += '🌟 A god has blessed this litter! At least one cub in this litter bears the mark of divine favor. 🌟\n.\n'
+    }
+    if (hasCurse.value) {
+        text += '⚡ A god has cursed this litter! At least one cub in this litter bears the mark of divine wrath. ⚡\n.\n'
+    }
+    
+    // Add parent names if provided
+    if (props.fatherName || props.motherName) {
+        const fatherText = props.fatherUrl 
+            ? `<a href="${props.fatherUrl}">${props.fatherName || 'Unknown'}</a>`
+            : (props.fatherName || 'Unknown')
+        const motherText = props.motherUrl
+            ? `<a href="${props.motherUrl}">${props.motherName || 'Unknown'}</a>`
+            : (props.motherName || 'Unknown')
+        text += `${fatherText} x ${motherText}\n.\n`
     }
     
     props.offspring.forEach((cub, index) => {
@@ -144,7 +193,7 @@ const copyResults = async () => {
             text += `**[Gift]:** ${cub.fur}\n`
         }
         
-        text += '\n.\n\n'
+        text += '.\n'
     })
     
     // Limited Markings section
@@ -154,22 +203,42 @@ const copyResults = async () => {
             .map(marking => {
                 const markingData = DATA.markings.available[marking]
                 const displayName = markingData.display_name
-                // Italicize Legendary markings
-                if (markingData.quality === 'Legendary') {
-                    return `*${displayName}*`
-                }
+
+
+    // Italicize Legendary markings
+    if (markingData.quality === 'Legendary') {
+        return `*${displayName}*`
+            }
                 return displayName
             })
             .join(', ')
-        text += `${limitedMarkingsText}\n`
+        text += `**${limitedMarkingsText}**\n`
     }
     
+    // Create HTML version with clickable links
+    const htmlText = text
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>')
+    
     try {
-        await navigator.clipboard.writeText(text)
+        // Copy both plain text and HTML to clipboard
+        await navigator.clipboard.write([
+            new ClipboardItem({
+                'text/plain': new Blob([text], { type: 'text/plain' }),
+                'text/html': new Blob([htmlText], { type: 'text/html' })
+            })
+        ])
         alert('Results copied to clipboard!')
     } catch (err) {
-        console.error('Failed to copy:', err)
-        alert('Failed to copy results to clipboard')
+        // Fallback to plain text only if rich clipboard fails
+        try {
+            await navigator.clipboard.writeText(text)
+            alert('Results copied to clipboard!')
+        } catch (fallbackErr) {
+            console.error('Failed to copy:', fallbackErr)
+            alert('Failed to copy results to clipboard')
+        }
     }
 }
 </script>
@@ -217,5 +286,40 @@ footer {
     background: linear-gradient(135deg, var(--color-background-soft) 0%, var(--color-background-mute) 100%);
     border: 2px solid var(--color-border-hover);
     border-radius: 0.5rem;
+}
+
+.gift-curse-section {
+    margin: 1rem 0;
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--color-heading);
+    background: linear-gradient(135deg, var(--color-background-soft) 0%, var(--color-background-mute) 100%);
+    border: 2px solid var(--color-border-hover);
+    border-radius: 0.5rem;
+}
+
+.parent-names-section {
+    margin: 1rem 0;
+    padding: 0.75rem;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--color-text);
+    background-color: var(--color-background-soft);
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+}
+
+.parent-link {
+    color: var(--color-heading);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-heading);
+}
+
+.parent-link:hover {
+    color: var(--color-border-hover);
+    border-bottom-color: var(--color-border-hover);
 }
 </style>

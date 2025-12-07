@@ -142,25 +142,25 @@ markings:
       display_name: Livorem
       quality: Uncommon
     Manicae1:
-      display_name: Agouti Manicae
+      display_name: Manicae (Agouti Variant)
       quality: Dupes  
     Manicae2:
-      display_name: Auric Manicae
+      display_name: Manicae (Auric Variant)
       quality: Dupes
     Manicae3:
-      display_name: Cream Manicae  
+      display_name: Manicae (Cream Variant)
       quality: Dupes    
     Manicae4:
-      display_name: Erythristic Manicae
+      display_name: Manicae (Erythristic Variant)
       quality: Dupes    
     Manicae5:
-      display_name: Maltese Manicae
+      display_name: Manicae (Maltese Variant)
       quality: Dupes    
     Manicae6:
-      display_name: Melanistic Manicae
+      display_name: Manicae (Melanistic Variant)
       quality: Dupes    
     Manicae7:
-      display_name: Tan Manicae
+      display_name: Manicae (Tan)
       quality: Dupes 
     Mollis:
       display_name: Mollis

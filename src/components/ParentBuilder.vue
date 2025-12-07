@@ -11,6 +11,24 @@
             no-center
         >
             <div class="content-container">
+                <div class="name-input">
+                    <div>
+                        <label>Name</label>
+                    </div>
+                    <div class="name-url-inputs">
+                        <BFormInput
+                            v-model="parentRef.name"
+                            placeholder="Enter parent name"
+                            class="name-field"
+                        />
+                        <BFormInput
+                            v-model="parentRef.url"
+                            placeholder="Enter URL"
+                            class="url-field"
+                        />
+                    </div>
+                </div>
+
                 <div class="build-selector">
                     <div>
                         <label>Build</label>
@@ -208,6 +226,29 @@ label {
     font-weight: bold;
     font-size: 1.1rem;
     margin-bottom: 0.1rem;
+}
+
+.name-url-inputs {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.name-field {
+    flex: 1;
+}
+
+.name-field :deep(input) {
+    background-color: #d3d3d3;
+    color: var(--color-text);
+}
+
+.url-field {
+    flex: 1;
+}
+
+.url-field :deep(input) {
+    background-color: #d3d3d3;
+    color: var(--color-text);
 }
 
 .form-selector {
