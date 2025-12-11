@@ -20,7 +20,8 @@ export default class NemeionGenerator {
             build: this._generateBuild(addons),
             traits: this._generateTraits(addons),
             markings: this._generateMarkings(addons),
-            mutations: this._generateMutations(addons)
+            mutations: this._generateMutations(addons),
+            titan_traits: this._generateTitanTraits(addons)
         })
     }
 
@@ -33,4 +34,5 @@ export default class NemeionGenerator {
     _generateTraits(addons) { }
     _generateMarkings(addons) { }
     _generateMutations(addons) { }
+    _generateTitanTraits(addons) { }
 }

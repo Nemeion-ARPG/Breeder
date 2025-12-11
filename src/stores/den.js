@@ -13,7 +13,7 @@ import _sample from 'lodash/sample'
 import { rollForThreshold } from '@/utils'
 
 import DATA from '@/data.yaml'
-import { GENDERS, BUILDS, ADDONS, MUTATIONS } from '@/Constants'
+import { GENDERS, BUILDS, ADDONS, MUTATIONS, MARKINGS } from '@/Constants'
 
 const DEFAULT_CHANCE_ROLL = () => _random(0, 1, true)
 const DEFAULT_SHOULD_DO_ACTION = rollForThreshold
@@ -24,6 +24,9 @@ export default defineStore('den', () => {
     const mother = ref(new Nemeion({ gender: GENDERS.Female }))
     const offspring = ref([])
     const selectedAddons = ref([])
+    const apolloFeatherEnabled = ref(false)
+    const selectedApolloMarking = ref(null)
+    const rank1Enabled = ref(false)
 
     function _rollLitterSize(chanceRoll) {
         // litter size is based off weights in the data table
@@ -66,6 +69,21 @@ export default defineStore('den', () => {
         })
     }
 
+    function makeRandom5(
+        randomGenerator = new NemeionRandomGenerator()
+    ) {
+        if (!randomGenerator) {
+            throw new Error('Cannot make Nemeions without a random generator')
+        }
+        if (!(randomGenerator instanceof NemeionRandomGenerator)) {
+            throw new Error('Can only make Nemeions with a NemeionRandomGenerator')
+        }
+        // Force litter size to be exactly 5
+        offspring.value = _generateLitter(5, () => {
+            return randomGenerator.makeOffspring(selectedAddons.value)
+        })
+    }
+
     function makeOffspring(
         breedingGround = new NemeionBreedingGround(father.value, mother.value),
         chanceRoll = DEFAULT_CHANCE_ROLL,
@@ -93,27 +111,36 @@ export default defineStore('den', () => {
                 litterSize += fertilityTreatmentOverrides.rollLitterSize(options.min_additional, options.max_additional)
             }
         }
+        if (selectedAddons.value.includes(ADDONS.AO_BREEDER_I)) {
+            const minimumCubs = DATA.add_ons.AO_BREEDER_I.options.minimum_cubs
+            litterSize = Math.max(litterSize, minimumCubs)
+        }
+        if (selectedAddons.value.includes(ADDONS.AO_BREEDER_II)) {
+            const options = DATA.add_ons.AO_BREEDER_II.options
+            const randomCubCount = fertilityTreatmentOverrides.rollLitterSize(options.minimum_cubs, options.maximum_cubs)
+            // If current litter size is already above the minimum, add the difference to maintain the boost
+            if (litterSize >= options.minimum_cubs) {
+                litterSize = litterSize + (randomCubCount - options.minimum_cubs)
+            } else {
+                litterSize = randomCubCount
+            }
+        }
+        if (selectedAddons.value.includes(ADDONS.AO_CONSUL_SINGLE)) {
+            const options = DATA.add_ons.AO_CONSUL_SINGLE.options
+            if (fertilityTreatmentOverrides.shouldDoAction(options.chance)) {
+                litterSize += options.additional_cubs
+            }
+        }
+        if (selectedAddons.value.includes(ADDONS.AO_CONSUL_DOUBLE)) {
+            const options = DATA.add_ons.AO_CONSUL_DOUBLE.options
+            if (fertilityTreatmentOverrides.shouldDoAction(options.chance)) {
+                litterSize += options.additional_cubs
+            }
+        }
 
-        let remainingItems = selectedAddons.value
+        let remainingItems = [...selectedAddons.value]
         const newLitter = _generateLitter(litterSize, () => {
             const newChild = breedingGround.makeOffspring(remainingItems)
-
-            if (remainingItems.includes(ADDONS.AO_TINCTURE_TRANSFORMATION)) {
-                remainingItems.remove(ADDONS.AO_TINCTURE_TRANSFORMATION)
-                newChild.build = BUILDS.Dwarf
-            }
-            if (remainingItems.includes(ADDONS.AO_BRUTE_POTION)) {
-                remainingItems.remove(ADDONS.AO_BRUTE_POTION)
-                newChild.build = BUILDS.Brute
-            }
-            if (remainingItems.includes(ADDONS.AO_REGAL_POTION)) {
-                remainingItems.remove(ADDONS.AO_REGAL_POTION)
-                newChild.build = BUILDS.Regal
-            }
-            if (remainingItems.includes(ADDONS.AO_DOMESTIC_POTION)) {
-                remainingItems.remove(ADDONS.AO_DOMESTIC_POTION)
-                newChild.build = BUILDS.Domestic
-            }
 
             return newChild
         })
@@ -125,6 +152,74 @@ export default defineStore('den', () => {
             }
         }
 
+        if (selectedAddons.value.includes(ADDONS.AO_LEGATUS_SINGLE)) {
+            const mutationChance = DATA.add_ons.AO_LEGATUS_SINGLE.options.mutation_chance
+            newLitter.forEach(cub => {
+                if (fertilityTreatmentOverrides.shouldDoAction(mutationChance)) {
+                    const randomMutation = randomSample(MUTATIONS.allValues)
+                    if (!cub.mutations.includes(randomMutation)) {
+                        cub.mutations.push(randomMutation)
+                    }
+                }
+            })
+        }
+
+        if (selectedAddons.value.includes(ADDONS.AO_LEGATUS_DOUBLE)) {
+            const mutationChance = DATA.add_ons.AO_LEGATUS_DOUBLE.options.mutation_chance
+            newLitter.forEach(cub => {
+                if (fertilityTreatmentOverrides.shouldDoAction(mutationChance)) {
+                    const randomMutation = randomSample(MUTATIONS.allValues)
+                    if (!cub.mutations.includes(randomMutation)) {
+                        cub.mutations.push(randomMutation)
+                    }
+                }
+            })
+        }
+
+        if (selectedAddons.value.includes(ADDONS.AO_SHORT_STATURE)) {
+            const options = DATA.add_ons.AO_SHORT_STATURE.options
+            if (fertilityTreatmentOverrides.shouldDoAction(options.chance)) {
+                // Find a cub that's not already a Dwarf and make them Dwarf
+                const nonDwarfCub = newLitter.find(cub => cub.build !== BUILDS.Dwarf)
+                if (nonDwarfCub) {
+                    nonDwarfCub.build = BUILDS.Dwarf
+                }
+            }
+        }
+
+        if (selectedAddons.value.includes(ADDONS.AO_POSEIDONS_PROMISE)) {
+            // Get all non-limited markings
+            const nonLimitedMarkings = Object.entries(DATA.markings.available)
+                .filter(([key, value]) => value.quality !== 'Limited')
+                .map(([key, value]) => key)
+            
+            // Get markings from both parents
+            const parentMarkings = [...father.value.markings, ...mother.value.markings]
+            
+            // Find markings not present in either parent
+            const availableMarkings = nonLimitedMarkings.filter(marking => !parentMarkings.includes(marking))
+            
+            if (availableMarkings.length > 0) {
+                // Add a random marking to the first cub
+                const randomMarking = randomSample(availableMarkings)
+                if (!newLitter[0].markings.includes(randomMarking)) {
+                    newLitter[0].markings.push(randomMarking)
+                }
+            }
+        }
+
+        // Apollo's Feather - force selected marking to appear on at least one cub
+        if (apolloFeatherEnabled.value && selectedApolloMarking.value) {
+            const litterHasMarking = newLitter.some(cub => cub.markings.includes(selectedApolloMarking.value))
+            if (!litterHasMarking && newLitter.length > 0) {
+                // Add the marking to a random cub if no cub has it
+                const randomCub = randomSample(newLitter)
+                if (!randomCub.markings.includes(selectedApolloMarking.value)) {
+                    randomCub.markings.push(selectedApolloMarking.value)
+                }
+            }
+        }
+
         offspring.value = newLitter
     }
 
@@ -133,8 +228,12 @@ export default defineStore('den', () => {
         mother,
         offspring,
         selectedAddons,
+        apolloFeatherEnabled,
+        selectedApolloMarking,
+        rank1Enabled,
 
         makeOffspring,
-        makeRandom
+        makeRandom,
+        makeRandom5
     }
 })

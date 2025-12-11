@@ -10,12 +10,14 @@ export default class Nemeion {
         this.coat = initialValues.coat || DATA.coats.default
         this.build = initialValues.build || DATA.builds.default
         this.traits = initialValues.traits || DATA.traits.default
+        this.titan_traits = initialValues.titan_traits || DATA.titan_traits.default
         this.markings = initialValues.markings || DATA.markings.default
         this.mutations = initialValues.mutations || DATA.mutations.default
     }
 
     get hasRareFur() { return DATA.furs.rare_options.includes(this.fur) }
     get hasTraits() { return this.traits.length > 0 }
+    get hasTitanTraits() { return this.titan_traits.length > 0 }
     get hasMarkings() { return this.markings.length > 0 }
     get hasLimitedMarkings() {
         return this.markings.some(marking => LIMITED_MARKINGS.allValues.includes(marking))

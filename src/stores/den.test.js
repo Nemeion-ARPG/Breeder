@@ -94,7 +94,7 @@ describe("den store", () => {
 
             it('should only be used once', () => {
                 const den = denStore()
-                den.selectedAddons = [ADDONS.AO_TINCTURE_TRANSFORMATION]
+                den.selectedAddons = [ADDONS.AO_DWARF_POTION]
                 
                 den.makeOffspring(new MockBreedingGround(den.father, den.mother), () => DATA.litters.weights[1]) // make 2
                 expect(den.offspring.length).toBe(2)
@@ -103,7 +103,7 @@ describe("den store", () => {
 
             it('should force at least one child to be a dwarf', () => {
                 const den = denStore()
-                den.selectedAddons = [ADDONS.AO_TINCTURE_TRANSFORMATION]
+                den.selectedAddons = [ADDONS.AO_DWARF_POTION]
 
                 den.makeOffspring(new MockBreedingGround(den.father, den.mother))
                 expect(den.offspring[0].build).toBe(BUILDS.Dwarf)

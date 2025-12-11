@@ -12,6 +12,8 @@ export const LIMITED_MARKINGS = new Enum(
 )
 export const TRAITS = new Enum(DATA.traits.available)
 export const TRAIT_QUALITIES = new Enum(DATA.traits.qualities)
+export const TITAN_TRAITS = new Enum(DATA.titan_traits.available)
+export const TITAN_TRAIT_QUALITIES = new Enum(DATA.titan_traits.qualities)
 export const BUILDS = new Enum(DATA.builds.available)
 export const COATS = new Enum(DATA.coats.available)
 export const FURS = new Enum([DATA.furs.default, ...DATA.furs.rare_options])

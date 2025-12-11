@@ -41,7 +41,7 @@ export default class NemeionRandomGenerator extends NemeionGenerator {
         return this.#_generateRandomAspects(DATA.traits.random_cap, TRAITS.allValues)
     }
     _generateMarkings() {
-        const markings = this.#_generateRandomAspects(DATA.markings.random_cap, MARKINGS.allValues)
+        const markings = this.#_generateWeightedMarkings(DATA.markings.random_cap)
         return this.#_filterExclusiveMarkings(markings)
     }
     _generateMutations() {
@@ -68,6 +68,55 @@ export default class NemeionRandomGenerator extends NemeionGenerator {
         for (let i = 0; i < totalCount; i++) {
             if (shouldDoAction()) {
                 result.push(this.randomSample(dataset))
+            }
+        }
+
+        return [...new Set(result)]
+    }
+
+    #_generateWeightedMarkings(maxCount) {
+        const totalCount = this.randomInt(maxCount)
+        const result = []
+
+        // Define weights for each quality (higher = more likely)
+        const qualityWeights = {
+            'Limited': 0,      // Will Never Appear
+            'Common': 100,     // Very common
+            'Uncommon': 60,    // Moderately common  
+            'Rare': 15,        // Less common
+            'Epic': 5,         // Rare
+            'Legendary': 1,    // Very rare
+            'Dupes': 5        // Uncommon-ish
+        }
+
+        // Create weighted pool once (optimization)
+        const weightedMarkings = []
+        
+        for (const markingKey of MARKINGS.allValues) {
+            const markingData = DATA.markings.available[markingKey]
+            const quality = markingData?.quality || 'Common'
+            const weight = qualityWeights[quality] !== undefined ? qualityWeights[quality] : 60
+            
+            // Add multiple copies based on weight (no minimum, allowing 0 copies)
+            for (let j = 0; j < weight; j++) {
+                weightedMarkings.push(markingKey)
+            }
+        }
+
+        // Debug logging (temporary)
+        const qualityCount = {}
+        for (const markingKey of weightedMarkings) {
+            const quality = DATA.markings.available[markingKey]?.quality || 'Common'
+            qualityCount[quality] = (qualityCount[quality] || 0) + 1
+        }
+        console.log('Weighted pool distribution:', qualityCount)
+        console.log('Total pool size:', weightedMarkings.length)
+
+        // Select markings from the weighted pool
+        for (let i = 0; i < totalCount; i++) {
+            if (weightedMarkings.length > 0) {
+                const selectedMarking = this.randomSample(weightedMarkings)
+                result.push(selectedMarking)
             }
         }
 

@@ -7,6 +7,7 @@
             <label>[Hereditary Markings]: <span v-html="selectedMarkings"></span></label>
             <label v-if="reference.mutations.length > 0">[Mutations]: {{ selectedMutations }}</label>
             <label v-if="reference.traits.length > 0">[Traits]: {{ selectedTraits }}</label>
+            <label v-if="reference.titan_traits.length > 0">[Titan Traits]: {{ selectedTitanTraits }}</label>
             <label v-if="reference.fur">[Gift]: {{ reference.fur }}</label>
 
         </div>
@@ -45,6 +46,11 @@ const headerText = computed(() => {
 const selectedTraits = computed(() => {
     return props.reference.traits
         .map(trait => DATA.traits.available[trait].display_name)
+        .join(', ')
+})
+const selectedTitanTraits = computed(() => {
+    return props.reference.titan_traits
+        .map(trait => DATA.titan_traits.available[trait].display_name)
         .join(', ')
 })
 const selectedMarkings = computed(() => {

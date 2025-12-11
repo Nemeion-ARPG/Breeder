@@ -38,6 +38,10 @@
             <b>{{ limitedMarkings.join(', ') }}</b>
         </p>
 
+        <p v-if="offspring.length > 0 && rank1Enabled" class="rank1-section">
+            <i>Born beneath the shadow of giants, these cubs enter the world stronger than ever. All cubs in this litter are automatically rank 1 at upload.</i>
+        </p>
+
         <footer>
             <BButton
                 class="primary-button"
@@ -52,11 +56,10 @@
             >Random</BButton>
 
             <BButton
-                v-if="offspring.length > 0"
                 class="primary-button"
-                @click="copyResults"
+                @click="$emit('generateRandom5')"
                 variant="secondary"
-            >Copy Results</BButton>
+            >Roll 5</BButton>
 
             <BButton
                 class="secondary-button"
@@ -64,6 +67,46 @@
                 variant="dark"
             >Reset</BButton>
         </footer>
+
+        <div v-if="offspring.length > 0" class="copy-section">
+            <BButton
+                class="copy-button"
+                @click="copyResults"
+                variant="success"
+            >Copy Results</BButton>
+        </div>
+        <br><br>
+        <div v-if="offspring.length > 0" class="brutate-section">
+            <BButton
+                class="brutate-button"
+                @click="brutateAll"
+                variant="warning"
+            >Force Brute</BButton>
+            
+            <BButton
+                class="brutate-button"
+                @click="regaliteAll"
+                variant="warning"
+            >Force Regal</BButton>
+            
+            <BButton
+                class="brutate-button"
+                @click="dwarfishAll"
+                variant="warning"
+            >Force Dwarf</BButton>
+            
+            <BButton
+                class="brutate-button"
+                @click="domeoAll"
+                variant="warning"
+            >Force Domestic</BButton>
+            
+            <BButton
+                class="brutate-button"
+                @click="cheetahfyAll"
+                variant="warning"
+            >Force Pharaoh</BButton>
+        </div>
     </section>
 </template>
 
@@ -109,9 +152,13 @@ const props = defineProps({
     motherUrl: {
         type: String,
         required: true
+    },
+    rank1Enabled: {
+        type: Boolean,
+        default: false
     }
 })
-defineEmits(['generateOffspring', 'reset', 'generateRandom'])
+defineEmits(['generateOffspring', 'reset', 'generateRandom', 'generateRandom5'])
 
 import { computed } from 'vue'
 
@@ -204,15 +251,19 @@ const copyResults = async () => {
                 const markingData = DATA.markings.available[marking]
                 const displayName = markingData.display_name
 
-
-    // Italicize Legendary markings
-    if (markingData.quality === 'Legendary') {
-        return `*${displayName}*`
-            }
+                // Italicize Legendary markings
+                if (markingData.quality === 'Legendary') {
+                    return `*${displayName}*`
+                }
                 return displayName
             })
             .join(', ')
         text += `**${limitedMarkingsText}**\n`
+    }
+    
+    // Add Strong Lineage message if enabled
+    if (props.rank1Enabled) {
+        text += '.\n*Born beneath the shadow of giants, these cubs enter the world stronger than ever. All cubs in this litter are automatically rank 1 at upload.*\n'
     }
     
     // Create HTML version with clickable links
@@ -240,6 +291,41 @@ const copyResults = async () => {
             alert('Failed to copy results to clipboard')
         }
     }
+}
+
+const brutateAll = () => {
+    // Change all cubs to Brute build
+    props.offspring.forEach(cub => {
+        cub.build = 'Brute'
+    })
+}
+
+const regaliteAll = () => {
+    // Change all cubs to Regal build
+    props.offspring.forEach(cub => {
+        cub.build = 'Regal'
+    })
+}
+
+const dwarfishAll = () => {
+    // Change all cubs to Dwarf build
+    props.offspring.forEach(cub => {
+        cub.build = 'Dwarf'
+    })
+}
+
+const domeoAll = () => {
+    // Change all cubs to Domestic build
+    props.offspring.forEach(cub => {
+        cub.build = 'Domestic'
+    })
+}
+
+const cheetahfyAll = () => {
+    // Change all cubs to Pharaoh build
+    props.offspring.forEach(cub => {
+        cub.build = 'Pharaoh'
+    })
 }
 </script>
 
@@ -321,5 +407,30 @@ footer {
 .parent-link:hover {
     color: var(--color-border-hover);
     border-bottom-color: var(--color-border-hover);
+}
+
+.copy-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.copy-button {
+    padding: 0.5rem 2rem;
+    font-weight: bold;
+}
+
+.brutate-section {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.brutate-button {
+    padding: 0.4rem 1rem;
+    font-weight: bold;
+    font-size: 0.9rem;
 }
 </style>

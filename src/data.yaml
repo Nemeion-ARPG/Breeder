@@ -160,7 +160,7 @@ markings:
       display_name: Manicae (Melanistic Variant)
       quality: Dupes    
     Manicae7:
-      display_name: Manicae (Tan)
+      display_name: Manicae (Tan Variant)
       quality: Dupes 
     Mollis:
       display_name: Mollis
@@ -364,101 +364,147 @@ traits:
       display_name: Lucky
       quality: Uncommon
     Nightbane:
-      display_name: Nightbane
+      display_name: Nightbane 
       quality: Uncommon
     Primal_Instincts:
-      display_name: Primal Instincts
+      display_name: Primal Instincts 
       quality: Uncommon
     Quick_Feet:
-      display_name: Quick Feet
+      display_name: Quick Feet 
       quality: Uncommon
     Rare_Blood:
-      display_name: Rare Blood
+      display_name: Rare Blood 
       quality: Uncommon
     Battleborn:
-      display_name: Battleborn
+      display_name: Battleborn 
       quality: Rare
     Casanova:
-      display_name: Casanova
+      display_name: Casanova 
       quality: Rare
     Clever:
-      display_name: Clever
+      display_name: Clever 
       quality: Rare
     Favored:
-      display_name: Favored
+      display_name: Favored 
       quality: Rare
     Fellowship:
-      display_name: Fellowship
+      display_name: Fellowship 
       quality: Rare
     Fortune_Finder:
-      display_name: Fortune Finder
+      display_name: Fortune Finder 
       quality: Rare
     Historian:
-      display_name: Historian
+      display_name: Historian 
       quality: Rare
     Knowledge_Seeker:
-      display_name: Knowledge Seeker
+      display_name: Knowledge Seeker 
       quality: Rare
     Short_Stature:
-      display_name: Short Stature
+      display_name: Short Stature 
       quality: Rare
     Warmonger:
-      display_name: Warmonger
+      display_name: Warmonger 
       quality: Rare
     Aphrodites_Lament:
-      display_name: Aphrodite's Delight
+      display_name: Aphrodite's Delight ♦
       quality: Epic
     Artesian:
-      display_name: Artesian
+      display_name: Artesian ♦
       quality: Epic
     Gold_Digger:
-      display_name: Gold Digger
+      display_name: Gold Digger ♦
       quality: Epic
     Mark_of_the_Caver:
-      display_name: Mark of the Caver
+      display_name: Mark of the Caver ♦
       quality: Epic
     Maark_of_the_Fisher:
-      display_name: Mark of the Fisher
+      display_name: Mark of the Fisher ♦
       quality: Epic
     Mark_of_the_Forager:
-      display_name: Mark of the Forager
+      display_name: Mark of the Forager ♦
       quality: Epic
     Mark_of_the_Hunter:
-      display_name: Mark of the Hunter
+      display_name: Mark of the Hunter ♦
       quality: Epic
     Mark_of_the_Traveller:
-      display_name: Mark of the Traveller
+      display_name: Mark of the Traveller ♦
       quality: Epic
     Noble_Blood:
-      display_name: Noble Blood
+      display_name: Noble Blood ♦
       quality: Epic
     One_with_Nature:
-      display_name: One with Nature
+      display_name: One with Nature ♦
       quality: Epic
     Ambassador:
-      display_name: Ambassador
+      display_name: Ambassador ♦
       quality: Legendary
     Devoted:
-      display_name: Devoted
+      display_name: Devoted ♦
       quality: Legendary
     Natural_Leader:
-      display_name: Natural Leader
+      display_name: Natural Leader ♦
       quality: Legendary
     Time_Traveller:
-      display_name: Time Traveller
+      display_name: Time Traveller ♦
       quality: Legendary
     Supply_Seeker:
-      display_name: Supply Seeker
+      display_name: Supply Seeker ♦
       quality: Legendary
     Transmutation:
-      display_name: Transmutation
+      display_name: Transmutation ♦
       quality: Legendary
     Treasure_Tracker:
-      display_name: Treasure Tracker
+      display_name: Treasure Tracker ♦
       quality: Legendary
     Cryptic_Curse:
-      display_name: Cryptic Curse
+      display_name: Cryptic Curse ☼
       quality: Unique
+    Vengeful:
+      display_name: Vengeful ☼
+      quality: Unique  
+    Team_Up:
+      display_name: Team Up ☼
+      quality: Unique    
+  
+titan_traits:
+  random_cap: 1
+  default: []
+  qualities:
+    Titan:
+      inherit_chance:
+        single: 0.02
+        double: 0.05
+  available:
+    Blessing_Titans:
+      display_name: Blessing of the Titans ★ 
+      quality: Titan
+    Indiscriminate_Affections:
+      display_name: Indiscriminate Affections ★ 
+      quality: Titan
+    Lavinias_Luck:
+      display_name: Lavinia's Luck ★ 
+      quality: Titan
+    Onyxias_Stash:
+      display_name: Onyxia's Secret Stash ★ 
+      quality: Titan  
+    Unas_Gift:
+      display_name: Unas's Gift ★ 
+      quality: Titan    
+    Protean_Blood_Titan:
+      display_name: Protean Blood ★ 
+      quality: Titan  
+    Rival_Titan:
+      display_name: Rival ★ 
+      quality: Titan    
+    Scholar_Alexandria:
+      display_name: Scholar of Alexandria ★ 
+      quality: Titan    
+    Souperior_Slurper:
+      display_name: ​Souperior Slurper ★ 
+      quality: Titan    
+    Twist_Fate:
+      display_name: Twist of Fate ★ 
+      quality: Titan     
 
 # each element represents a separate option, with the options repeated with their weight of recieving that alternative
 # if the weight is null, the combination are considered illegal
@@ -635,19 +681,77 @@ add_ons:
     description: When selected, all cubs are guaranteed to be male.
     mutually_exclusive: AO_APHRO_PASSION
   AO_MUTATION_STONE:
-    display_name: Mutation Stone
+    display_name: Fragment of Distortion
     description: Guarantees at least 1 cub will have a random mutation.
   AO_RARE_BLOOD:
     display_name: Rare Blood
     description: Increases chance of a parent passing a mutation to their cubs by 25%.
     options:
       increased_chance: 0.25
+  AO_SAVORY_RIBS:
+    display_name: Savory Ribs
+    description: Increases chance of Traits and Titan Traits passing from parents by 5%.
+    options:
+      trait_boost: 0.05
+      titan_trait_boost: 0.05
+  AO_CURSED_BLOOD:
+    display_name: Cursed Blood
+    description: Increases chance of passing a fur from either parent by 5%.
+    options:
+      fur_boost: 0.05
+  AO_PHARAOH_POTION:
+    display_name: Pharaoh Potion
+    description: Guarantees all cubs will be a Pharaoh build.
   AO_REGAL_POTION:
     display_name: Regal Potion
     description: Guarantees at least 1 cub will be a Regal build.
-  AO_TINCTURE_TRANSFORMATION:
+  AO_DWARF_POTION:
     display_name: Dwarfish Drought
     description: Guarantees at least 1 cub will be a Dwarf build.
+  AO_PROTEAN_BLOOD:
+    display_name: Protean Blood
+    description: Guarantees all cubs will have a randomly rolled mutation.
+  AO_SHORT_STATURE:
+    display_name: Short Stature
+    description: 25% chance that at least 1 cub will be a Dwarf build.
+    options:
+      chance: 0.25
+  AO_POSEIDONS_PROMISE:
+    display_name: Poseidon's Promise
+    description: Guarantees at least 1 cub will have a randomly selected non-limited marking not present in either parent.
+  AO_BREEDER_I:
+    display_name: Breeder I
+    description: Guarantees a minimum of 3 cubs returned.
+    options:
+      minimum_cubs: 3
+  AO_BREEDER_II:
+    display_name: Breeder II
+    description: Guarantees a minimum of 4 to 5 cubs returned.
+    options:
+      minimum_cubs: 4
+      maximum_cubs: 5
+  AO_LEGATUS_SINGLE:
+    display_name: Legatus Single
+    description: Adds a 15% chance for every cub result to return with a random mutation.
+    options:
+      mutation_chance: 0.15
+  AO_LEGATUS_DOUBLE:
+    display_name: Legatus Double
+    description: Adds a 30% chance for every cub result to return with a random mutation.
+    options:
+      mutation_chance: 0.30
+  AO_CONSUL_SINGLE:
+    display_name: Consul Single
+    description: Adds a 25% chance for an additional +1 cub result to return on top of the base roll.
+    options:
+      chance: 0.25
+      additional_cubs: 1
+  AO_CONSUL_DOUBLE:
+    display_name: Consul Double
+    description: Adds a 50% chance for an additional +1 cub result to return on top of the base roll.
+    options:
+      chance: 0.50
+      additional_cubs: 1
   AO_WEREWORM:
     display_name: Wereworm
     description: Increases chance of an offspring having a mutation by 15%.

@@ -57,6 +57,28 @@
                     />
                 </div>
 
+                <div class="random-selector">
+                    <BButton
+                        @click="randomizeParent"
+                        variant="success"
+                        class="random-button"
+                    >
+                        Stone Idol
+                    </BButton>
+                    
+                    <BButton
+                        @click="loadStarter"
+                        variant="info"
+                        class="starter-button"
+                    >
+                        Starter
+                    </BButton>
+                    
+                    <div v-if="showNotification" class="notification-popup">
+                        {{ notificationMessage }}
+                    </div>
+                </div>
+
                 <div class="trait-selector">
                     <div>
                         <label>Traits</label>
@@ -105,6 +127,18 @@
                     />
                 </div>
 
+                <div class="titan-traits-selector">
+                    <div>
+                        <label>Titan Traits</label>
+                    </div>
+
+                    <BFormCheckboxGroup
+                        class="form-checkbox-group"
+                        v-model="parentRef.titan_traits"
+                        :options="availableTitanTraits"
+                    />
+                </div>
+
                 <footer class="button-container">
 
                     <BButton
@@ -140,8 +174,10 @@ import Nemeion from '@/types/Nemeion'
 import { ref, computed } from 'vue'
 
 import DATA from '@/data.yaml'
-import { BUILDS, FURS, COATS, TRAITS, MARKINGS, MUTATIONS } from '@/Constants';
+import STARTERS from '@/starters.yaml'
+import { BUILDS, FURS, COATS, TRAITS, MARKINGS, MUTATIONS, TITAN_TRAITS } from '@/Constants';
 import { sortData } from '@/utils'
+import _sample from 'lodash/sample'
 
 const props = defineProps({
     title: {
@@ -161,6 +197,17 @@ const props = defineProps({
 defineEmits(['update:parentRef'])
 
 const showSummary = ref(false)
+const showNotification = ref(false)
+const notificationMessage = ref('')
+
+const showNotificationWithMessage = (message) => {
+    notificationMessage.value = message
+    showNotification.value = true
+    setTimeout(() => {
+        showNotification.value = false
+    }, 2000)
+}
+
 const availableFurs = computed(() => {
     return FURS.allValues
         .filter(fur => fur !== null && fur !== undefined && fur !== '')
@@ -176,6 +223,16 @@ const availableTraits = computed(() => {
         options.push({
             value: trait,
             text: DATA.traits.available[trait].display_name
+        })
+    }
+    return options
+})
+const availableTitanTraits = computed(() => {
+    let options = []
+    for (const titanTrait in sortData(DATA.titan_traits.available)) {
+        options.push({
+            value: titanTrait,
+            text: DATA.titan_traits.available[titanTrait].display_name
         })
     }
     return options
@@ -214,6 +271,97 @@ const availableBuilds = computed(() => {
             }
         })
 })
+
+const randomizeParent = () => {
+    // Random markings (1-8)
+    const markingCount = Math.floor(Math.random() * 8) + 1
+    const allMarkings = MARKINGS.allValues
+    const selectedMarkings = []
+    
+    for (let i = 0; i < markingCount; i++) {
+        const randomMarking = allMarkings[Math.floor(Math.random() * allMarkings.length)]
+        if (!selectedMarkings.includes(randomMarking)) {
+            selectedMarkings.push(randomMarking)
+        }
+    }
+    props.parentRef.markings = selectedMarkings
+    
+    // Random traits (1-2)
+    const traitCount = Math.floor(Math.random() * 2) + 1
+    const allTraits = TRAITS.allValues
+    const selectedTraits = []
+    
+    for (let i = 0; i < traitCount; i++) {
+        const randomTrait = allTraits[Math.floor(Math.random() * allTraits.length)]
+        if (!selectedTraits.includes(randomTrait)) {
+            selectedTraits.push(randomTrait)
+        }
+    }
+    props.parentRef.traits = selectedTraits
+    
+    // Random mutations (0-1)
+    const mutationCount = Math.floor(Math.random() * 2) // 0 or 1
+    if (mutationCount === 1) {
+        const allMutations = MUTATIONS.allValues
+        const randomMutation = allMutations[Math.floor(Math.random() * allMutations.length)]
+        props.parentRef.mutations = [randomMutation]
+    } else {
+        props.parentRef.mutations = []
+    }
+    
+    // Random titan traits (0-1, rare)
+    const titanTraitChance = Math.random()
+    if (titanTraitChance < 0.05) { // 5% chance for Stone Idol
+        const allTitanTraits = TITAN_TRAITS.allValues
+        const randomTitanTrait = allTitanTraits[Math.floor(Math.random() * allTitanTraits.length)]
+        props.parentRef.titan_traits = [randomTitanTrait]
+    } else {
+        props.parentRef.titan_traits = []
+    }
+    
+    // Set parent name to "Unknown"
+    props.parentRef.name = "Unknown"
+    
+    // Show notification
+    showNotificationWithMessage(`Stone Idol applied to ${props.title}!`)
+}
+
+const loadStarter = () => {
+    if (!STARTERS.starters || STARTERS.starters.length === 0) {
+        showNotificationWithMessage('No starters available in starters.yaml!')
+        return
+    }
+    
+    // Filter starters by gender compatibility
+    const parentGender = props.title === "Father" ? "Male" : "Female"
+    const compatibleStarters = STARTERS.starters.filter(starter => {
+        const starterGender = starter.gender
+        return starterGender === "Any" || starterGender === parentGender
+    })
+    
+    if (compatibleStarters.length === 0) {
+        showNotificationWithMessage(`No ${props.title} starters available in starters.yaml!`)
+        return
+    }
+    
+    // Randomly select a compatible starter
+    const randomIndex = Math.floor(Math.random() * compatibleStarters.length)
+    const randomStarter = compatibleStarters[randomIndex]
+    
+    // Apply starter data to parent
+    props.parentRef.name = randomStarter.name || "Starter"
+    props.parentRef.url = randomStarter.url || ""
+    props.parentRef.build = randomStarter.build || props.parentRef.build
+    props.parentRef.coat = randomStarter.coat || props.parentRef.coat
+    props.parentRef.traits = randomStarter.traits || []
+    props.parentRef.markings = randomStarter.markings || []
+    props.parentRef.mutations = randomStarter.mutations || []
+    props.parentRef.furs = randomStarter.furs || []
+    props.parentRef.titan_traits = randomStarter.titan_traits || []
+    
+    // Show notification
+    showNotificationWithMessage(`Starter "${randomStarter.name}" applied to ${props.title}!`)
+}
 </script>
 
 <style scoped>
@@ -268,6 +416,40 @@ label {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 0.25rem;
+}
+
+.random-selector {
+    margin-bottom: 1rem;
+    text-align: center;
+    position: relative;
+}
+
+.random-button {
+    width: 100%;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.starter-button {
+    width: 100%;
+    font-weight: bold;
+}
+
+.notification-popup {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--vt-c-green);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    white-space: nowrap;
+    z-index: 1000;
+    margin-top: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 :deep(.form-check) {

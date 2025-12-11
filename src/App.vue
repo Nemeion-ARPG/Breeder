@@ -23,6 +23,13 @@
       title="Addons"
       v-model="den.selectedAddons"
       :available-addons="availableAddons"
+      :apollo-feather-enabled="den.apolloFeatherEnabled"
+      :selected-apollo-marking="den.selectedApolloMarking"
+      :available-markings-for-apollo="availableMarkingsForApollo"
+      :rank1-enabled="den.rank1Enabled"
+      @update:apollo-feather-enabled="den.apolloFeatherEnabled = $event"
+      @update:selected-apollo-marking="den.selectedApolloMarking = $event"
+      @update:rank1-enabled="den.rank1Enabled = $event"
     />
 
     <OffspringOutput
@@ -34,9 +41,11 @@
       :mother-name="den.mother.name"
       :father-url="den.father.url"
       :mother-url="den.mother.url"
+      :rank1-enabled="den.rank1Enabled"
       @generateOffspring="den.makeOffspring()"
       @reset="den.$reset()"
       @generateRandom="den.makeRandom()"
+      @generateRandom5="den.makeRandom5()"
     />
   </main>
 </template>
@@ -47,6 +56,8 @@ import AddonSelector from '@/components/AddonSelector.vue'
 import OffspringOutput from '@/components/OffspringOutput.vue'
 
 import denStore from '@/stores/den'
+import { computed } from 'vue'
+import { MARKINGS } from '@/Constants'
 
 import DATA from '@/data.yaml'
 
@@ -57,6 +68,16 @@ const availableAddons = Object.entries(DATA.add_ons).map(([key, value]) => {
     id: key,
     ...value
   }
+})
+
+const availableMarkingsForApollo = computed(() => {
+  return [
+    { value: null, text: 'Select a marking...' },
+    ...MARKINGS.allValues.map(marking => ({
+      value: marking,
+      text: DATA.markings.available[marking].display_name
+    }))
+  ]
 })
 </script>
 

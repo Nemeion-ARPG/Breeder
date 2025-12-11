@@ -1,0 +1,68 @@
+starters:
+  # Add more starters here following this format
+  # gender can be "Male", "Female", or "Any" (for either parent)
+  # build can be "Brute", "Regal", "Dwarf", "Domestic", or "Pharaoh"
+  # coat can be "Tan", "Cream", or "Agouti"
+
+
+# Male Starters listed from lowest ID to Highest
+  - name: "Cicero 2"
+    url: "https://www.deviantart.com/nemconsul/art/Cicero-2-666446788"
+    gender: "Male"
+    build: "Brute"
+    coat: "Tan"
+    traits: []
+    markings: ["Lashed", "Habitu"]
+    mutations: []
+    furs: []
+    titan_traits: []
+  
+  - name: "Pontius 5"
+    url: "https://www.deviantart.com/nemconsul/art/Pontius-5-666817247"
+    gender: "Male"
+    build: "Brute"
+    coat: "Tan"
+    traits: []
+    markings: ["Livorem"]
+    mutations: []
+    furs: []
+    titan_traits: []
+
+  - name: "Ajax 12"
+    url: "https://www.deviantart.com/nemconsul/art/Ajax-12-666844452"
+    gender: "Male"
+    build: "Brute"
+    coat: "Tan"
+    traits: []
+    markings: ["Niveus", "Hebetes"]
+    mutations: []
+    furs: []
+    titan_traits: []    
+
+
+# Female Starters listed from lowest ID to Highest
+  - name: "Priscilla 10"
+    url: "https://www.deviantart.com/nemconsul/art/Priscilla-10-666819862"
+    gender: "Female"
+    build: "Brute"
+    coat: "Tan"
+    traits: []
+    markings: ["Habitu"]
+    mutations: []
+    furs: []
+    titan_traits: []  
+  
+  - name: "Helvia 29"
+    url: "https://www.deviantart.com/nemconsul/art/Helvia-29-668142546"
+    gender: "Female"
+    build: "Brute"
+    coat: "Tan"
+    traits: []
+    markings: ["Cicatricum"]
+    mutations: []
+    furs: []
+    titan_traits: []     
+
+
+
+    

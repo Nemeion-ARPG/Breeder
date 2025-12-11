@@ -43,7 +43,7 @@ export default class NemeionBreedingGround extends NemeionGenerator {
             return super._generateGender(addons)
         }
     }
-    _generateFur() {
+    _generateFur(addons = []) {
         const DEFAULT_FUR = DATA.furs.default
         const rollRandomFur = () => {
             if (this.shouldDoAction(DATA.furs.rare_chance)) {
@@ -54,9 +54,20 @@ export default class NemeionBreedingGround extends NemeionGenerator {
         }
 
         const bothParentsHaveRareFur = this.father.hasRareFur && this.mother.hasRareFur
+        
+        // Apply Cursed Blood boost to inheritance chances
+        let singleInheritChance = DATA.furs.inherit_chance.single
+        let doubleInheritChance = DATA.furs.inherit_chance.double
+        
+        if (addons.includes(ADDONS.AO_CURSED_BLOOD) && (this.father.hasRareFur || this.mother.hasRareFur)) {
+            const boost = DATA.add_ons.AO_CURSED_BLOOD.options.fur_boost
+            singleInheritChance += boost
+            doubleInheritChance += boost
+        }
+        
         if (bothParentsHaveRareFur && this.father.fur === this.mother.fur) {
             // just roll once, with the double rate
-            if (this.shouldDoAction(DATA.furs.inherit_chance.double)) {
+            if (this.shouldDoAction(doubleInheritChance)) {
                 return this.mother.fur
             } else {
                 return rollRandomFur()
@@ -64,9 +75,8 @@ export default class NemeionBreedingGround extends NemeionGenerator {
         } else if (bothParentsHaveRareFur) {
             // both parents have rare fur, but they're different
             // roll for each parent individually, using the single rate
-            const inheritChance = DATA.furs.inherit_chance.single
-            const useMotherFur = this.shouldDoAction(inheritChance)
-            const useFatherFur = this.shouldDoAction(inheritChance)
+            const useMotherFur = this.shouldDoAction(singleInheritChance)
+            const useFatherFur = this.shouldDoAction(singleInheritChance)
             switch (`${useMotherFur} ${useFatherFur}`) {
             case 'true true':
             case 'true false':
@@ -79,7 +89,7 @@ export default class NemeionBreedingGround extends NemeionGenerator {
         } else if (this.father.hasRareFur || this.mother.hasRareFur) {
             // only one parent has rare fur, check to see if it's inherited
             let parent = this.father.hasRareFur ? this.father : this.mother
-            if (this.shouldDoAction(DATA.furs.inherit_chance.single)) {
+            if (this.shouldDoAction(singleInheritChance)) {
                 return parent.fur
             } else {
                 return rollRandomFur()
@@ -104,6 +114,27 @@ export default class NemeionBreedingGround extends NemeionGenerator {
         }
     }
     _generateBuild(addons = []) {
+        // Check if Brute Potion is included - forces all cubs to be Brute build
+        if (addons.includes(ADDONS.AO_BRUTE_POTION)) {
+            return BUILDS.Brute
+        }
+        // Check if Regal Potion is included - forces all cubs to be Regal build
+        if (addons.includes(ADDONS.AO_REGAL_POTION)) {
+            return BUILDS.Regal
+        }
+        // Check if Dwarfish Drought is included - forces all cubs to be Dwarf build
+        if (addons.includes(ADDONS.AO_DWARF_POTION)) {
+            return BUILDS.Dwarf
+        }
+        // Check if Domestic Potion is included - forces all cubs to be Domestic build
+        if (addons.includes(ADDONS.AO_DOMESTIC_POTION)) {
+            return BUILDS.Domestic
+        }
+        // Check if Pharaoh Potion is included - forces all cubs to be Pharaoh build
+        if (addons.includes(ADDONS.AO_PHARAOH_POTION)) {
+            return BUILDS.Pharaoh
+        }
+
         if (this.father.build === this.mother.build) {
             return this.father.build
         }
@@ -141,6 +172,11 @@ export default class NemeionBreedingGround extends NemeionGenerator {
         return this.#_filterExclusiveMarkings(markings)
     }
     _generateMutations(addons = []) {
+        // Check if Protean Blood is included - forces all cubs to have a random mutation
+        if (addons.includes(ADDONS.AO_PROTEAN_BLOOD)) {
+            return [this.randomSample(MUTATIONS.allValues)]
+        }
+
         let result = []
 
         if (this.father.hasMutations || this.mother.hasMutations) {
@@ -170,6 +206,31 @@ export default class NemeionBreedingGround extends NemeionGenerator {
 
         if (this.shouldDoAction(mutationChance)) {
             result.push(this.randomSample(MUTATIONS.allValues))
+        }
+
+        return [...new Set(result)]
+    }
+
+    _generateTitanTraits(addons = []) {
+        if (!this.father.hasTitanTraits && !this.mother.hasTitanTraits) {
+            return []
+        }
+
+        let result = []
+
+        // Inherit from parents with 1% chance
+        const parentTitanTraits = [...this.father.titan_traits, ...this.mother.titan_traits]
+        for (const titanTrait of parentTitanTraits) {
+            let inheritChance = DATA.titan_traits.available[titanTrait].inherit_chance
+            
+            // Apply Savory Ribs boost if present
+            if (addons.includes(ADDONS.AO_SAVORY_RIBS)) {
+                inheritChance += DATA.add_ons.AO_SAVORY_RIBS.options.titan_trait_boost
+            }
+            
+            if (this.shouldDoAction(inheritChance)) {
+                result.push(titanTrait)
+            }
         }
 
         return [...new Set(result)]
@@ -226,6 +287,10 @@ export default class NemeionBreedingGround extends NemeionGenerator {
                     if (increasedChance) {
                         result[aspect] += increasedChance
                     }
+                }
+                
+                if (aspectKey === ASPECT_KEYS.traits && addons.includes(ADDONS.AO_SAVORY_RIBS)) {
+                    result[aspect] += DATA.add_ons.AO_SAVORY_RIBS.options.trait_boost
                 }
                 
                 return result
