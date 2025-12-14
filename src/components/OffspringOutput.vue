@@ -235,6 +235,14 @@ const copyResults = async () => {
             text += `**[Traits]:** ${traits}\n`
         }
         
+        // Titan Traits (if present)
+        if (cub.titan_traits.length > 0) {
+            const titanTraits = cub.titan_traits
+                .map(trait => DATA.titan_traits.available[trait].display_name)
+                .join(', ')
+            text += `**[Titan Traits]:** ${titanTraits}\n`
+        }
+        
         // Gift (if present)
         if (cub.fur) {
             text += `**[Gift]:** ${cub.fur}\n`

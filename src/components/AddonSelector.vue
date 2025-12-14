@@ -31,6 +31,24 @@
             </div>
             
             <BFormCheckbox
+                :model-value="heritageEnabled"
+                @update:model-value="$emit('update:heritage-enabled', $event)"
+                class="heritage-checkbox"
+            >
+                Heritage
+            </BFormCheckbox>
+            
+            <div v-if="heritageEnabled" class="heritage-selector">
+                <label>Select trait to force on one cub:</label>
+                <BFormSelect
+                    :model-value="selectedHeritageTrait"
+                    @update:model-value="$emit('update:selected-heritage-trait', $event)"
+                    :options="availableTraitsForHeritage"
+                    class="heritage-select"
+                />
+            </div>
+            
+            <BFormCheckbox
                 :model-value="rank1Enabled"
                 @update:model-value="$emit('update:rank1-enabled', $event)"
                 class="rank1-checkbox"
@@ -53,7 +71,7 @@ const selectedAddons = defineModel({
     }
 })
 
-defineEmits(['update:apollo-feather-enabled', 'update:selected-apollo-marking', 'update:rank1-enabled'])
+defineEmits(['update:apollo-feather-enabled', 'update:selected-apollo-marking', 'update:heritage-enabled', 'update:selected-heritage-trait', 'update:rank1-enabled'])
 
 const props = defineProps({
     title: {
@@ -80,6 +98,18 @@ const props = defineProps({
         type: Array,
         default: () => []
     },
+    heritageEnabled: {
+        type: Boolean,
+        default: false
+    },
+    selectedHeritageTrait: {
+        type: String,
+        default: null
+    },
+    availableTraitsForHeritage: {
+        type: Array,
+        default: () => []
+    },
     rank1Enabled: {
         type: Boolean,
         default: false
@@ -101,8 +131,14 @@ const sortedAddons = computed(() => {
             let disabled = false
             
             // Check original mutual exclusivity
-            if (addon.mutually_exclusive && selectedAddons.value.includes(addon.mutually_exclusive)) {
-                disabled = true
+            if (addon.mutually_exclusive) {
+                const mutuallyExclusiveAddons = Array.isArray(addon.mutually_exclusive) 
+                    ? addon.mutually_exclusive 
+                    : [addon.mutually_exclusive]
+                
+                if (mutuallyExclusiveAddons.some(excludedAddon => selectedAddons.value.includes(excludedAddon))) {
+                    disabled = true
+                }
             }
             
             // Check build potion exclusivity

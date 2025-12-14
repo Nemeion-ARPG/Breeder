@@ -7,7 +7,7 @@ import _random from 'lodash/random'
 import { rollForThreshold } from '@/utils'
 
 import DATA from '@/data.yaml'
-import { TRAITS, MARKINGS, MUTATIONS } from '@/Constants.js'
+import { TRAITS, MARKINGS, MUTATIONS, TITAN_TRAITS } from '@/Constants.js'
 
 export const DEFAULT_RANDOM_SAMPLE = _sample
 export const DEFAULT_SHOULD_DO_ACTION = rollForThreshold
@@ -45,7 +45,12 @@ export default class NemeionRandomGenerator extends NemeionGenerator {
         return this.#_filterExclusiveMarkings(markings)
     }
     _generateMutations() {
-        return this.#_generateRandomAspects(DATA.mutations.random_cap, MUTATIONS.allValues, () => this.shouldDoAction(DATA.mutations.base_chance))
+        const mutations = this.#_generateRandomAspects(DATA.mutations.random_cap, MUTATIONS.allValues, () => this.shouldDoAction(DATA.mutations.base_chance))
+        return this.#_filterExclusiveMutations(mutations)
+    }
+    _generateTitanTraits() {
+        // Random generation does not include Titan Traits
+        return DATA.titan_traits.default
     }
 
     #_generateWeightedRandom(weights) {
@@ -142,6 +147,36 @@ export default class NemeionRandomGenerator extends NemeionGenerator {
                 for (const marking of foundMarkings) {
                     if (marking !== keepMarking) {
                         const index = result.indexOf(marking)
+                        if (index > -1) {
+                            result.splice(index, 1)
+                        }
+                    }
+                }
+            }
+        }
+
+        return result
+    }
+
+    #_filterExclusiveMutations(mutations) {
+        if (!DATA.mutations.exclusive_groups) {
+            return mutations
+        }
+
+        const result = [...mutations]
+        const exclusiveGroups = DATA.mutations.exclusive_groups
+
+        for (const groupName in exclusiveGroups) {
+            const groupMutations = exclusiveGroups[groupName]
+            const foundMutations = result.filter(mutation => groupMutations.includes(mutation))
+            
+            if (foundMutations.length > 1) {
+                // Keep only one mutation from this group (randomly selected)
+                const keepMutation = this.randomSample(foundMutations)
+                // Remove all others from the result
+                for (const mutation of foundMutations) {
+                    if (mutation !== keepMutation) {
+                        const index = result.indexOf(mutation)
                         if (index > -1) {
                             result.splice(index, 1)
                         }

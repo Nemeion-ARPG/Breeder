@@ -143,10 +143,18 @@
 
                     <BButton
                         class="summary-button"
-                        variant="dark"
+                        variant="info"
                         @click="showSummary = !showSummary"
                     >
                         View Summary
+                    </BButton>
+                    
+                    <BButton
+                        @click="resetParent"
+                        variant="danger"
+                        class="reset-button"
+                    >
+                        Parent Reset
                     </BButton>
                 </footer>
             </div>
@@ -210,7 +218,7 @@ const showNotificationWithMessage = (message) => {
 
 const availableFurs = computed(() => {
     return FURS.allValues
-        .filter(fur => fur !== null && fur !== undefined && fur !== '')
+        .filter(fur => fur !== null && fur !== undefined && fur !== '' && fur !== 'null')
         .map(fur => ({
             value: fur,
             text: fur
@@ -322,6 +330,9 @@ const randomizeParent = () => {
     // Set parent name to "Unknown"
     props.parentRef.name = "Unknown"
     
+    // Clear the URL field
+    props.parentRef.url = ""
+    
     // Show notification
     showNotificationWithMessage(`Stone Idol applied to ${props.title}!`)
 }
@@ -361,6 +372,22 @@ const loadStarter = () => {
     
     // Show notification
     showNotificationWithMessage(`Starter "${randomStarter.name}" applied to ${props.title}!`)
+}
+
+const resetParent = () => {
+    // Clear all parent properties
+    props.parentRef.name = ""
+    props.parentRef.url = ""
+    props.parentRef.build = "Standard"
+    props.parentRef.coat = "Natural"
+    props.parentRef.traits = []
+    props.parentRef.markings = []
+    props.parentRef.mutations = []
+    props.parentRef.furs = []
+    props.parentRef.titan_traits = []
+    
+    // Show notification
+    showNotificationWithMessage(`${props.title} reset!`)
 }
 </script>
 

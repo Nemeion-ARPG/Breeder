@@ -26,6 +26,8 @@ export default defineStore('den', () => {
     const selectedAddons = ref([])
     const apolloFeatherEnabled = ref(false)
     const selectedApolloMarking = ref(null)
+    const heritageEnabled = ref(false)
+    const selectedHeritageTrait = ref(null)
     const rank1Enabled = ref(false)
 
     function _rollLitterSize(chanceRoll) {
@@ -51,6 +53,34 @@ export default defineStore('den', () => {
         }
 
         return litter
+    }
+
+    function _applySpecialFeatures(newLitter, randomSample) {
+        // Apollo's Feather - force selected marking to appear on at least one cub
+        if (apolloFeatherEnabled.value && selectedApolloMarking.value) {
+            const litterHasMarking = newLitter.some(cub => cub.markings.includes(selectedApolloMarking.value))
+            if (!litterHasMarking && newLitter.length > 0) {
+                // Add the marking to a random cub if no cub has it
+                const randomCub = randomSample(newLitter)
+                if (!randomCub.markings.includes(selectedApolloMarking.value)) {
+                    randomCub.markings.push(selectedApolloMarking.value)
+                }
+            }
+        }
+
+        // Heritage - force selected trait onto one random cub
+        if (heritageEnabled.value && selectedHeritageTrait.value && newLitter.length > 0) {
+            const randomCub = randomSample(newLitter)
+            const [traitType, traitValue] = selectedHeritageTrait.value.split(':')
+            
+            if (traitType === 'marking' && !randomCub.markings.includes(traitValue)) {
+                randomCub.markings.push(traitValue)
+            } else if (traitType === 'mutation' && !randomCub.mutations.includes(traitValue)) {
+                randomCub.mutations.push(traitValue)
+            } else if (traitType === 'coat') {
+                randomCub.coat = traitValue
+            }
+        }
     }
 
     function makeRandom(
@@ -102,6 +132,17 @@ export default defineStore('den', () => {
 
         let litterSize = _rollLitterSize(chanceRoll)
 
+        // Apply minimum guarantees first, then add bonuses on top
+        if (selectedAddons.value.includes(ADDONS.AO_BREEDER_I)) {
+            const minimumCubs = DATA.add_ons.AO_BREEDER_I.options.minimum_cubs
+            litterSize = Math.max(litterSize, minimumCubs)
+        }
+        if (selectedAddons.value.includes(ADDONS.AO_BREEDER_II)) {
+            const minimumCubs = DATA.add_ons.AO_BREEDER_II.options.minimum_cubs
+            litterSize = Math.max(litterSize, minimumCubs)
+        }
+
+        // Apply additional cubs from other addons
         if (selectedAddons.value.includes(ADDONS.AO_BLOSSOM_CHLORIS)) {
             litterSize += DATA.add_ons.AO_BLOSSOM_CHLORIS.options.additional
         }
@@ -109,20 +150,6 @@ export default defineStore('den', () => {
             const options = DATA.add_ons.AO_FERTILITY_TREATMENT.options
             if (fertilityTreatmentOverrides.shouldDoAction(options.chance)) {
                 litterSize += fertilityTreatmentOverrides.rollLitterSize(options.min_additional, options.max_additional)
-            }
-        }
-        if (selectedAddons.value.includes(ADDONS.AO_BREEDER_I)) {
-            const minimumCubs = DATA.add_ons.AO_BREEDER_I.options.minimum_cubs
-            litterSize = Math.max(litterSize, minimumCubs)
-        }
-        if (selectedAddons.value.includes(ADDONS.AO_BREEDER_II)) {
-            const options = DATA.add_ons.AO_BREEDER_II.options
-            const randomCubCount = fertilityTreatmentOverrides.rollLitterSize(options.minimum_cubs, options.maximum_cubs)
-            // If current litter size is already above the minimum, add the difference to maintain the boost
-            if (litterSize >= options.minimum_cubs) {
-                litterSize = litterSize + (randomCubCount - options.minimum_cubs)
-            } else {
-                litterSize = randomCubCount
             }
         }
         if (selectedAddons.value.includes(ADDONS.AO_CONSUL_SINGLE)) {
@@ -208,18 +235,35 @@ export default defineStore('den', () => {
             }
         }
 
-        // Apollo's Feather - force selected marking to appear on at least one cub
-        if (apolloFeatherEnabled.value && selectedApolloMarking.value) {
-            const litterHasMarking = newLitter.some(cub => cub.markings.includes(selectedApolloMarking.value))
-            if (!litterHasMarking && newLitter.length > 0) {
-                // Add the marking to a random cub if no cub has it
-                const randomCub = randomSample(newLitter)
-                if (!randomCub.markings.includes(selectedApolloMarking.value)) {
-                    randomCub.markings.push(selectedApolloMarking.value)
-                }
-            }
+        // Apply build-specific potions to 1-2 cubs
+        if (selectedAddons.value.includes(ADDONS.AO_DOMESTIC_POTION)) {
+            const options = DATA.add_ons.AO_DOMESTIC_POTION.options
+            const cubCount = fertilityTreatmentOverrides.rollLitterSize(options.min_cubs, options.max_cubs)
+            const targetCubs = newLitter.slice(0, Math.min(cubCount, newLitter.length))
+            targetCubs.forEach(cub => {
+                cub.build = BUILDS.Domestic
+            })
         }
 
+        if (selectedAddons.value.includes(ADDONS.AO_PHARAOH_POTION)) {
+            const options = DATA.add_ons.AO_PHARAOH_POTION.options
+            const cubCount = fertilityTreatmentOverrides.rollLitterSize(options.min_cubs, options.max_cubs)
+            const targetCubs = newLitter.slice(0, Math.min(cubCount, newLitter.length))
+            targetCubs.forEach(cub => {
+                cub.build = BUILDS.Pharaoh
+            })
+        }
+
+        if (selectedAddons.value.includes(ADDONS.AO_DWARF_POTION)) {
+            const options = DATA.add_ons.AO_DWARF_POTION.options
+            const cubCount = fertilityTreatmentOverrides.rollLitterSize(options.min_cubs, options.max_cubs)
+            const targetCubs = newLitter.slice(0, Math.min(cubCount, newLitter.length))
+            targetCubs.forEach(cub => {
+                cub.build = BUILDS.Dwarf
+            })
+        }
+
+        _applySpecialFeatures(newLitter, randomSample)
         offspring.value = newLitter
     }
 
@@ -230,6 +274,8 @@ export default defineStore('den', () => {
         selectedAddons,
         apolloFeatherEnabled,
         selectedApolloMarking,
+        heritageEnabled,
+        selectedHeritageTrait,
         rank1Enabled,
 
         makeOffspring,

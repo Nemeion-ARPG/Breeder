@@ -472,8 +472,8 @@ titan_traits:
   qualities:
     Titan:
       inherit_chance:
-        single: 0.02
-        double: 0.05
+        single: 0.03
+        double: 0.06
   available:
     Blessing_Titans:
       display_name: Blessing of the Titans ★ 
@@ -505,6 +505,9 @@ titan_traits:
     Twist_Fate:
       display_name: Twist of Fate ★ 
       quality: Titan     
+    Charitable:
+      display_name: Charitable ★ 
+      quality: Titan       
 
 # each element represents a separate option, with the options repeated with their weight of recieving that alternative
 # if the weight is null, the combination are considered illegal
@@ -580,10 +583,10 @@ coats:
         Agouti: 1.00
 
 furs:
-  rare_chance: 0.05
+  rare_chance: 0.03
   inherit_chance:
-    single: 0.25
-    double: 0.40
+    single: 0.03
+    double: 0.05
   default: 
   rare_options:
     - Apollo's Ascension (Blessing)
@@ -606,6 +609,11 @@ mutations:
   inherit_chance:
     single: 0.1
   default: []
+  exclusive_groups:
+    chimerism:
+      - Chimerism
+      - Chimerism2
+      - Chimerism3
   available:
     Albinism:
       display_name: Albinism
@@ -638,13 +646,18 @@ add_ons:
   AO_APHRO_PASSION:
     display_name: Aphrodite's Passion
     description: When selected, all cubs are guaranteed to be female.
-    mutually_exclusive: AO_HEPHAESTUS_FERVOR
+    mutually_exclusive: 
+      - AO_HEPHAESTUS_FERVOR
+      - AO_BLESSING_OF_THE_KING
+      - AO_BLESSING_OF_THE_QUEEN
+
   AO_BIG_BONED:
     display_name: Big Boned
     description: Increases the chance offspring will be a Brute build
     options:
       Brute: 0.80
       Regal: 0.20
+
   AO_BIRTHRIGHT:
     display_name: Birthright
     description: Increase the chance of Common, Uncommon, and Rare traits to be inherited by 15%.
@@ -652,23 +665,31 @@ add_ons:
       Common: 0.15
       Uncommon: 0.15
       Rare: 0.15
+
   AO_BLOSSOM_CHLORIS:
     display_name: Blossom of Chloris
     description: Guarantees an additional cub will be born.
     options:
       additional: 1
+
   AO_BRUTE_POTION:
     display_name: Brute Potion
     description: Guarantees at least 1 cub will be a Brute build.
+
   AO_DELICATE:
     display_name: Delicate
     description: Increases the chance offspring will be a Regal build.
     options:
       Brute: 0.40
       Regal: 0.60
+
   AO_DOMESTIC_POTION:
     display_name: Domestic Potion
-    description: Guarantees at least 1 cub will be a Dwarf build.
+    description: Guarantees 1-2 cubs will be a Domestic build.
+    options:
+      min_cubs: 1
+      max_cubs: 2
+
   AO_FERTILITY_TREATMENT:
     display_name: Fertility Treatment
     description: 15% chance of 1-2 additional cubs being born.
@@ -676,84 +697,126 @@ add_ons:
       chance: 0.15
       min_additional: 1
       max_additional: 2
+
   AO_HEPHAESTUS_FERVOR:
     display_name: Hephaestus' Fervor
     description: When selected, all cubs are guaranteed to be male.
-    mutually_exclusive: AO_APHRO_PASSION
+    mutually_exclusive: 
+      - AO_APHRO_PASSION
+      - AO_BLESSING_OF_THE_QUEEN
+      - AO_BLESSING_OF_THE_KING
+
   AO_MUTATION_STONE:
     display_name: Fragment of Distortion
     description: Guarantees at least 1 cub will have a random mutation.
+
   AO_RARE_BLOOD:
     display_name: Rare Blood
     description: Increases chance of a parent passing a mutation to their cubs by 25%.
     options:
       increased_chance: 0.25
+
   AO_SAVORY_RIBS:
     display_name: Savory Ribs
     description: Increases chance of Traits and Titan Traits passing from parents by 5%.
     options:
       trait_boost: 0.05
       titan_trait_boost: 0.05
+
   AO_CURSED_BLOOD:
     display_name: Cursed Blood
     description: Increases chance of passing a fur from either parent by 5%.
     options:
       fur_boost: 0.05
+
   AO_PHARAOH_POTION:
     display_name: Pharaoh Potion
-    description: Guarantees all cubs will be a Pharaoh build.
+    description: Guarantees 1-2 cubs will be a Pharaoh build.
+    options:
+      min_cubs: 1
+      max_cubs: 2
+
   AO_REGAL_POTION:
     display_name: Regal Potion
     description: Guarantees at least 1 cub will be a Regal build.
+
   AO_DWARF_POTION:
     display_name: Dwarfish Drought
-    description: Guarantees at least 1 cub will be a Dwarf build.
+    description: Guarantees 1-2 cubs will be a Dwarf build.
+    options:
+      min_cubs: 1
+      max_cubs: 2
+
   AO_PROTEAN_BLOOD:
     display_name: Protean Blood
     description: Guarantees all cubs will have a randomly rolled mutation.
+
   AO_SHORT_STATURE:
     display_name: Short Stature
     description: 25% chance that at least 1 cub will be a Dwarf build.
     options:
       chance: 0.25
+
   AO_POSEIDONS_PROMISE:
     display_name: Poseidon's Promise
     description: Guarantees at least 1 cub will have a randomly selected non-limited marking not present in either parent.
+
   AO_BREEDER_I:
     display_name: Breeder I
     description: Guarantees a minimum of 3 cubs returned.
     options:
       minimum_cubs: 3
+
   AO_BREEDER_II:
     display_name: Breeder II
-    description: Guarantees a minimum of 4 to 5 cubs returned.
+    description: Guarantees a minimum of 5 cubs returned.
     options:
-      minimum_cubs: 4
-      maximum_cubs: 5
+      minimum_cubs: 5
+
   AO_LEGATUS_SINGLE:
     display_name: Legatus Single
     description: Adds a 15% chance for every cub result to return with a random mutation.
     options:
       mutation_chance: 0.15
+
   AO_LEGATUS_DOUBLE:
     display_name: Legatus Double
     description: Adds a 30% chance for every cub result to return with a random mutation.
     options:
       mutation_chance: 0.30
+
   AO_CONSUL_SINGLE:
     display_name: Consul Single
     description: Adds a 25% chance for an additional +1 cub result to return on top of the base roll.
     options:
       chance: 0.25
       additional_cubs: 1
+
   AO_CONSUL_DOUBLE:
     display_name: Consul Double
     description: Adds a 50% chance for an additional +1 cub result to return on top of the base roll.
     options:
       chance: 0.50
       additional_cubs: 1
+
   AO_WEREWORM:
     display_name: Wereworm
     description: Increases chance of an offspring having a mutation by 15%.
     options:
       increased_chance: 0.15
+
+  AO_BLESSING_OF_THE_QUEEN:
+    display_name: Blessing of the Queen
+    description: When selected, all cubs are guaranteed to be female.
+    mutually_exclusive: 
+      - AO_HEPHAESTUS_FERVOR
+      - AO_BLESSING_OF_THE_KING
+      - AO_APHRO_PASSION
+
+  AO_BLESSING_OF_THE_KING:
+    display_name: Blessing of the King
+    description: When selected, all cubs are guaranteed to be male.
+    mutually_exclusive: 
+      - AO_APHRO_PASSION
+      - AO_BLESSING_OF_THE_QUEEN
+      - AO_HEPHAESTUS_FERVOR

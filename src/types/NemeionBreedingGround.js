@@ -35,9 +35,9 @@ export default class NemeionBreedingGround extends NemeionGenerator {
     }
 
     _generateGender(addons) {
-        if (addons.includes(ADDONS.AO_APHRO_PASSION)) {
+        if (addons.includes(ADDONS.AO_APHRO_PASSION) || addons.includes(ADDONS.AO_BLESSING_OF_THE_QUEEN)) {
             return GENDERS.Female
-        } else if (addons.includes(ADDONS.AO_HEPHAESTUS_FERVOR)) {
+        } else if (addons.includes(ADDONS.AO_HEPHAESTUS_FERVOR) || addons.includes(ADDONS.AO_BLESSING_OF_THE_KING)) {
             return GENDERS.Male
         } else {
             return super._generateGender(addons)
@@ -122,18 +122,6 @@ export default class NemeionBreedingGround extends NemeionGenerator {
         if (addons.includes(ADDONS.AO_REGAL_POTION)) {
             return BUILDS.Regal
         }
-        // Check if Dwarfish Drought is included - forces all cubs to be Dwarf build
-        if (addons.includes(ADDONS.AO_DWARF_POTION)) {
-            return BUILDS.Dwarf
-        }
-        // Check if Domestic Potion is included - forces all cubs to be Domestic build
-        if (addons.includes(ADDONS.AO_DOMESTIC_POTION)) {
-            return BUILDS.Domestic
-        }
-        // Check if Pharaoh Potion is included - forces all cubs to be Pharaoh build
-        if (addons.includes(ADDONS.AO_PHARAOH_POTION)) {
-            return BUILDS.Pharaoh
-        }
 
         if (this.father.build === this.mother.build) {
             return this.father.build
@@ -172,11 +160,6 @@ export default class NemeionBreedingGround extends NemeionGenerator {
         return this.#_filterExclusiveMarkings(markings)
     }
     _generateMutations(addons = []) {
-        // Check if Protean Blood is included - forces all cubs to have a random mutation
-        if (addons.includes(ADDONS.AO_PROTEAN_BLOOD)) {
-            return [this.randomSample(MUTATIONS.allValues)]
-        }
-
         let result = []
 
         if (this.father.hasMutations || this.mother.hasMutations) {
@@ -208,7 +191,14 @@ export default class NemeionBreedingGround extends NemeionGenerator {
             result.push(this.randomSample(MUTATIONS.allValues))
         }
 
-        return [...new Set(result)]
+        // Check if Protean Blood is included - guarantees at least one random mutation if none exist
+        if (addons.includes(ADDONS.AO_PROTEAN_BLOOD) && result.length === 0) {
+            result.push(this.randomSample(MUTATIONS.allValues))
+        }
+
+        // Remove duplicates and apply exclusive group filtering
+        const uniqueMutations = [...new Set(result)]
+        return this.#_filterExclusiveMutations(uniqueMutations)
     }
 
     _generateTitanTraits(addons = []) {
@@ -218,10 +208,20 @@ export default class NemeionBreedingGround extends NemeionGenerator {
 
         let result = []
 
-        // Inherit from parents with 1% chance
+        // Inherit from parents with proper single/double chance logic
         const parentTitanTraits = [...this.father.titan_traits, ...this.mother.titan_traits]
         for (const titanTrait of parentTitanTraits) {
-            let inheritChance = DATA.titan_traits.available[titanTrait].inherit_chance
+            const titanTraitData = DATA.titan_traits.available[titanTrait]
+            const quality = titanTraitData.quality
+            
+            // Determine inherit chance based on whether both parents have the same trait
+            const fatherHasTrait = this.father.titan_traits.includes(titanTrait)
+            const motherHasTrait = this.mother.titan_traits.includes(titanTrait)
+            const bothParentsHaveTrait = fatherHasTrait && motherHasTrait
+            
+            let inheritChance = bothParentsHaveTrait 
+                ? DATA.titan_traits.qualities[quality].inherit_chance.double
+                : DATA.titan_traits.qualities[quality].inherit_chance.single
             
             // Apply Savory Ribs boost if present
             if (addons.includes(ADDONS.AO_SAVORY_RIBS)) {
@@ -255,6 +255,36 @@ export default class NemeionBreedingGround extends NemeionGenerator {
                 for (const marking of foundMarkings) {
                     if (marking !== keepMarking) {
                         const index = result.indexOf(marking)
+                        if (index > -1) {
+                            result.splice(index, 1)
+                        }
+                    }
+                }
+            }
+        }
+
+        return result
+    }
+
+    #_filterExclusiveMutations(mutations) {
+        if (!DATA.mutations.exclusive_groups) {
+            return mutations
+        }
+
+        const result = [...mutations]
+        const exclusiveGroups = DATA.mutations.exclusive_groups
+
+        for (const groupName in exclusiveGroups) {
+            const groupMutations = exclusiveGroups[groupName]
+            const foundMutations = result.filter(mutation => groupMutations.includes(mutation))
+            
+            if (foundMutations.length > 1) {
+                // Keep only one mutation from this group (randomly selected)
+                const keepMutation = this.randomSample(foundMutations)
+                // Remove all others from the result
+                for (const mutation of foundMutations) {
+                    if (mutation !== keepMutation) {
+                        const index = result.indexOf(mutation)
                         if (index > -1) {
                             result.splice(index, 1)
                         }

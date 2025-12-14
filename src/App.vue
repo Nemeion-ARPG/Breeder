@@ -26,9 +26,14 @@
       :apollo-feather-enabled="den.apolloFeatherEnabled"
       :selected-apollo-marking="den.selectedApolloMarking"
       :available-markings-for-apollo="availableMarkingsForApollo"
+      :heritage-enabled="den.heritageEnabled"
+      :selected-heritage-trait="den.selectedHeritageTrait"
+      :available-traits-for-heritage="availableTraitsForHeritage"
       :rank1-enabled="den.rank1Enabled"
       @update:apollo-feather-enabled="den.apolloFeatherEnabled = $event"
       @update:selected-apollo-marking="den.selectedApolloMarking = $event"
+      @update:heritage-enabled="den.heritageEnabled = $event"
+      @update:selected-heritage-trait="den.selectedHeritageTrait = $event"
       @update:rank1-enabled="den.rank1Enabled = $event"
     />
 
@@ -57,7 +62,7 @@ import OffspringOutput from '@/components/OffspringOutput.vue'
 
 import denStore from '@/stores/den'
 import { computed } from 'vue'
-import { MARKINGS } from '@/Constants'
+import { MARKINGS, MUTATIONS, COATS } from '@/Constants'
 
 import DATA from '@/data.yaml'
 
@@ -73,9 +78,34 @@ const availableAddons = Object.entries(DATA.add_ons).map(([key, value]) => {
 const availableMarkingsForApollo = computed(() => {
   return [
     { value: null, text: 'Select a marking...' },
-    ...MARKINGS.allValues.map(marking => ({
-      value: marking,
-      text: DATA.markings.available[marking].display_name
+    ...MARKINGS.allValues
+      .filter(marking => DATA.markings.available[marking].quality !== 'Limited')
+      .map(marking => ({
+        value: marking,
+        text: DATA.markings.available[marking].display_name
+      }))
+  ]
+})
+
+const availableTraitsForHeritage = computed(() => {
+  return [
+    { value: null, text: 'Select a trait...' },
+    // Markings (excluding Limited)
+    ...MARKINGS.allValues
+      .filter(marking => DATA.markings.available[marking].quality !== 'Limited')
+      .map(marking => ({
+        value: `marking:${marking}`,
+        text: `[Marking] ${DATA.markings.available[marking].display_name}`
+      })),
+    // Mutations
+    ...MUTATIONS.allValues.map(mutation => ({
+      value: `mutation:${mutation}`,
+      text: `[Mutation] ${DATA.mutations.available[mutation].display_name}`
+    })),
+    // Coats
+    ...COATS.allValues.map(coat => ({
+      value: `coat:${coat}`,
+      text: `[Coat] ${coat} Coat`
     }))
   ]
 })
