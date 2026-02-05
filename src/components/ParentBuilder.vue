@@ -236,14 +236,12 @@ const availableTraits = computed(() => {
     return options
 })
 const availableTitanTraits = computed(() => {
-    let options = []
-    for (const titanTrait in sortData(DATA.titan_traits.available)) {
-        options.push({
+    return Object.entries(DATA.titan_traits.available)
+        .map(([titanTrait, titanTraitData]) => ({
             value: titanTrait,
-            text: DATA.titan_traits.available[titanTrait].display_name
-        })
-    }
-    return options
+            text: titanTraitData.display_name
+        }))
+        .sort((a, b) => a.text.localeCompare(b.text, undefined, { sensitivity: 'base' }))
 })
 const availableMarkings = computed(() => {
     let options = []
@@ -256,14 +254,12 @@ const availableMarkings = computed(() => {
     return options
 })
 const availableMutations = computed(() => {
-    let options = []
-    for (const mutation in DATA.mutations.available) {
-        options.push({
+    return Object.entries(DATA.mutations.available)
+        .map(([mutation, mutationData]) => ({
             value: mutation,
-            text: DATA.mutations.available[mutation].display_name
-        })
-    }
-    return options
+            text: mutationData.display_name
+        }))
+        .sort((a, b) => a.text.localeCompare(b.text, undefined, { sensitivity: 'base' }))
 })
 const availableBuilds = computed(() => {
     let otherParentBuild = props.otherParentRef.build
