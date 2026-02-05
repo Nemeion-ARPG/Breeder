@@ -360,6 +360,9 @@ traits:
     Trader:
       display_name: Trader
       quality: Common
+    Burly:
+      display_name: Burly
+      quality: Common  
     Big_Boned:
       display_name: Big Boned
       quality: Uncommon
@@ -411,6 +414,9 @@ traits:
     Fellowship:
       display_name: Fellowship 
       quality: Rare
+    Lone_Fighter:
+      display_name: Lone Fighter 
+      quality: Rare  
     Fortune_Finder:
       display_name: Fortune Finder 
       quality: Rare
@@ -435,6 +441,18 @@ traits:
     Gold_Digger:
       display_name: Gold Digger ♦
       quality: Epic
+    Petite:
+      display_name: Petite ♦
+      quality: Epic  
+    Holiday_Spirit:
+      display_name: Holiday Spirit ♦
+      quality: Epic    
+    Fighters_Fee:
+      display_name: Fighter's Fee ♦
+      quality: Epic    
+    Festivous:
+      display_name: Festivous ♦
+      quality: Epic    
     Mark_of_the_Caver:
       display_name: Mark of the Caver ♦
       quality: Epic
@@ -459,6 +477,12 @@ traits:
     Ambassador:
       display_name: Ambassador ♦
       quality: Legendary
+    Crowd_Pleaser:
+      display_name: Crowd Pleaser ♦
+      quality: Legendary  
+    Lean:
+      display_name: Lean ♦
+      quality: Legendary  
     Devoted:
       display_name: Devoted ♦
       quality: Legendary
@@ -486,6 +510,27 @@ traits:
     Team_Up:
       display_name: Team Up ☼
       quality: Unique    
+    Mutagenic:
+      display_name: Mutagenic ☼
+      quality: Unique    
+    Tiny_Terror:
+      display_name: Tiny Terror ☼
+      quality: Unique    
+    Medic:
+      display_name: Medic ☼
+      quality: Unique     
+    Cautionary:
+      display_name: Cautionary ☼
+      quality: Unique         
+    Wildcard:
+      display_name: Wildcard ☼
+      quality: Unique      
+    Teacher:
+      display_name: Teacher ☼
+      quality: Unique      
+    Heartfelt_Hoarder:
+      display_name: Heartfelt Hoarder ☼
+      quality: Unique      
   
 titan_traits:
   random_cap: 1
@@ -529,6 +574,9 @@ titan_traits:
     Charitable:
       display_name: Charitable ★ 
       quality: Titan       
+    Mineral_Deficit:
+      display_name: Drake's Mineral Deficit ★ 
+      quality: Titan     
 
 # each element represents a separate option, with the options repeated with their weight of recieving that alternative
 # if the weight is null, the combination are considered illegal
