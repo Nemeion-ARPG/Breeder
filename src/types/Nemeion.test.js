@@ -51,7 +51,7 @@ describe('Nemeion', () => {
                     mutations: [MUTATIONS.Albinism],
                 }
                 const instance = new Nemeion(initialValues)
-                expect(instance).toEqual(initialValues)
+                expect(instance).toMatchObject(initialValues)
             })
         })
     })

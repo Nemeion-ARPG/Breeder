@@ -40,27 +40,20 @@ describe('NemeionRandomGenerator', () => {
     })
 
     describe('_generateFur', () => {
-        it('should return the default fur if the roll is unsuccessful', () => {
-            const generator = new NemeionRandomGenerator(() => false)
+        it('should always return the default fur (random generation does not include furs/gifts)', () => {
+            const generator = new NemeionRandomGenerator()
             const result = generator._generateFur()
             expect(result).toEqual(DATA.furs.default)
         })
 
-        it('should only roll once', () => {
+        it('should not roll for fur', () => {
             const mockShouldDoAction = vi.fn().mockImplementation(() => true)
-            const generator = new NemeionRandomGenerator(mockShouldDoAction)
+            const mockRandomSample = vi.fn()
+            const generator = new NemeionRandomGenerator(mockShouldDoAction, mockRandomSample)
 
             let _ = generator._generateFur()
-            expect(mockShouldDoAction).toHaveBeenCalledTimes(1)
-        })
-
-        it('should return a random rare fur if the roll is successful', () => {
-            const expectedRareFur = DATA.furs.rare_options[0]
-            const mockRandomSample = vi.fn().mockImplementation(() => expectedRareFur)
-            const generator = new NemeionRandomGenerator(() => true, mockRandomSample)
-
-            const result = generator._generateFur()
-            expect(result).toEqual(expectedRareFur)
+            expect(mockShouldDoAction).not.toHaveBeenCalled()
+            expect(mockRandomSample).not.toHaveBeenCalled()
         })
     })
 

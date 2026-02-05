@@ -186,6 +186,24 @@ markings:
     Bellus:
       display_name: Bellus
       quality: Rare
+    Cineres1:
+      display_name: Cineres (Rust Variant)
+      quality: Rare  
+    Cineres2:
+      display_name: Cineres (Burgundy Variant)
+      quality: Rare  
+    Cineres3:
+      display_name: Cineres (Pearl Variant)
+      quality: Rare   
+    Cineres4:
+      display_name: Cineres (Ash Variant)
+      quality: Rare    
+    Cineres5:
+      display_name: Cineres (Cobalt Variant)
+      quality: Rare       
+    Cineres6:
+      display_name: Cineres (Sand Variant)
+      quality: Rare    
     Equus:
       display_name: Equus
       quality: Rare
@@ -237,6 +255,9 @@ markings:
     Cordis:
       display_name: Cordis
       quality: Epic
+    Eluvio:
+      display_name: Eluvio
+      quality: Epic  
     Latus:
       display_name: Latus
       quality: Epic
@@ -641,6 +662,14 @@ mutations:
       display_name: Vitiligo
     Polycaudal:
       display_name: Polycaudal
+    Raptor_Claws:
+      display_name: Raptor Claws  
+    Double_Tusk:
+      display_name: Double Tusk
+    Smilodon_Sabers:
+      display_name: Smilodon Sabers
+    Double_Smilodon:
+      display_name: Double Smilodon Sabers      
 
 add_ons:
   AO_APHRO_PASSION:

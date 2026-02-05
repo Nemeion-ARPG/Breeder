@@ -96,7 +96,14 @@ describe("den store", () => {
                 const den = denStore()
                 den.selectedAddons = [ADDONS.AO_DWARF_POTION]
                 
-                den.makeOffspring(new MockBreedingGround(den.father, den.mother), () => DATA.litters.weights[1]) // make 2
+                den.makeOffspring(
+                    new MockBreedingGround(den.father, den.mother),
+                    () => DATA.litters.weights[1],
+                    {
+                        rollLitterSize: (min, max) => min,
+                        shouldDoAction: DEFAULT_SHOULD_DO_ACTION
+                    }
+                ) // make 2, but only apply potion to 1 cub
                 expect(den.offspring.length).toBe(2)
                 expect(den.offspring[1].build).toBe(BUILDS.Domestic)
             })
@@ -183,7 +190,14 @@ describe("den store", () => {
                 const den = denStore()
                 den.selectedAddons = [ADDONS.AO_DOMESTIC_POTION]
                 
-                den.makeOffspring(new MockBreedingGround(den.father, den.mother), () => DATA.litters.weights[1]) // make 2
+                den.makeOffspring(
+                    new MockBreedingGround(den.father, den.mother),
+                    () => DATA.litters.weights[1],
+                    {
+                        rollLitterSize: (min, max) => min,
+                        shouldDoAction: DEFAULT_SHOULD_DO_ACTION
+                    }
+                ) // make 2, but only apply potion to 1 cub
                 expect(den.offspring.length).toBe(2)
                 expect(den.offspring[1].build).toBe(BUILDS.Brute)
             })
@@ -328,6 +342,41 @@ describe("den store", () => {
 
                 expect(mockMakeOffspring).toHaveBeenCalledTimes(3)
                 expect(mockRandomSample).not.toHaveBeenCalled()
+            })
+        })
+
+        describe('with inbreeding enabled', () => {
+            it('should attach a [Health] outcome per cub based on a d100 roll', () => {
+                const den = denStore()
+                den.inbreedingEnabled = true
+
+                const breedingGround = new NemeionBreedingGround(den.father, den.mother)
+                const rollD100 = vi.fn().mockReturnValue(21)
+
+                    den.makeOffspring(breedingGround, () => DATA.litters.weights[0], {
+                        rollLitterSize: (min, max) => min,
+                        shouldDoAction: DEFAULT_SHOULD_DO_ACTION
+                    }, (arr) => arr[0], rollD100)
+
+                expect(den.offspring.length).toBe(1)
+                    expect(den.offspring[0].health).toBe('Inbred - Blindness')
+            })
+
+            it('should roll 100 as two distinct conditions', () => {
+                const den = denStore()
+                den.inbreedingEnabled = true
+
+                const breedingGround = new NemeionBreedingGround(den.father, den.mother)
+                const rollD100 = vi.fn().mockReturnValue(100)
+                const randomSample = (arr) => arr[0]
+
+                    den.makeOffspring(breedingGround, () => DATA.litters.weights[0], {
+                        rollLitterSize: (min, max) => min,
+                        shouldDoAction: DEFAULT_SHOULD_DO_ACTION
+                    }, randomSample, rollD100)
+
+                expect(den.offspring.length).toBe(1)
+                    expect(den.offspring[0].health).toBe('Inbred - Blindness, Inbred - Deafness')
             })
         })
     })

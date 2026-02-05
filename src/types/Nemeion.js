@@ -13,6 +13,11 @@ export default class Nemeion {
         this.titan_traits = initialValues.titan_traits || DATA.titan_traits.default
         this.markings = initialValues.markings || DATA.markings.default
         this.mutations = initialValues.mutations || DATA.mutations.default
+
+        // Optional addon-driven output (only set when used)
+        if ('health' in initialValues) {
+            this.health = initialValues.health
+        }
     }
 
     get hasRareFur() { return DATA.furs.rare_options.includes(this.fur) }

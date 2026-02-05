@@ -30,11 +30,13 @@
       :selected-heritage-trait="den.selectedHeritageTrait"
       :available-traits-for-heritage="availableTraitsForHeritage"
       :rank1-enabled="den.rank1Enabled"
+      :inbreeding-enabled="den.inbreedingEnabled"
       @update:apollo-feather-enabled="den.apolloFeatherEnabled = $event"
       @update:selected-apollo-marking="den.selectedApolloMarking = $event"
       @update:heritage-enabled="den.heritageEnabled = $event"
       @update:selected-heritage-trait="den.selectedHeritageTrait = $event"
       @update:rank1-enabled="den.rank1Enabled = $event"
+      @update:inbreeding-enabled="den.inbreedingEnabled = $event"
     />
 
     <OffspringOutput

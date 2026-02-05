@@ -55,6 +55,14 @@
             >
                 Strong Lineage
             </BFormCheckbox>
+
+            <BFormCheckbox
+                :model-value="inbreedingEnabled"
+                @update:model-value="$emit('update:inbreeding-enabled', $event)"
+                class="inbreeding-checkbox"
+            >
+                Inbreeding
+            </BFormCheckbox>
         </div>
     </section>
 </template>
@@ -71,7 +79,14 @@ const selectedAddons = defineModel({
     }
 })
 
-defineEmits(['update:apollo-feather-enabled', 'update:selected-apollo-marking', 'update:heritage-enabled', 'update:selected-heritage-trait', 'update:rank1-enabled'])
+defineEmits([
+    'update:apollo-feather-enabled',
+    'update:selected-apollo-marking',
+    'update:heritage-enabled',
+    'update:selected-heritage-trait',
+    'update:rank1-enabled',
+    'update:inbreeding-enabled'
+])
 
 const props = defineProps({
     title: {
@@ -111,6 +126,10 @@ const props = defineProps({
         default: () => []
     },
     rank1Enabled: {
+        type: Boolean,
+        default: false
+    },
+    inbreedingEnabled: {
         type: Boolean,
         default: false
     }

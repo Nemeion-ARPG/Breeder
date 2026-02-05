@@ -16,6 +16,7 @@ import DATA from '@/data.yaml'
 import { GENDERS, BUILDS, ADDONS, MUTATIONS, MARKINGS } from '@/Constants'
 
 const DEFAULT_CHANCE_ROLL = () => _random(0, 1, true)
+const DEFAULT_ROLL_D100 = () => _random(1, 100)
 const DEFAULT_SHOULD_DO_ACTION = rollForThreshold
 const DEFAULT_RANDOM_SAMPLE = _sample
 
@@ -29,6 +30,34 @@ export default defineStore('den', () => {
     const heritageEnabled = ref(false)
     const selectedHeritageTrait = ref(null)
     const rank1Enabled = ref(false)
+    const inbreedingEnabled = ref(false)
+
+    function _rollInbreedingHealth(roll, randomSample) {
+        if (roll >= 1 && roll <= 20) return 'Healthy'
+        if (roll >= 21 && roll <= 35) return 'Inbred - Blindness'
+        if (roll >= 36 && roll <= 50) return 'Inbred - Deafness'
+        if (roll >= 51 && roll <= 75) return 'Inbred - Frail'
+        if (roll >= 76 && roll <= 90) return 'Inbred - Infertile'
+        if (roll >= 91 && roll <= 99) return 'Inbred - Dead'
+        if (roll === 100) {
+            const options = ['Inbred - Blindness', 'Inbred - Deafness', 'Inbred - Frail', 'Inbred - Infertile']
+            const first = randomSample(options)
+            const remaining = options.filter(v => v !== first)
+            const second = randomSample(remaining)
+            return `${first}, ${second}`
+        }
+
+        throw new Error(`Invalid d100 roll: ${roll}`)
+    }
+
+    function _applyInbreedingHealth(litter, rollD100, randomSample) {
+        if (!inbreedingEnabled.value) return
+
+        litter.forEach(cub => {
+            const roll = rollD100()
+            cub.health = _rollInbreedingHealth(roll, randomSample)
+        })
+    }
 
     function _rollLitterSize(chanceRoll) {
         // litter size is based off weights in the data table
@@ -83,9 +112,23 @@ export default defineStore('den', () => {
         }
     }
 
+    function _applyGuaranteedBuilds(newLitter) {
+        if (newLitter.length === 0) return
+
+        // These potions guarantee at least one cub, not the whole litter
+        if (selectedAddons.value.includes(ADDONS.AO_BRUTE_POTION)) {
+            newLitter[0].build = BUILDS.Brute
+        }
+        if (selectedAddons.value.includes(ADDONS.AO_REGAL_POTION)) {
+            newLitter[0].build = BUILDS.Regal
+        }
+    }
+
     function makeRandom(
         randomGenerator = new NemeionRandomGenerator(),
-        chanceRoll = DEFAULT_CHANCE_ROLL
+        chanceRoll = DEFAULT_CHANCE_ROLL,
+        rollD100 = DEFAULT_ROLL_D100,
+        randomSample = DEFAULT_RANDOM_SAMPLE
     ) {
         if (!randomGenerator) {
             throw new Error('Cannot make Nemeions without a random generator')
@@ -94,13 +137,19 @@ export default defineStore('den', () => {
             throw new Error('Can only make Nemeions with a NemeionRandomGenerator')
         }
         const litterSize = _rollLitterSize(chanceRoll)
-        offspring.value = _generateLitter(litterSize, () => {
+        const newLitter = _generateLitter(litterSize, () => {
             return randomGenerator.makeOffspring(selectedAddons.value)
         })
+
+        _applyGuaranteedBuilds(newLitter)
+        _applyInbreedingHealth(newLitter, rollD100, randomSample)
+        offspring.value = newLitter
     }
 
     function makeRandom5(
-        randomGenerator = new NemeionRandomGenerator()
+        randomGenerator = new NemeionRandomGenerator(),
+        rollD100 = DEFAULT_ROLL_D100,
+        randomSample = DEFAULT_RANDOM_SAMPLE
     ) {
         if (!randomGenerator) {
             throw new Error('Cannot make Nemeions without a random generator')
@@ -109,9 +158,13 @@ export default defineStore('den', () => {
             throw new Error('Can only make Nemeions with a NemeionRandomGenerator')
         }
         // Force litter size to be exactly 5
-        offspring.value = _generateLitter(5, () => {
+        const newLitter = _generateLitter(5, () => {
             return randomGenerator.makeOffspring(selectedAddons.value)
         })
+
+        _applyGuaranteedBuilds(newLitter)
+        _applyInbreedingHealth(newLitter, rollD100, randomSample)
+        offspring.value = newLitter
     }
 
     function makeOffspring(
@@ -121,7 +174,8 @@ export default defineStore('den', () => {
             rollLitterSize: (min, max) => _random(min, max),
             shouldDoAction: DEFAULT_SHOULD_DO_ACTION
         },
-        randomSample = DEFAULT_RANDOM_SAMPLE
+        randomSample = DEFAULT_RANDOM_SAMPLE,
+        rollD100 = DEFAULT_ROLL_D100
     ) {
         if (!breedingGround) {
             throw new Error('Cannot breed just anywhere')
@@ -263,7 +317,10 @@ export default defineStore('den', () => {
             })
         }
 
+        _applyGuaranteedBuilds(newLitter)
         _applySpecialFeatures(newLitter, randomSample)
+
+        _applyInbreedingHealth(newLitter, rollD100, randomSample)
         offspring.value = newLitter
     }
 
@@ -277,6 +334,7 @@ export default defineStore('den', () => {
         heritageEnabled,
         selectedHeritageTrait,
         rank1Enabled,
+        inbreedingEnabled,
 
         makeOffspring,
         makeRandom,

@@ -127,23 +127,24 @@ describe('NemeionBreedingGround', () => {
                 const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, { shouldDoAction: () => false })
                 const result = breedingGround._generateFur()
 
-                expect(result).toBe(FURS.Sleek)
+                expect(result).toBe(DATA.furs.default)
             })
 
             it('returns a rare fur when the random roll is successful', () => {
+                const expectedRareFur = DATA.furs.rare_options[0]
                 const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, {
                     shouldDoAction: () => true,
-                    randomSample: () => FURS.Silky
+                    randomSample: () => expectedRareFur
                 })
                 const result = breedingGround._generateFur()
 
-                expect(result).toEqual(FURS.Silky)
+                expect(result).toEqual(expectedRareFur)
             })
         })
 
         describe('when both parents have rare fur', () => {
             describe('when parents have the same fur', () => {
-                const expectedFur = FURS.Silky
+                const expectedFur = DATA.furs.rare_options[0]
                 const father = new Nemeion({ ...prototypeFather, fur: expectedFur })
                 const mother = new Nemeion({ ...prototypeMother, fur: expectedFur })
 
@@ -151,7 +152,7 @@ describe('NemeionBreedingGround', () => {
                     const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: () => false })
 
                     const result = breedingGround._generateFur()
-                    expect(result).toBe(FURS.Sleek)
+                    expect(result).toBe(DATA.furs.default)
                 })
 
                 it('returns the same fur as the parents when the inherit roll is successful', () => {
@@ -165,22 +166,23 @@ describe('NemeionBreedingGround', () => {
                     const mockChanceRoll = vi.fn()
                         .mockImplementationOnce(() => false)
                         .mockImplementationOnce(() => true)
-                    const mockSampleRoll = vi.fn().mockImplementation(() => FURS.Polar)
+                    const expectedRareFur = DATA.furs.rare_options[1]
+                    const mockSampleRoll = vi.fn().mockImplementation(() => expectedRareFur)
                     const breedingGround = new NemeionBreedingGround(father, mother, {
                         shouldDoAction: mockChanceRoll,
                         randomSample: mockSampleRoll
                     })
 
                     const result = breedingGround._generateFur()
-                    expect(result).toBe(FURS.Polar)
+                    expect(result).toBe(expectedRareFur)
                 })
             })
 
             describe("when parents DON'T have the same fur", () => {
-                const mother = new Nemeion({ ...prototypeMother, fur: FURS.Silky })
+                const mother = new Nemeion({ ...prototypeMother, fur: DATA.furs.rare_options[0] })
 
                 it('always rolls an inherit chance for each parent', () => {
-                    const father = new Nemeion({ ...prototypeFather, fur: FURS.Polar })
+                    const father = new Nemeion({ ...prototypeFather, fur: DATA.furs.rare_options[1] })
 
                     const mockMethod = vi.fn().mockImplementation(() => false)
 
@@ -192,17 +194,17 @@ describe('NemeionBreedingGround', () => {
                 })
 
                 it("returns the mother's fur when both inherit rolls are successful", () => {
-                    const father = new Nemeion({ ...prototypeFather, fur: FURS.Polar })
+                    const father = new Nemeion({ ...prototypeFather, fur: DATA.furs.rare_options[1] })
                     const mockMethod = vi.fn().mockImplementation(() => true)
 
                     const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockMethod })
                     const result = breedingGround._generateFur()
 
-                    expect(result).toBe(FURS.Silky)
+                    expect(result).toBe(mother.fur)
                 })
 
                 it("returns the appropriate parent's fur when only one inherit roll is successful", () => {
-                    const father = new Nemeion({ ...prototypeFather, fur: FURS.Polar })
+                    const father = new Nemeion({ ...prototypeFather, fur: DATA.furs.rare_options[1] })
 
                     const fatherResultMethod = vi.fn()
                         .mockImplementationOnce(() => false)
@@ -223,12 +225,12 @@ describe('NemeionBreedingGround', () => {
 
         describe('when one parent has rare fur', () => {
             it("returns the appropriate parent's fur when the inherit roll is successful", () => {
-                const father = new Nemeion({ ...prototypeFather, fur: FURS.Silky })
+                const father = new Nemeion({ ...prototypeFather, fur: DATA.furs.rare_options[0] })
                 const fatherBreedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: () => true })
                 const fatherResult = fatherBreedingGround._generateFur()
                 expect(fatherResult).toBe(father.fur)
 
-                const mother = new Nemeion({ ...prototypeMother, fur: FURS.Polar })
+                const mother = new Nemeion({ ...prototypeMother, fur: DATA.furs.rare_options[1] })
                 const motherBreedingGround = new NemeionBreedingGround(prototypeFather, mother, { shouldDoAction: () => true })
                 const motherResult = motherBreedingGround._generateFur()
                 expect(motherResult).toBe(mother.fur)
@@ -237,23 +239,24 @@ describe('NemeionBreedingGround', () => {
             it('returns a sleek fur when the inherit roll is unsuccessful AND random roll is unsuccessful', () => {
                 const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, { shouldDoAction: () => false })
                 const result = breedingGround._generateFur()
-                expect(result).toBe(FURS.Sleek)
+                expect(result).toBe(DATA.furs.default)
             })
 
             it('returns a random rare fur when the inherit roll is unsuccessful but the random roll is successful', () => {
-                const father = new Nemeion({ ...prototypeFather, fur: FURS.Silky })
+                const father = new Nemeion({ ...prototypeFather, fur: DATA.furs.rare_options[0] })
 
                 const mockInheritRoll = vi.fn()
                     .mockImplementationOnce(() => false)
                     .mockImplementationOnce(() => true)
-                const mockSampleRoll = vi.fn().mockImplementation(() => FURS.Polar)
+                const expectedRareFur = DATA.furs.rare_options[1]
+                const mockSampleRoll = vi.fn().mockImplementation(() => expectedRareFur)
                 const breedingGround = new NemeionBreedingGround(father, prototypeMother, {
                     shouldDoAction: mockInheritRoll,
                     randomSample: mockSampleRoll
                 })
                 const result = breedingGround._generateFur()
 
-                expect(result).toBe(FURS.Polar)
+                expect(result).toBe(expectedRareFur)
                 expect(mockSampleRoll).toHaveBeenCalled()
             })
         })

@@ -25,10 +25,13 @@ export default class NemeionBreedingGround extends NemeionGenerator {
             if (father.gender !== GENDERS.Male || mother.gender !== GENDERS.Female) {
                 throw new Error('Parent genders do not match reality for breeding')
             }
-            super(overrides.shouldDoAction)
+            const shouldDoAction = overrides?.shouldDoAction ?? DEFAULT_SHOULD_DO_ACTION
+            const randomSample = overrides?.randomSample ?? DEFAULT_RANDOM_SAMPLE
+
+            super(shouldDoAction)
             this.father = father
             this.mother = mother
-            this.randomSample = overrides.randomSample
+            this.randomSample = randomSample
         } else {
             throw new Error('Only Nemeions can be bred here')
         }
@@ -114,15 +117,6 @@ export default class NemeionBreedingGround extends NemeionGenerator {
         }
     }
     _generateBuild(addons = []) {
-        // Check if Brute Potion is included - forces all cubs to be Brute build
-        if (addons.includes(ADDONS.AO_BRUTE_POTION)) {
-            return BUILDS.Brute
-        }
-        // Check if Regal Potion is included - forces all cubs to be Regal build
-        if (addons.includes(ADDONS.AO_REGAL_POTION)) {
-            return BUILDS.Regal
-        }
-
         if (this.father.build === this.mother.build) {
             return this.father.build
         }

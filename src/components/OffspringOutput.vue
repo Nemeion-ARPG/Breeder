@@ -11,6 +11,10 @@
             ⚡ A god has cursed this litter! ⚡
         </p>
 
+        <p v-if="hasInbreedingPenalty" class="inbreeding-section">
+            💀 This litter has been affected by inbreeding! At least one cub in this litter has been afflicted by inbreeding penalties. 💀
+        </p>
+
         <p v-if="offspring.length > 0 && (fatherName || motherName)" class="parent-names-section">
             <a v-if="fatherUrl" :href="fatherUrl" target="_blank" class="parent-link">{{ fatherName || 'Unknown' }}</a>
             <span v-else>{{ fatherName || 'Unknown' }}</span>
@@ -174,8 +178,16 @@ const hasCurse = computed(() => {
     return props.offspring.some(cub => cub.fur && cub.fur.includes('(Curse)'))
 })
 
+const hasInbreedingPenalty = computed(() => {
+    return props.offspring.some(cub => cub.health && cub.health !== 'Healthy')
+})
+
 const copyResults = async () => {
     let text = ''
+
+    if (hasInbreedingPenalty.value) {
+        text += '💀 This litter has been affected by inbreeding! At least one cub in this litter has been afflicted by inbreeding penalties. 💀\n.\n'
+    }
     
     // Add blessing/curse message if any cub has a gift
     if (hasBlessing.value) {
@@ -246,6 +258,11 @@ const copyResults = async () => {
         // Gift (if present)
         if (cub.fur) {
             text += `**[Gift]:** ${cub.fur}\n`
+        }
+
+        // Health (if present)
+        if (cub.health) {
+            text += `**[Health]:** ${cub.health}\n`
         }
         
         text += '.\n'
@@ -351,6 +368,15 @@ footer {
 :deep(.btn-check + .btn) {
     color: var(--color-text);
     background-color: var(--color-background-mute);
+}
+
+.inbreeding-section {
+    background: rgba(120, 0, 0, 0.12);
+    border: 1px solid rgba(120, 0, 0, 0.35);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    margin: 0.75rem 0;
+    font-weight: 600;
 }
 
 :deep(.btn-dark) {

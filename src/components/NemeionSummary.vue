@@ -10,6 +10,8 @@
             <label v-if="reference.titan_traits.length > 0">[Titan Traits]: {{ selectedTitanTraits }}</label>
             <label v-if="reference.fur">[Gift]: {{ reference.fur }}</label>
 
+            <label v-if="reference.health">[Health]: {{ reference.health }}</label>
+
         </div>
     </div>
 </template>
