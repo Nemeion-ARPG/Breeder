@@ -27,6 +27,32 @@
                             class="url-field"
                         />
                     </div>
+
+                    <div class="markings-bulk-input">
+                        <div>
+                            <label>Markings (paste list)</label>
+                        </div>
+                        <BFormTextarea
+                            v-model="markingsBulkInput"
+                            rows="2"
+                            max-rows="6"
+                            placeholder="Type or paste marking names (comma/newline separated). Recognized markings will be checked automatically."
+                            class="markings-bulk-field"
+                        />
+                    </div>
+
+                    <div class="traits-bulk-input">
+                        <div>
+                            <label>Traits (paste list)</label>
+                        </div>
+                        <BFormTextarea
+                            v-model="traitsBulkInput"
+                            rows="2"
+                            max-rows="6"
+                            placeholder="Type or paste trait and titan trait names (comma/newline separated). Recognized ones will be checked automatically."
+                            class="traits-bulk-field"
+                        />
+                    </div>
                 </div>
 
                 <div class="build-selector">
@@ -80,63 +106,108 @@
                 </div>
 
                 <div class="trait-selector">
-                    <div>
-                        <label>Traits</label>
-                    </div>
+                    <button
+                        type="button"
+                        class="collapsible-header"
+                        :aria-expanded="traitsOpen ? 'true' : 'false'"
+                        :aria-controls="`${idPrefix}-traits`"
+                        @click="traitsOpen = !traitsOpen"
+                    >
+                        <span class="collapsible-title">Traits</span>
+                        <span class="collapsible-chevron">{{ traitsOpen ? '▾' : '▸' }}</span>
+                    </button>
 
-                    <BFormCheckboxGroup
-                        class="form-checkbox-group"
-                        v-model="parentRef.traits"
-                        :options="availableTraits"
-                    />
+                    <div :id="`${idPrefix}-traits`" v-show="traitsOpen">
+                        <BFormCheckboxGroup
+                            class="form-checkbox-group"
+                            v-model="parentRef.traits"
+                            :options="availableTraits"
+                        />
+                    </div>
                 </div>
 
                 <div class="markings-selector">
-                    <div>
-                        <label>Markings</label>
-                    </div>
+                    <button
+                        type="button"
+                        class="collapsible-header"
+                        :aria-expanded="markingsOpen ? 'true' : 'false'"
+                        :aria-controls="`${idPrefix}-markings`"
+                        @click="markingsOpen = !markingsOpen"
+                    >
+                        <span class="collapsible-title">Markings</span>
+                        <span class="collapsible-chevron">{{ markingsOpen ? '▾' : '▸' }}</span>
+                    </button>
 
-                    <BFormCheckboxGroup
-                        class="form-checkbox-group"
-                        v-model="parentRef.markings"
-                        :options="availableMarkings"
-                    />
+                    <div :id="`${idPrefix}-markings`" v-show="markingsOpen">
+                        <BFormCheckboxGroup
+                            class="form-checkbox-group"
+                            v-model="parentRef.markings"
+                            :options="availableMarkings"
+                        />
+                    </div>
                 </div>
 
                 <div class="mutations-selector">
-                    <div>
-                        <label>Mutations</label>
-                    </div>
+                    <button
+                        type="button"
+                        class="collapsible-header"
+                        :aria-expanded="mutationsOpen ? 'true' : 'false'"
+                        :aria-controls="`${idPrefix}-mutations`"
+                        @click="mutationsOpen = !mutationsOpen"
+                    >
+                        <span class="collapsible-title">Mutations</span>
+                        <span class="collapsible-chevron">{{ mutationsOpen ? '▾' : '▸' }}</span>
+                    </button>
 
-                    <BFormCheckboxGroup
-                        class="form-checkbox-group"
-                        v-model="parentRef.mutations"
-                        :options="availableMutations"
-                    />
+                    <div :id="`${idPrefix}-mutations`" v-show="mutationsOpen">
+                        <BFormCheckboxGroup
+                            class="form-checkbox-group"
+                            v-model="parentRef.mutations"
+                            :options="availableMutations"
+                        />
+                    </div>
                 </div>
 
                 <div class="fur-selector">
-                    <div>
-                        <label>Gifts</label>
-                    </div>
+                    <button
+                        type="button"
+                        class="collapsible-header"
+                        :aria-expanded="giftsOpen ? 'true' : 'false'"
+                        :aria-controls="`${idPrefix}-gifts`"
+                        @click="giftsOpen = !giftsOpen"
+                    >
+                        <span class="collapsible-title">Gifts</span>
+                        <span class="collapsible-chevron">{{ giftsOpen ? '▾' : '▸' }}</span>
+                    </button>
                     
-                    <BFormCheckboxGroup
-                        class="form-checkbox-group"
-                        v-model="parentRef.furs"
-                        :options="availableFurs"
-                    />
+                    <div :id="`${idPrefix}-gifts`" v-show="giftsOpen">
+                        <BFormCheckboxGroup
+                            class="form-checkbox-group"
+                            v-model="parentRef.furs"
+                            :options="availableFurs"
+                        />
+                    </div>
                 </div>
 
                 <div class="titan-traits-selector">
-                    <div>
-                        <label>Titan Traits</label>
-                    </div>
+                    <button
+                        type="button"
+                        class="collapsible-header"
+                        :aria-expanded="titanTraitsOpen ? 'true' : 'false'"
+                        :aria-controls="`${idPrefix}-titan-traits`"
+                        @click="titanTraitsOpen = !titanTraitsOpen"
+                    >
+                        <span class="collapsible-title">Titan Traits</span>
+                        <span class="collapsible-chevron">{{ titanTraitsOpen ? '▾' : '▸' }}</span>
+                    </button>
 
-                    <BFormCheckboxGroup
-                        class="form-checkbox-group"
-                        v-model="parentRef.titan_traits"
-                        :options="availableTitanTraits"
-                    />
+                    <div :id="`${idPrefix}-titan-traits`" v-show="titanTraitsOpen">
+                        <BFormCheckboxGroup
+                            class="form-checkbox-group"
+                            v-model="parentRef.titan_traits"
+                            :options="availableTitanTraits"
+                        />
+                    </div>
                 </div>
 
                 <footer class="button-container">
@@ -179,7 +250,7 @@
 import NemeionSummary from '@/components/NemeionSummary.vue'
 import Nemeion from '@/types/Nemeion'
 
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 import DATA from '@/data.yaml'
 import STARTERS from '@/starters.yaml'
@@ -207,6 +278,151 @@ defineEmits(['update:parentRef'])
 const showSummary = ref(false)
 const showNotification = ref(false)
 const notificationMessage = ref('')
+
+const idPrefix = computed(() => props.title.toLowerCase().replace(/\s+/g, '-'))
+
+const traitsOpen = ref(false)
+const markingsOpen = ref(false)
+const mutationsOpen = ref(false)
+const giftsOpen = ref(false)
+const titanTraitsOpen = ref(false)
+
+const markingsBulkInput = ref('')
+const traitsBulkInput = ref('')
+
+const normalizeForMatch = (value) => {
+    return String(value ?? '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim()
+        .replace(/\s+/g, ' ')
+}
+
+const markingMatchers = computed(() => {
+    return Object.entries(DATA.markings.available).map(([id, data]) => ({
+        id,
+        idNormalized: normalizeForMatch(id),
+        nameNormalized: normalizeForMatch(data.display_name)
+    }))
+})
+
+const traitMatchers = computed(() => {
+    return Object.entries(DATA.traits.available).map(([id, data]) => ({
+        id,
+        idNormalized: normalizeForMatch(id),
+        nameNormalized: normalizeForMatch(data.display_name)
+    }))
+})
+
+const titanTraitMatchers = computed(() => {
+    return Object.entries(DATA.titan_traits.available).map(([id, data]) => ({
+        id,
+        idNormalized: normalizeForMatch(id),
+        nameNormalized: normalizeForMatch(data.display_name)
+    }))
+})
+
+const findRecognizedMarkings = (input) => {
+    const inputNormalized = normalizeForMatch(input)
+    if (!inputNormalized) return []
+
+    const tokens = String(input)
+        .split(/[\n,;]+/)
+        .map(token => normalizeForMatch(token))
+        .filter(Boolean)
+    const tokenSet = new Set(tokens)
+
+    const found = new Set()
+    for (const matcher of markingMatchers.value) {
+        if (
+            tokenSet.has(matcher.idNormalized) ||
+            tokenSet.has(matcher.nameNormalized) ||
+            inputNormalized.includes(matcher.nameNormalized) ||
+            inputNormalized.includes(matcher.idNormalized)
+        ) {
+            found.add(matcher.id)
+        }
+    }
+    return [...found]
+}
+
+const findRecognizedByMatchers = (input, matchers) => {
+    const inputNormalized = normalizeForMatch(input)
+    if (!inputNormalized) return []
+
+    const tokens = String(input)
+        .split(/[\n,;]+/)
+        .map(token => normalizeForMatch(token))
+        .filter(Boolean)
+    const tokenSet = new Set(tokens)
+
+    const found = new Set()
+    for (const matcher of matchers) {
+        if (
+            tokenSet.has(matcher.idNormalized) ||
+            tokenSet.has(matcher.nameNormalized) ||
+            inputNormalized.includes(matcher.nameNormalized) ||
+            inputNormalized.includes(matcher.idNormalized)
+        ) {
+            found.add(matcher.id)
+        }
+    }
+
+    return [...found]
+}
+
+const inferCoatFromMarkingsInput = (input) => {
+    const lower = String(input ?? '').toLowerCase()
+
+    const candidates = [
+        { coat: 'Tan', keyword: 'tan' },
+        { coat: 'Cream', keyword: 'cream' },
+        { coat: 'Agouti', keyword: 'agouti' },
+    ]
+        .map(({ coat, keyword }) => ({
+            coat,
+            index: lower.indexOf(keyword)
+        }))
+        .filter(({ index }) => index !== -1)
+        .sort((a, b) => a.index - b.index)
+
+    return candidates.length > 0 ? candidates[0].coat : null
+}
+
+watch(markingsBulkInput, (newValue) => {
+    const inferredCoat = inferCoatFromMarkingsInput(newValue)
+    if (inferredCoat && COATS.allValues.includes(inferredCoat)) {
+        props.parentRef.coat = inferredCoat
+    }
+
+    const recognized = findRecognizedMarkings(newValue)
+    if (recognized.length === 0) return
+
+    const existing = Array.isArray(props.parentRef.markings) ? props.parentRef.markings : []
+    props.parentRef.markings = [...new Set([...existing, ...recognized])]
+
+    // UX: if they’re pasting markings, auto-open the markings section.
+    markingsOpen.value = true
+})
+
+watch(traitsBulkInput, (newValue) => {
+    const recognizedTraits = findRecognizedByMatchers(newValue, traitMatchers.value)
+    const recognizedTitanTraits = findRecognizedByMatchers(newValue, titanTraitMatchers.value)
+
+    if (recognizedTraits.length > 0) {
+        const existingTraits = Array.isArray(props.parentRef.traits) ? props.parentRef.traits : []
+        props.parentRef.traits = [...new Set([...existingTraits, ...recognizedTraits])]
+        traitsOpen.value = true
+    }
+
+    if (recognizedTitanTraits.length > 0) {
+        const existingTitanTraits = Array.isArray(props.parentRef.titan_traits)
+            ? props.parentRef.titan_traits
+            : []
+        props.parentRef.titan_traits = [...new Set([...existingTitanTraits, ...recognizedTitanTraits])]
+        titanTraitsOpen.value = true
+    }
+})
 
 const showNotificationWithMessage = (message) => {
     notificationMessage.value = message
@@ -381,6 +597,15 @@ const resetParent = () => {
     props.parentRef.mutations = []
     props.parentRef.furs = []
     props.parentRef.titan_traits = []
+
+    markingsBulkInput.value = ''
+    traitsBulkInput.value = ''
+
+    traitsOpen.value = false
+    markingsOpen.value = false
+    mutationsOpen.value = false
+    giftsOpen.value = false
+    titanTraitsOpen.value = false
     
     // Show notification
     showNotificationWithMessage(`${props.title} reset!`)
@@ -422,6 +647,24 @@ label {
     color: var(--color-text);
 }
 
+.markings-bulk-input {
+    margin-top: 0.5rem;
+}
+
+.markings-bulk-field :deep(textarea) {
+    background-color: #d3d3d3;
+    color: var(--color-text);
+}
+
+.traits-bulk-input {
+    margin-top: 0.5rem;
+}
+
+.traits-bulk-field :deep(textarea) {
+    background-color: #d3d3d3;
+    color: var(--color-text);
+}
+
 .form-selector {
     color: var(--color-text);
     background: var(--color-background-soft);
@@ -439,6 +682,32 @@ label {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 0.25rem;
+}
+
+.collapsible-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: var(--color-text);
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 0.1rem;
+    cursor: pointer;
+}
+
+.collapsible-header:focus-visible {
+    outline: 2px solid var(--color-border-hover);
+    outline-offset: 2px;
+}
+
+.collapsible-chevron {
+    color: var(--color-text);
+    font-weight: normal;
+    opacity: 0.9;
 }
 
 .random-selector {
