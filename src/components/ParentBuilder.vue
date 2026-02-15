@@ -270,6 +270,11 @@ const props = defineProps({
     otherParentRef: {
         type: Nemeion,
         required: true
+    },
+    resetNonce: {
+        type: Number,
+        required: false,
+        default: 0
     }
 })
 
@@ -290,12 +295,32 @@ const titanTraitsOpen = ref(false)
 const markingsBulkInput = ref('')
 const traitsBulkInput = ref('')
 
+watch(() => props.resetNonce, () => {
+    markingsBulkInput.value = ''
+    traitsBulkInput.value = ''
+
+    traitsOpen.value = false
+    markingsOpen.value = false
+    mutationsOpen.value = false
+    giftsOpen.value = false
+    titanTraitsOpen.value = false
+
+    showSummary.value = false
+})
+
 const normalizeForMatch = (value) => {
     return String(value ?? '')
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, ' ')
         .trim()
         .replace(/\s+/g, ' ')
+}
+
+const includesWholeNormalizedPhrase = (haystackNormalized, needleNormalized) => {
+    if (!haystackNormalized || !needleNormalized) return false
+    const haystack = ` ${haystackNormalized} `
+    const needle = ` ${needleNormalized} `
+    return haystack.includes(needle)
 }
 
 const markingMatchers = computed(() => {
@@ -337,8 +362,8 @@ const findRecognizedMarkings = (input) => {
         if (
             tokenSet.has(matcher.idNormalized) ||
             tokenSet.has(matcher.nameNormalized) ||
-            inputNormalized.includes(matcher.nameNormalized) ||
-            inputNormalized.includes(matcher.idNormalized)
+            includesWholeNormalizedPhrase(inputNormalized, matcher.nameNormalized) ||
+            includesWholeNormalizedPhrase(inputNormalized, matcher.idNormalized)
         ) {
             found.add(matcher.id)
         }
@@ -361,8 +386,8 @@ const findRecognizedByMatchers = (input, matchers) => {
         if (
             tokenSet.has(matcher.idNormalized) ||
             tokenSet.has(matcher.nameNormalized) ||
-            inputNormalized.includes(matcher.nameNormalized) ||
-            inputNormalized.includes(matcher.idNormalized)
+            includesWholeNormalizedPhrase(inputNormalized, matcher.nameNormalized) ||
+            includesWholeNormalizedPhrase(inputNormalized, matcher.idNormalized)
         ) {
             found.add(matcher.id)
         }
@@ -493,6 +518,26 @@ const availableBuilds = computed(() => {
 })
 
 const randomizeParent = () => {
+    const pickDifferentRandom = (options, current) => {
+        if (!Array.isArray(options) || options.length === 0) return current
+        if (options.length === 1) return options[0]
+
+        let next = current
+        // Try a few times to avoid returning the same value
+        for (let i = 0; i < 10; i++) {
+            const candidate = options[Math.floor(Math.random() * options.length)]
+            if (candidate !== current) {
+                next = candidate
+                break
+            }
+        }
+        return next === current ? options.find(v => v !== current) ?? options[0] : next
+    }
+
+    // Random build and coat
+    props.parentRef.build = pickDifferentRandom(BUILDS.allValues, props.parentRef.build)
+    props.parentRef.coat = pickDifferentRandom(COATS.allValues, props.parentRef.coat)
+
     // Random markings (1-8)
     const markingCount = Math.floor(Math.random() * 8) + 1
     const allMarkings = MARKINGS.allValues
@@ -590,11 +635,12 @@ const resetParent = () => {
     // Clear all parent properties
     props.parentRef.name = ""
     props.parentRef.url = ""
-    props.parentRef.build = "Standard"
-    props.parentRef.coat = "Natural"
+    props.parentRef.build = DATA.builds.default
+    props.parentRef.coat = DATA.coats.default
     props.parentRef.traits = []
     props.parentRef.markings = []
     props.parentRef.mutations = []
+    props.parentRef.fur = DATA.furs.default
     props.parentRef.furs = []
     props.parentRef.titan_traits = []
 

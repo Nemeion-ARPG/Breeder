@@ -9,6 +9,7 @@
       title="Father"
       v-model:parentRef="den.father"
       :otherParentRef="den.mother"
+      :reset-nonce="resetNonce"
     />
 
     <ParentBuilder
@@ -16,6 +17,7 @@
       title="Mother"
       v-model:parentRef="den.mother"
       :otherParentRef="den.father"
+      :reset-nonce="resetNonce"
     />
 
     <AddonSelector
@@ -28,6 +30,8 @@
       :available-markings-for-apollo="availableMarkingsForApollo"
       :heritage-enabled="den.heritageEnabled"
       :selected-heritage-trait="den.selectedHeritageTrait"
+      :heritage-double-enabled="den.heritageDoubleEnabled"
+      :selected-heritage-double-trait="den.selectedHeritageDoubleTrait"
       :available-traits-for-heritage="availableTraitsForHeritage"
       :rank1-enabled="den.rank1Enabled"
       :inbreeding-enabled="den.inbreedingEnabled"
@@ -35,6 +39,8 @@
       @update:selected-apollo-marking="den.selectedApolloMarking = $event"
       @update:heritage-enabled="den.heritageEnabled = $event"
       @update:selected-heritage-trait="den.selectedHeritageTrait = $event"
+      @update:heritage-double-enabled="den.heritageDoubleEnabled = $event"
+      @update:selected-heritage-double-trait="den.selectedHeritageDoubleTrait = $event"
       @update:rank1-enabled="den.rank1Enabled = $event"
       @update:inbreeding-enabled="den.inbreedingEnabled = $event"
     />
@@ -43,15 +49,16 @@
       class="full-width-column"
       title="Offspring"
       :offspring="den.offspring"
-      :limited-markings="[...den.father.limitedMarkings, ...den.mother.limitedMarkings]"
+      :limited-markings="limitedMarkingsSorted"
       :father-name="den.father.name"
       :mother-name="den.mother.name"
       :father-url="den.father.url"
       :mother-url="den.mother.url"
       :rank1-enabled="den.rank1Enabled"
       @generateOffspring="den.makeOffspring()"
-      @reset="den.$reset()"
+      @reset="resetAll"
       @generateRandom="den.makeRandom()"
+      @generateRandom1="den.makeRandom1()"
       @generateRandom5="den.makeRandom5()"
     />
   </main>
@@ -63,12 +70,24 @@ import AddonSelector from '@/components/AddonSelector.vue'
 import OffspringOutput from '@/components/OffspringOutput.vue'
 
 import denStore from '@/stores/den'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { MARKINGS, MUTATIONS, COATS } from '@/Constants'
 
 import DATA from '@/data.yaml'
 
 const den = denStore()
+
+const resetNonce = ref(0)
+
+const resetAll = () => {
+  den.$reset()
+  resetNonce.value += 1
+}
+
+const limitedMarkingsSorted = computed(() => {
+  const combined = [...den.father.limitedMarkings, ...den.mother.limitedMarkings]
+  return [...new Set(combined)].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+})
 
 const availableAddons = Object.entries(DATA.add_ons).map(([key, value]) => {
   return {

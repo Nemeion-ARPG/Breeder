@@ -63,6 +63,18 @@ describe("den store", () => {
             expect(breedingGround.makeOffspring).toHaveBeenCalled()
         })
 
+            describe('with pomegranate of eleusis addon', () => {
+                it('guarantees a minimum of 3 cubs returned', () => {
+                    const den = denStore()
+                    den.selectedAddons = [ADDONS.AO_POMEGRANATE_ELEUSIS]
+
+                    const breedingGround = new NemeionBreedingGround(den.father, den.mother)
+                    den.makeOffspring(breedingGround, () => DATA.litters.weights[0])
+
+                    expect(den.offspring.length).toBeGreaterThanOrEqual(3)
+                })
+            })
+
         describe('when given a breeding ground', () => {
             it('throws an error if it is not a NemeionBreedingGround', () => {
                 const den = denStore()
@@ -211,6 +223,165 @@ describe("den store", () => {
             })
         })
 
+        describe('with volatile potion addon', () => {
+            class MockBreedingGround extends NemeionBreedingGround {
+                constructor(father, mother) {
+                    super(father, mother)
+                }
+
+                _generateBuild() {
+                    // Always generate a parent build so the addon must override at least one cub.
+                    return this.father.build
+                }
+            }
+
+            it('should force at least one cub to have a build not present on either parent', () => {
+                const den = denStore()
+                den.father.build = BUILDS.Brute
+                den.mother.build = BUILDS.Regal
+                den.selectedAddons = [ADDONS.AO_VOLATILE_POTION]
+
+                den.makeOffspring(
+                    new MockBreedingGround(den.father, den.mother),
+                    () => DATA.litters.weights[1],
+                    {
+                        rollLitterSize: (min, max) => min,
+                        shouldDoAction: DEFAULT_SHOULD_DO_ACTION
+                    },
+                    (arr) => arr[0]
+                )
+
+                const parentBuilds = new Set([den.father.build, den.mother.build])
+                expect(den.offspring.some(cub => !parentBuilds.has(cub.build))).toBe(true)
+            })
+        })
+
+        describe('with mutagenic addon', () => {
+            class MockBreedingGround extends NemeionBreedingGround {
+                constructor(father, mother) {
+                    super(father, mother)
+                }
+
+                _generateMutations() {
+                    return []
+                }
+            }
+
+            const countPhysical = (litter) =>
+                litter.filter(cub => cub.mutations.some(m => DATA.mutations.available[m].category === 'physical')).length
+
+            it('should always guarantee at least one cub has a physical mutation', () => {
+                const den = denStore()
+                den.selectedAddons = [ADDONS.AO_MUTAGENIC]
+
+                den.makeOffspring(
+                    new MockBreedingGround(den.father, den.mother),
+                    () => DATA.litters.weights[1],
+                    {
+                        rollLitterSize: (min, max) => min,
+                        shouldDoAction: () => false
+                    },
+                    (arr) => arr[0]
+                )
+
+                expect(countPhysical(den.offspring)).toBeGreaterThanOrEqual(1)
+            })
+
+            it('should have a 50% chance to force a second cub to get a physical mutation', () => {
+                const den = denStore()
+                den.selectedAddons = [ADDONS.AO_MUTAGENIC]
+
+                const mockShouldDoAction = vi
+                    .fn()
+                    .mockImplementationOnce(() => true)
+
+                den.makeOffspring(
+                    new MockBreedingGround(den.father, den.mother),
+                    () => DATA.litters.weights[1],
+                    {
+                        rollLitterSize: (min, max) => min,
+                        shouldDoAction: mockShouldDoAction
+                    },
+                    (arr) => arr[0]
+                )
+
+                expect(mockShouldDoAction).toHaveBeenCalledWith(DATA.add_ons.AO_MUTAGENIC.options.second_cub_chance)
+                expect(countPhysical(den.offspring)).toBe(2)
+            })
+
+            it('should have a 25% chance for each remaining cub to get a physical mutation', () => {
+                const den = denStore()
+                den.selectedAddons = [ADDONS.AO_MUTAGENIC]
+
+                const mockShouldDoAction = vi
+                    .fn()
+                    // second cub chance
+                    .mockImplementationOnce(() => false)
+                    // remaining cub chance (3 cubs will be eligible in a 4 cub litter)
+                    .mockImplementationOnce(() => true)
+                    .mockImplementationOnce(() => false)
+                    .mockImplementationOnce(() => true)
+
+                den.makeOffspring(
+                    new MockBreedingGround(den.father, den.mother),
+                    () => DATA.litters.weights[3],
+                    {
+                        rollLitterSize: (min, max) => min,
+                        shouldDoAction: mockShouldDoAction
+                    },
+                    (arr) => arr[0]
+                )
+
+                expect(den.offspring.length).toBe(4)
+                expect(countPhysical(den.offspring)).toBe(3)
+            })
+        })
+
+        describe('with heritage double enabled', () => {
+            class MockBreedingGround extends NemeionBreedingGround {
+                constructor(father, mother) {
+                    super(father, mother)
+                }
+
+                _generateMarkings() {
+                    return []
+                }
+
+                _generateMutations() {
+                    return []
+                }
+            }
+
+            it('should apply both Heritage and Heritage Double selections', () => {
+                const den = denStore()
+                den.heritageEnabled = true
+                den.selectedHeritageTrait = 'marking:Aetherius'
+                den.heritageDoubleEnabled = true
+                den.selectedHeritageDoubleTrait = 'mutation:Polycaudal'
+
+                const randomSample = vi
+                    .fn()
+                    // Heritage targets first cub
+                    .mockImplementationOnce(arr => arr[0])
+                    // Heritage Double targets second cub
+                    .mockImplementationOnce(arr => arr[1])
+
+                den.makeOffspring(
+                    new MockBreedingGround(den.father, den.mother),
+                    () => DATA.litters.weights[1],
+                    {
+                        rollLitterSize: (min, max) => min,
+                        shouldDoAction: DEFAULT_SHOULD_DO_ACTION
+                    },
+                    randomSample
+                )
+
+                expect(den.offspring.length).toBe(2)
+                expect(den.offspring[0].markings).toContain('Aetherius')
+                expect(den.offspring[1].mutations).toContain('Polycaudal')
+            })
+        })
+
         describe('with blossom of cloris addon', () => {
             const ADDITIONAL_COUNT = DATA.add_ons.AO_BLOSSOM_CHLORIS.options.additional
 
@@ -327,7 +498,7 @@ describe("den store", () => {
                 expect(mockRandomSample).toHaveBeenCalledTimes(1)
             })
 
-            it('should not roll if any children have mutations', () => {
+            it('should still roll even if some children already have mutations', () => {
                 const den = denStore()
                 den.selectedAddons = [ADDONS.AO_MUTATION_STONE]
 
@@ -335,13 +506,72 @@ describe("den store", () => {
                     .mockImplementationOnce(() => new Nemeion())
                     .mockImplementationOnce(() => new Nemeion({ mutations: [MUTATIONS.Leucism] }))
                     .mockImplementationOnce(() => new Nemeion())
-                const mockRandomSample = vi.fn()
+                const mockRandomSample = vi.fn().mockImplementation(() => MUTATIONS.Albinism)
                 const breedingGround = new MockBreedingGround(den.father, den.mother, mockMakeOffspring)
 
                 den.makeOffspring(breedingGround, mockLitterSizeChance, undefined, mockRandomSample)
 
                 expect(mockMakeOffspring).toHaveBeenCalledTimes(3)
-                expect(mockRandomSample).not.toHaveBeenCalled()
+                expect(mockRandomSample).toHaveBeenCalledTimes(1)
+                expect(den.offspring[0].hasMutations).toBe(true)
+            })
+        })
+
+        describe('with legatus stacking with mutation boosters', () => {
+            const mockLitterSizeChance = () => DATA.litters.weights[0] // 1 cub
+
+            class MockBreedingGround extends NemeionBreedingGround {
+                constructor(father, mother, makeOffspring = () => new Nemeion()) {
+                    super(father, mother)
+                    this._makeOffspring = makeOffspring
+                }
+                makeOffspring() {
+                    return this._makeOffspring()
+                }
+            }
+
+            it('applies Wereworm + Rare Blood boosts to Legatus Single chance', () => {
+                const den = denStore()
+                den.selectedAddons = [ADDONS.AO_LEGATUS_SINGLE, ADDONS.AO_WEREWORM, ADDONS.AO_RARE_BLOOD]
+
+                const mockShouldDoAction = vi.fn().mockImplementation(() => false)
+                const breedingGround = new MockBreedingGround(den.father, den.mother)
+
+                den.makeOffspring(
+                    breedingGround,
+                    mockLitterSizeChance,
+                    { rollLitterSize: (min) => min, shouldDoAction: mockShouldDoAction },
+                    () => MUTATIONS.Albinism
+                )
+
+                const base = DATA.add_ons.AO_LEGATUS_SINGLE.options.mutation_chance
+                const expected = Math.min(
+                    1,
+                    base + DATA.add_ons.AO_WEREWORM.options.increased_chance + DATA.add_ons.AO_RARE_BLOOD.options.increased_chance
+                )
+                expect(mockShouldDoAction).toHaveBeenCalledWith(expected)
+            })
+
+            it('applies Wereworm + Rare Blood boosts to Legatus Double chance', () => {
+                const den = denStore()
+                den.selectedAddons = [ADDONS.AO_LEGATUS_DOUBLE, ADDONS.AO_WEREWORM, ADDONS.AO_RARE_BLOOD]
+
+                const mockShouldDoAction = vi.fn().mockImplementation(() => false)
+                const breedingGround = new MockBreedingGround(den.father, den.mother)
+
+                den.makeOffspring(
+                    breedingGround,
+                    mockLitterSizeChance,
+                    { rollLitterSize: (min) => min, shouldDoAction: mockShouldDoAction },
+                    () => MUTATIONS.Albinism
+                )
+
+                const base = DATA.add_ons.AO_LEGATUS_DOUBLE.options.mutation_chance
+                const expected = Math.min(
+                    1,
+                    base + DATA.add_ons.AO_WEREWORM.options.increased_chance + DATA.add_ons.AO_RARE_BLOOD.options.increased_chance
+                )
+                expect(mockShouldDoAction).toHaveBeenCalledWith(expected)
             })
         })
 
@@ -425,6 +655,57 @@ describe("den store", () => {
                     den.makeRandom(null)
                 }).toThrowError()
             })
+        })
+
+        it('forces a mutation when a cub has no markings', () => {
+            const den = denStore()
+
+            class MockRandomGenerator extends NemeionRandomGenerator {
+                makeOffspring() {
+                    return new Nemeion({ markings: [], mutations: [] })
+                }
+            }
+
+            den.makeRandom(new MockRandomGenerator(), () => DATA.litters.weights[0], () => 1, (arr) => arr[0])
+
+            expect(den.offspring.length).toBe(1)
+            expect(den.offspring[0].markings.length).toBe(0)
+            expect(den.offspring[0].mutations.length).toBeGreaterThan(0)
+        })
+    })
+
+    describe('makeRandom5', () => {
+        it('forces a mutation when a cub has no markings', () => {
+            const den = denStore()
+
+            class MockRandomGenerator extends NemeionRandomGenerator {
+                makeOffspring() {
+                    return new Nemeion({ markings: [], mutations: [] })
+                }
+            }
+
+            den.makeRandom5(new MockRandomGenerator(), () => 1, (arr) => arr[0])
+
+            expect(den.offspring.length).toBe(5)
+            expect(den.offspring.every(cub => cub.markings.length === 0)).toBe(true)
+            expect(den.offspring.every(cub => cub.mutations.length > 0)).toBe(true)
+        })
+    })
+
+    describe('makeRandom1', () => {
+        it('rolls exactly 1 cub', () => {
+            const den = denStore()
+
+            class MockRandomGenerator extends NemeionRandomGenerator {
+                makeOffspring() {
+                    return new Nemeion({ markings: [], mutations: [] })
+                }
+            }
+
+            den.makeRandom1(new MockRandomGenerator(), () => 1, (arr) => arr[0])
+
+            expect(den.offspring.length).toBe(1)
+            expect(den.offspring[0].mutations.length).toBeGreaterThan(0)
         })
     })
 

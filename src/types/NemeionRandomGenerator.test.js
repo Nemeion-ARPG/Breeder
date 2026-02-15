@@ -120,6 +120,24 @@ describe('NemeionRandomGenerator', () => {
             let _ = generator._generateTraits()
             expect(mockRandomSample).toHaveBeenCalled(2)
         })
+
+        it('should never roll Unique quality traits', () => {
+            const mockRandomSample = vi.fn().mockImplementation((arr) => {
+                // Ensure the candidate pool does not contain Unique traits
+                for (const key of arr) {
+                    expect(DATA.traits.available[key].quality).not.toBe('Unique')
+                }
+                return arr[0]
+            })
+
+            const generator = new NemeionRandomGenerator(() => true, mockRandomSample, () => 2)
+            const result = generator._generateTraits()
+
+            // And the result itself is not Unique
+            for (const key of result) {
+                expect(DATA.traits.available[key].quality).not.toBe('Unique')
+            }
+        })
     })
 
     describe('_generateMarkings', () => {

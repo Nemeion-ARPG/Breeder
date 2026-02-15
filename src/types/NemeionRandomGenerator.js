@@ -9,6 +9,8 @@ import { rollForThreshold } from '@/utils'
 import DATA from '@/data.yaml'
 import { TRAITS, MARKINGS, MUTATIONS, TITAN_TRAITS } from '@/Constants.js'
 
+const RANDOM_ALLOWED_TRAITS = TRAITS.allValues.filter(key => DATA.traits.available?.[key]?.quality !== 'Unique')
+
 export const DEFAULT_RANDOM_SAMPLE = _sample
 export const DEFAULT_SHOULD_DO_ACTION = rollForThreshold
 export const DEFAULT_RANDOM_INT = (max) => _random(0, max)
@@ -38,7 +40,7 @@ export default class NemeionRandomGenerator extends NemeionGenerator {
         return this.#_generateWeightedRandom(DATA.builds.random_chance)
     }
     _generateTraits() {
-        return this.#_generateRandomAspects(DATA.traits.random_cap, TRAITS.allValues)
+        return this.#_generateRandomAspects(DATA.traits.random_cap, RANDOM_ALLOWED_TRAITS)
     }
     _generateMarkings() {
         const markings = this.#_generateWeightedMarkings(DATA.markings.random_cap)

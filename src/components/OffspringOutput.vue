@@ -15,7 +15,7 @@
             💀 This litter has been affected by inbreeding! At least one cub in this litter has been afflicted by inbreeding penalties. 💀
         </p>
 
-        <p v-if="offspring.length > 0 && (fatherName || motherName)" class="parent-names-section">
+        <p v-if="offspring.length > 0" class="parent-names-section">
             <a v-if="fatherUrl" :href="fatherUrl" target="_blank" class="parent-link">{{ fatherName || 'Unknown' }}</a>
             <span v-else>{{ fatherName || 'Unknown' }}</span>
             X 
@@ -58,6 +58,12 @@
                 @click="$emit('generateRandom')"
                 variant="secondary"
             >Random</BButton>
+
+            <BButton
+                class="primary-button"
+                @click="$emit('generateRandom1')"
+                variant="secondary"
+            >Roll 1</BButton>
 
             <BButton
                 class="primary-button"
@@ -162,7 +168,7 @@ const props = defineProps({
         default: false
     }
 })
-defineEmits(['generateOffspring', 'reset', 'generateRandom', 'generateRandom5'])
+defineEmits(['generateOffspring', 'reset', 'generateRandom', 'generateRandom1', 'generateRandom5'])
 
 import { computed } from 'vue'
 
@@ -183,6 +189,7 @@ const hasInbreedingPenalty = computed(() => {
 })
 
 const copyResults = async () => {
+    const TRAIT_COLLATOR = new Intl.Collator(undefined, { sensitivity: 'base' })
     let text = ''
 
     if (hasInbreedingPenalty.value) {
@@ -197,8 +204,8 @@ const copyResults = async () => {
         text += '⚡ A god has cursed this litter! At least one cub in this litter bears the mark of divine wrath. ⚡\n.\n'
     }
     
-    // Add parent names if provided
-    if (props.fatherName || props.motherName) {
+    // Always include parent line (Unknown x Unknown fallback)
+    if (props.offspring.length > 0) {
         const fatherText = props.fatherUrl 
             ? `<a href="${props.fatherUrl}">${props.fatherName || 'Unknown'}</a>`
             : (props.fatherName || 'Unknown')
@@ -243,6 +250,7 @@ const copyResults = async () => {
         if (cub.traits.length > 0) {
             const traits = cub.traits
                 .map(trait => DATA.traits.available[trait].display_name)
+                .sort((a, b) => TRAIT_COLLATOR.compare(a, b))
                 .join(', ')
             text += `**[Traits]:** ${traits}\n`
         }
@@ -251,6 +259,7 @@ const copyResults = async () => {
         if (cub.titan_traits.length > 0) {
             const titanTraits = cub.titan_traits
                 .map(trait => DATA.titan_traits.available[trait].display_name)
+                .sort((a, b) => TRAIT_COLLATOR.compare(a, b))
                 .join(', ')
             text += `**[Titan Traits]:** ${titanTraits}\n`
         }

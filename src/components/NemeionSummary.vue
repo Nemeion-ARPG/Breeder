@@ -24,6 +24,8 @@ import { computed } from 'vue'
 import DATA from '@/data.yaml'
 import { MARKING_QUALITIES } from '@/Constants';
 
+const TRAIT_COLLATOR = new Intl.Collator(undefined, { sensitivity: 'base' })
+
 const props = defineProps({
     index: {
         type: Number,
@@ -48,17 +50,18 @@ const headerText = computed(() => {
 const selectedTraits = computed(() => {
     return props.reference.traits
         .map(trait => DATA.traits.available[trait].display_name)
+        .sort((a, b) => TRAIT_COLLATOR.compare(a, b))
         .join(', ')
 })
 const selectedTitanTraits = computed(() => {
     return props.reference.titan_traits
         .map(trait => DATA.titan_traits.available[trait].display_name)
+        .sort((a, b) => TRAIT_COLLATOR.compare(a, b))
         .join(', ')
 })
 const selectedMarkings = computed(() => {
     const markings = props.reference.markings
         .filter(marking => {
-            console.log('fizz', props.reference.limitedMarkings)
             return props.filterLimitedMarkings
                 ? !props.reference.limitedMarkings.includes(marking)
                 : true

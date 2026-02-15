@@ -47,6 +47,24 @@
                     class="heritage-select"
                 />
             </div>
+
+            <BFormCheckbox
+                :model-value="heritageDoubleEnabled"
+                @update:model-value="$emit('update:heritage-double-enabled', $event)"
+                class="heritage-checkbox"
+            >
+                Heritage Double
+            </BFormCheckbox>
+
+            <div v-if="heritageDoubleEnabled" class="heritage-selector">
+                <label>Select additional trait to force on one cub:</label>
+                <BFormSelect
+                    :model-value="selectedHeritageDoubleTrait"
+                    @update:model-value="$emit('update:selected-heritage-double-trait', $event)"
+                    :options="availableTraitsForHeritage"
+                    class="heritage-select"
+                />
+            </div>
             
             <BFormCheckbox
                 :model-value="rank1Enabled"
@@ -84,6 +102,8 @@ defineEmits([
     'update:selected-apollo-marking',
     'update:heritage-enabled',
     'update:selected-heritage-trait',
+    'update:heritage-double-enabled',
+    'update:selected-heritage-double-trait',
     'update:rank1-enabled',
     'update:inbreeding-enabled'
 ])
@@ -118,6 +138,14 @@ const props = defineProps({
         default: false
     },
     selectedHeritageTrait: {
+        type: String,
+        default: null
+    },
+    heritageDoubleEnabled: {
+        type: Boolean,
+        default: false
+    },
+    selectedHeritageDoubleTrait: {
         type: String,
         default: null
     },

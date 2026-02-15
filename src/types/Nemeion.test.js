@@ -27,15 +27,15 @@ describe('Nemeion', () => {
             })
 
             it('has the default traits', () => {
-                expect(instance.traits).toBe(DATA.traits.default)
+                expect(instance.traits).toEqual(DATA.traits.default)
             })
 
             it('has the default markings', () => {
-                expect(instance.markings).toBe(DATA.markings.default)
+                expect(instance.markings).toEqual(DATA.markings.default)
             })
 
             it('has the default mutations', () => {
-                expect(instance.mutations).toBe(DATA.mutations.default)
+                expect(instance.mutations).toEqual(DATA.mutations.default)
             })
         })
 

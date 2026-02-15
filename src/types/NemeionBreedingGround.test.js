@@ -14,7 +14,8 @@ import {
     MUTATIONS,
     TRAITS, TRAIT_QUALITIES,
     MARKINGS, MARKING_QUALITIES,
-    ADDONS
+    ADDONS,
+    TITAN_TRAITS
 } from '@/Constants.js'
 import Nemeion from '@/types/Nemeion'
 
@@ -379,25 +380,163 @@ describe('NemeionBreedingGround', () => {
         })
 
         describe('with the delicate addon', () => {
-            const BRUTE_RATE = DATA.add_ons.AO_DELICATE.options.Brute
-            const REGAL_RATE = DATA.add_ons.AO_DELICATE.options.Regal
+            const BOOST = DATA.add_ons.AO_DELICATE.options.increased_chance
 
-            it(`rolls with an ${BRUTE_RATE * 100}% chance if the mother is a brute build`, () => {
+            it('does not override the inherit chance if the mother is a brute build', () => {
                 const father = new Nemeion({ ...prototypeFather, build: BUILDS.Domestic })
                 const mockShouldDoAction = vi.fn().mockImplementation(() => true)
                 const breedingGround = new NemeionBreedingGround(father, prototypeMother, { shouldDoAction: mockShouldDoAction })
 
                 let _ = breedingGround._generateBuild([ADDONS.AO_DELICATE])
-                expect(mockShouldDoAction).toHaveBeenCalledWith(BRUTE_RATE)
+                const baseChance = DATA.builds.available[father.build].inherit_chance[prototypeMother.build]
+                expect(mockShouldDoAction).toHaveBeenCalledWith(baseChance)
             })
 
-            it(`rolls with a ${REGAL_RATE * 100}% chance if the mother is a regal build`, () => {
+            it(`adds a ${BOOST * 100}% boost towards the father if the father is regal`, () => {
+                const father = new Nemeion({ ...prototypeFather, build: BUILDS.Regal })
+                const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Brute })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockShouldDoAction })
+
+                let _ = breedingGround._generateBuild([ADDONS.AO_DELICATE])
+                const baseChanceMother = DATA.builds.available[father.build].inherit_chance[mother.build]
+                const baseChanceFather = 1 - baseChanceMother
+                const boostedChanceFather = Math.min(1, baseChanceFather + BOOST)
+                const expectedChanceMother = 1 - boostedChanceFather
+                expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChanceMother)
+            })
+
+            it(`adds a ${BOOST * 100}% boost if the mother is a regal build`, () => {
                 const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Regal })
                 const mockShouldDoAction = vi.fn().mockImplementation(() => true)
                 const breedingGround = new NemeionBreedingGround(prototypeFather, mother, { shouldDoAction: mockShouldDoAction })
 
                 let _ = breedingGround._generateBuild([ADDONS.AO_DELICATE])
-                expect(mockShouldDoAction).toHaveBeenCalledWith(0.60)
+                const baseChance = DATA.builds.available[prototypeFather.build].inherit_chance[mother.build]
+                const expectedChance = Math.min(1, baseChance + BOOST)
+                expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChance)
+            })
+        })
+
+        describe('with the lean addon', () => {
+            const BOOST = DATA.add_ons.AO_LEAN.options.increased_chance
+
+            it('does not override the inherit chance if neither parent is a pharaoh build', () => {
+                const father = new Nemeion({ ...prototypeFather, build: BUILDS.Domestic })
+                const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Brute })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockShouldDoAction })
+
+                let _ = breedingGround._generateBuild([ADDONS.AO_LEAN])
+                const baseChance = DATA.builds.available[father.build].inherit_chance[mother.build]
+                expect(mockShouldDoAction).toHaveBeenCalledWith(baseChance)
+            })
+
+            it(`adds a ${BOOST * 100}% boost if the mother is a pharaoh build`, () => {
+                const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Pharaoh })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(prototypeFather, mother, { shouldDoAction: mockShouldDoAction })
+
+                let _ = breedingGround._generateBuild([ADDONS.AO_LEAN])
+                const baseChance = DATA.builds.available[prototypeFather.build].inherit_chance[mother.build]
+                const expectedChance = Math.min(1, baseChance + BOOST)
+                expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChance)
+            })
+
+            it(`adds a ${BOOST * 100}% boost towards the father if the father is pharaoh`, () => {
+                const father = new Nemeion({ ...prototypeFather, build: BUILDS.Pharaoh })
+                const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Regal })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockShouldDoAction })
+
+                let _ = breedingGround._generateBuild([ADDONS.AO_LEAN])
+                const baseChanceMother = DATA.builds.available[father.build].inherit_chance[mother.build]
+                const baseChanceFather = 1 - baseChanceMother
+                const boostedChanceFather = Math.min(1, baseChanceFather + BOOST)
+                const expectedChanceMother = 1 - boostedChanceFather
+                expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChanceMother)
+            })
+        })
+
+        describe('with the burly addon', () => {
+            const BOOST = DATA.add_ons.AO_BURLY.options.increased_chance
+
+            it('does not override the inherit chance if neither parent is a brute build', () => {
+                const father = new Nemeion({ ...prototypeFather, build: BUILDS.Domestic })
+                const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Regal })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockShouldDoAction })
+
+                let _ = breedingGround._generateBuild([ADDONS.AO_BURLY])
+                const baseChance = DATA.builds.available[father.build].inherit_chance[mother.build]
+                expect(mockShouldDoAction).toHaveBeenCalledWith(baseChance)
+            })
+
+            it(`adds a ${BOOST * 100}% boost if the mother is a brute build`, () => {
+                const father = new Nemeion({ ...prototypeFather, build: BUILDS.Regal })
+                const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Brute })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockShouldDoAction })
+
+                let _ = breedingGround._generateBuild([ADDONS.AO_BURLY])
+                const baseChance = DATA.builds.available[father.build].inherit_chance[mother.build]
+                const expectedChance = Math.min(1, baseChance + BOOST)
+                expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChance)
+            })
+
+            it(`adds a ${BOOST * 100}% boost towards the father if the father is brute`, () => {
+                const father = new Nemeion({ ...prototypeFather, build: BUILDS.Brute })
+                const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Regal })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockShouldDoAction })
+
+                let _ = breedingGround._generateBuild([ADDONS.AO_BURLY])
+                const baseChanceMother = DATA.builds.available[father.build].inherit_chance[mother.build]
+                const baseChanceFather = 1 - baseChanceMother
+                const boostedChanceFather = Math.min(1, baseChanceFather + BOOST)
+                const expectedChanceMother = 1 - boostedChanceFather
+                expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChanceMother)
+            })
+        })
+
+        describe('with the petite addon', () => {
+            const BOOST = DATA.add_ons.AO_PETITE.options.increased_chance
+
+            it('does not override the inherit chance if neither parent is a domestic build', () => {
+                const father = new Nemeion({ ...prototypeFather, build: BUILDS.Brute })
+                const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Regal })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockShouldDoAction })
+
+                let _ = breedingGround._generateBuild([ADDONS.AO_PETITE])
+                const baseChance = DATA.builds.available[father.build].inherit_chance[mother.build]
+                expect(mockShouldDoAction).toHaveBeenCalledWith(baseChance)
+            })
+
+            it(`adds a ${BOOST * 100}% boost if the mother is domestic`, () => {
+                const father = new Nemeion({ ...prototypeFather, build: BUILDS.Brute })
+                const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Domestic })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockShouldDoAction })
+
+                let _ = breedingGround._generateBuild([ADDONS.AO_PETITE])
+                const baseChance = DATA.builds.available[father.build].inherit_chance[mother.build]
+                const expectedChance = Math.min(1, baseChance + BOOST)
+                expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChance)
+            })
+
+            it(`adds a ${BOOST * 100}% boost towards the father if the father is domestic`, () => {
+                const father = new Nemeion({ ...prototypeFather, build: BUILDS.Domestic })
+                const mother = new Nemeion({ ...prototypeMother, build: BUILDS.Regal })
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const breedingGround = new NemeionBreedingGround(father, mother, { shouldDoAction: mockShouldDoAction })
+
+                let _ = breedingGround._generateBuild([ADDONS.AO_PETITE])
+                const baseChanceMother = DATA.builds.available[father.build].inherit_chance[mother.build]
+                const baseChanceFather = 1 - baseChanceMother
+                const boostedChanceFather = Math.min(1, baseChanceFather + BOOST)
+                const expectedChanceMother = 1 - boostedChanceFather
+                expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChanceMother)
             })
         })
     })
@@ -532,10 +671,15 @@ describe('NemeionBreedingGround', () => {
                 ]
                 
                 let _ = breedingGround._generateTraits([ADDONS.AO_BIRTHRIGHT])
-                
-                expect(mockShouldDoAction).toHaveBeenNthCalledWith(1, expectedRates[0])
-                expect(mockShouldDoAction).toHaveBeenNthCalledWith(2, expectedRates[1])
-                expect(mockShouldDoAction).toHaveBeenNthCalledWith(3, expectedRates[2])
+
+                const calledRates = mockShouldDoAction.mock.calls.map(([rate]) => rate)
+                expect(calledRates).toHaveLength(expectedRates.length)
+
+                const sortedCalled = [...calledRates].sort((a, b) => a - b)
+                const sortedExpected = [...expectedRates].sort((a, b) => a - b)
+                sortedExpected.forEach((rate, i) => {
+                    expect(sortedCalled[i]).toBeCloseTo(rate, 10)
+                })
             })
         })
     })
@@ -868,6 +1012,75 @@ describe('NemeionBreedingGround', () => {
 
                 let _ = breedingGround._generateMutations([ADDONS.AO_RARE_BLOOD])
                 expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChance)
+            })
+        })
+
+        describe('mutation stacking and caps', () => {
+            it('adds a guaranteed additional random mutation with Protean Blood', () => {
+                const mockShouldDoAction = vi.fn().mockImplementation(() => false)
+                const mockRandomSample = vi.fn().mockImplementation(() => MUTATIONS.Albinism)
+                const breedingGround = new NemeionBreedingGround(prototypeFather, prototypeMother, {
+                    shouldDoAction: mockShouldDoAction,
+                    randomSample: mockRandomSample
+                })
+
+                const result = breedingGround._generateMutations([ADDONS.AO_PROTEAN_BLOOD])
+
+                // No base mutation roll passes, but Protean still guarantees one.
+                expect(result).toEqual([MUTATIONS.Albinism])
+                expect(mockRandomSample).toHaveBeenCalledWith(MUTATIONS.allValues)
+            })
+
+            it('caps mutations to a maximum of 3 when more would roll', () => {
+                const many = MUTATIONS.allValues
+                expect(many.length).toBeGreaterThanOrEqual(5)
+
+                const father = new Nemeion({ ...prototypeFather, mutations: many.slice(0, 3) })
+                const mother = new Nemeion({ ...prototypeMother, mutations: many.slice(3, 5) })
+
+                const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+                const mockRandomSample = vi.fn().mockImplementation((arr) => arr[0])
+                const breedingGround = new NemeionBreedingGround(father, mother, {
+                    shouldDoAction: mockShouldDoAction,
+                    randomSample: mockRandomSample
+                })
+
+                const result = breedingGround._generateMutations([ADDONS.AO_PROTEAN_BLOOD])
+                expect(result.length).toBe(3)
+
+                // All results must come from the unique rolled set.
+                const rolledSet = [...new Set([...father.mutations, ...mother.mutations, ...MUTATIONS.allValues.slice(0, 1)])]
+                result.forEach(m => {
+                    expect(rolledSet).toContain(m)
+                })
+            })
+        })
+    })
+
+    describe('_generateTitanTraits', () => {
+        it('caps titan traits to a maximum of 4', () => {
+            const all = TITAN_TRAITS.allValues
+            expect(all.length).toBeGreaterThanOrEqual(6)
+
+            const father = new Nemeion({ ...prototypeFather, titan_traits: all.slice(0, 3) })
+            const mother = new Nemeion({ ...prototypeMother, titan_traits: all.slice(3, 6) })
+
+            // Force all inheritance rolls to succeed
+            const mockShouldDoAction = vi.fn().mockImplementation(() => true)
+
+            // Deterministic sample: always pick the first remaining
+            const mockRandomSample = vi.fn().mockImplementation((arr) => arr[0])
+            const breedingGround = new NemeionBreedingGround(father, mother, {
+                shouldDoAction: mockShouldDoAction,
+                randomSample: mockRandomSample
+            })
+
+            const result = breedingGround._generateTitanTraits([])
+            expect(result.length).toBe(4)
+
+            const rolledSet = [...new Set([...father.titan_traits, ...mother.titan_traits])]
+            result.forEach(trait => {
+                expect(rolledSet).toContain(trait)
             })
         })
     })

@@ -10,6 +10,9 @@ import { GENDERS, MUTATIONS, ADDONS, TRAIT_QUALITIES, BUILDS } from '@/Constants
 export const DEFAULT_RANDOM_SAMPLE = _sample
 export const DEFAULT_SHOULD_DO_ACTION = rollForThreshold
 
+const MAX_TITAN_TRAITS_PER_CUB = 4
+const MAX_MUTATIONS_PER_CUB = 3
+
 const ASPECT_KEYS = { traits: 'traits', markings: 'markings' }
 
 /// Always use the mother as the tie-breaker for inherited traits
@@ -124,15 +127,47 @@ export default class NemeionBreedingGround extends NemeionGenerator {
         let fatherBuild = DATA.builds.available[this.father.build]
         let inheritChance = fatherBuild.inherit_chance[this.mother.build]
 
+        const boostChanceToInheritBuild = (targetBuild, boost) => {
+            if (!boost) return
+
+            // inheritChance is the chance to inherit the mother's build
+            // If the mother is target, increase inheritChance.
+            // If the father is target, decrease inheritChance (increasing the chance to inherit the father).
+            if (this.mother.build === targetBuild && this.father.build !== targetBuild) {
+                inheritChance = Math.min(1, inheritChance + boost)
+            } else if (this.father.build === targetBuild && this.mother.build !== targetBuild) {
+                const baseFatherChance = 1 - inheritChance
+                const boostedFatherChance = Math.min(1, baseFatherChance + boost)
+                inheritChance = 1 - boostedFatherChance
+            }
+        }
+
         if (addons.includes(ADDONS.AO_BIG_BONED)) {
             let optionalChance = DATA.add_ons.AO_BIG_BONED.options[this.mother.build]
             inheritChance = optionalChance ? optionalChance : inheritChance
-        } else if (addons.includes(ADDONS.AO_DELICATE)) {
-            let optionalChance = DATA.add_ons.AO_DELICATE.options[this.mother.build]
-            inheritChance = optionalChance ? optionalChance : inheritChance
+        } else {
+            if (addons.includes(ADDONS.AO_BURLY)) {
+                const boost = DATA.add_ons.AO_BURLY.options.increased_chance ?? 0
+                boostChanceToInheritBuild(BUILDS.Brute, boost)
+            }
+
+            if (addons.includes(ADDONS.AO_DELICATE)) {
+                const boost = DATA.add_ons.AO_DELICATE.options.increased_chance ?? 0
+                boostChanceToInheritBuild(BUILDS.Regal, boost)
+            }
+
+            if (addons.includes(ADDONS.AO_LEAN)) {
+                const boost = DATA.add_ons.AO_LEAN.options.increased_chance ?? 0
+                boostChanceToInheritBuild(BUILDS.Pharaoh, boost)
+            }
+
+            if (addons.includes(ADDONS.AO_PETITE)) {
+                const boost = DATA.add_ons.AO_PETITE.options.increased_chance ?? 0
+                boostChanceToInheritBuild(BUILDS.Domestic, boost)
+            }
         }
 
-        if (inheritChance) { // this may be null explicitly in the dataset
+        if (inheritChance !== null && inheritChance !== undefined) { // this may be null explicitly in the dataset
             return this.shouldDoAction(inheritChance) ? this.mother.build : this.father.build
         } else {
             throw new Error('incompatible builds')
@@ -185,14 +220,33 @@ export default class NemeionBreedingGround extends NemeionGenerator {
             result.push(this.randomSample(MUTATIONS.allValues))
         }
 
-        // Check if Protean Blood is included - guarantees at least one random mutation if none exist
-        if (addons.includes(ADDONS.AO_PROTEAN_BLOOD) && result.length === 0) {
+        // Protean Blood: guarantees an additional randomly rolled mutation on every cub.
+        if (addons.includes(ADDONS.AO_PROTEAN_BLOOD)) {
             result.push(this.randomSample(MUTATIONS.allValues))
         }
 
         // Remove duplicates and apply exclusive group filtering
         const uniqueMutations = [...new Set(result)]
-        return this.#_filterExclusiveMutations(uniqueMutations)
+        const filtered = this.#_filterExclusiveMutations(uniqueMutations)
+
+        if (filtered.length <= MAX_MUTATIONS_PER_CUB) {
+            return filtered
+        }
+
+        // If more than the cap successfully rolled, keep a random subset.
+        const remaining = [...filtered]
+        const selected = []
+        while (selected.length < MAX_MUTATIONS_PER_CUB && remaining.length > 0) {
+            const pick = this.randomSample(remaining)
+            if (!pick) break
+            selected.push(pick)
+            const index = remaining.indexOf(pick)
+            if (index >= 0) {
+                remaining.splice(index, 1)
+            }
+        }
+
+        return selected
     }
 
     _generateTitanTraits(addons = []) {
@@ -206,6 +260,7 @@ export default class NemeionBreedingGround extends NemeionGenerator {
         const parentTitanTraits = [...this.father.titan_traits, ...this.mother.titan_traits]
         for (const titanTrait of parentTitanTraits) {
             const titanTraitData = DATA.titan_traits.available[titanTrait]
+            if (!titanTraitData) continue
             const quality = titanTraitData.quality
             
             // Determine inherit chance based on whether both parents have the same trait
@@ -227,7 +282,26 @@ export default class NemeionBreedingGround extends NemeionGenerator {
             }
         }
 
-        return [...new Set(result)]
+        const uniqueResult = [...new Set(result)]
+        if (uniqueResult.length <= MAX_TITAN_TRAITS_PER_CUB) {
+            return uniqueResult
+        }
+
+        // If more than the cap successfully rolled, keep a random subset.
+        // This preserves the original per-trait roll chances while enforcing a hard maximum.
+        const remaining = [...uniqueResult]
+        const selected = []
+        while (selected.length < MAX_TITAN_TRAITS_PER_CUB && remaining.length > 0) {
+            const pick = this.randomSample(remaining)
+            if (!pick) break
+            selected.push(pick)
+            const index = remaining.indexOf(pick)
+            if (index >= 0) {
+                remaining.splice(index, 1)
+            }
+        }
+
+        return selected
     }
 
     #_filterExclusiveMarkings(markings) {

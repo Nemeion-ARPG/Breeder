@@ -29,11 +29,13 @@ export default defineStore('den', () => {
     const selectedApolloMarking = ref(null)
     const heritageEnabled = ref(false)
     const selectedHeritageTrait = ref(null)
+    const heritageDoubleEnabled = ref(false)
+    const selectedHeritageDoubleTrait = ref(null)
     const rank1Enabled = ref(false)
     const inbreedingEnabled = ref(false)
 
     function _rollInbreedingHealth(roll, randomSample) {
-        if (roll >= 1 && roll <= 20) return 'Healthy'
+        if (roll >= 1 && roll <= 20) return 'Inbred - Healthy'
         if (roll >= 21 && roll <= 35) return 'Inbred - Blindness'
         if (roll >= 36 && roll <= 50) return 'Inbred - Deafness'
         if (roll >= 51 && roll <= 75) return 'Inbred - Frail'
@@ -92,7 +94,7 @@ export default defineStore('den', () => {
                 // Add the marking to a random cub if no cub has it
                 const randomCub = randomSample(newLitter)
                 if (!randomCub.markings.includes(selectedApolloMarking.value)) {
-                    randomCub.markings.push(selectedApolloMarking.value)
+                    randomCub.addMarking(selectedApolloMarking.value)
                 }
             }
         }
@@ -103,9 +105,23 @@ export default defineStore('den', () => {
             const [traitType, traitValue] = selectedHeritageTrait.value.split(':')
             
             if (traitType === 'marking' && !randomCub.markings.includes(traitValue)) {
-                randomCub.markings.push(traitValue)
-            } else if (traitType === 'mutation' && !randomCub.mutations.includes(traitValue)) {
-                randomCub.mutations.push(traitValue)
+                randomCub.addMarking(traitValue)
+            } else if (traitType === 'mutation') {
+                randomCub.addMutation(traitValue)
+            } else if (traitType === 'coat') {
+                randomCub.coat = traitValue
+            }
+        }
+
+        // Heritage Double - same as Heritage, allowing an additional forced trait
+        if (heritageDoubleEnabled.value && selectedHeritageDoubleTrait.value && newLitter.length > 0) {
+            const randomCub = randomSample(newLitter)
+            const [traitType, traitValue] = selectedHeritageDoubleTrait.value.split(':')
+
+            if (traitType === 'marking' && !randomCub.markings.includes(traitValue)) {
+                randomCub.addMarking(traitValue)
+            } else if (traitType === 'mutation') {
+                randomCub.addMutation(traitValue)
             } else if (traitType === 'coat') {
                 randomCub.coat = traitValue
             }
@@ -122,6 +138,101 @@ export default defineStore('den', () => {
         if (selectedAddons.value.includes(ADDONS.AO_REGAL_POTION)) {
             newLitter[0].build = BUILDS.Regal
         }
+    }
+
+    function _applyVolatilePotionBuild(newLitter, randomSample) {
+        if (!selectedAddons.value.includes(ADDONS.AO_VOLATILE_POTION)) return
+        if (!Array.isArray(newLitter) || newLitter.length === 0) return
+
+        const excludedBuilds = new Set([father.value.build, mother.value.build].filter(Boolean))
+        const availableBuilds = BUILDS.allValues.filter(build => !excludedBuilds.has(build))
+        if (availableBuilds.length === 0) return
+
+        // If we already have a cub with a non-parent build, nothing to do.
+        const alreadySatisfied = newLitter.some(cub => cub?.build && !excludedBuilds.has(cub.build))
+        if (alreadySatisfied) return
+
+        // Prefer not to overwrite the "guaranteed" build potions which target the first cub.
+        const targetPool = newLitter.length > 1 ? newLitter.slice(1) : newLitter
+        const targetCub = randomSample(targetPool) ?? newLitter[0]
+
+        targetCub.build = randomSample(availableBuilds)
+    }
+
+    function _applyMutagenicPhysicalMutation(newLitter, randomSample, shouldDoAction) {
+        if (!selectedAddons.value.includes(ADDONS.AO_MUTAGENIC)) return
+        if (!Array.isArray(newLitter) || newLitter.length === 0) return
+
+        const physicalMutations = Object.entries(DATA.mutations.available)
+            .filter(([, value]) => value?.category === 'physical')
+            .map(([key]) => key)
+
+        if (physicalMutations.length === 0) return
+
+        const doAction = typeof shouldDoAction === 'function' ? shouldDoAction : DEFAULT_SHOULD_DO_ACTION
+
+        const hasPhysical = (cub) =>
+            Array.isArray(cub?.mutations) && cub.mutations.some(m => DATA.mutations.available?.[m]?.category === 'physical')
+
+        const canReceiveMoreMutations = (cub) => (Array.isArray(cub?.mutations) ? cub.mutations.length < 3 : true)
+
+        const tryAddPhysical = (cub) => {
+            if (!cub) return false
+            if (hasPhysical(cub)) return false
+            if (!canReceiveMoreMutations(cub)) return false
+
+            const availableForCub = physicalMutations.filter(m => !cub.mutations.includes(m))
+            if (availableForCub.length === 0) return false
+
+            cub.addMutation(randomSample(availableForCub))
+            return hasPhysical(cub)
+        }
+
+        const options = DATA.add_ons.AO_MUTAGENIC?.options ?? {}
+        const secondCubChance = options.second_cub_chance ?? 0.5
+        const remainingCubChance = options.remaining_cub_chance ?? 0.25
+
+        // 1) Guarantee at least one cub has a physical mutation (if possible).
+        if (!newLitter.some(hasPhysical)) {
+            const candidates = newLitter.filter(cub => !hasPhysical(cub) && canReceiveMoreMutations(cub))
+            const target = randomSample(candidates) ?? candidates[0]
+            if (target) {
+                tryAddPhysical(target)
+            }
+        }
+
+        // 2) 50% chance to force a second cub.
+        if (newLitter.length > 1 && doAction(secondCubChance)) {
+            const candidates = newLitter.filter(cub => !hasPhysical(cub) && canReceiveMoreMutations(cub))
+            const target = randomSample(candidates) ?? candidates[0]
+            if (target) {
+                tryAddPhysical(target)
+            }
+        }
+
+        // 3) 25% chance for each remaining cub.
+        newLitter.forEach(cub => {
+            if (hasPhysical(cub)) return
+            if (!canReceiveMoreMutations(cub)) return
+            if (doAction(remainingCubChance)) {
+                tryAddPhysical(cub)
+            }
+        })
+    }
+
+    function _forceMutationOnNoMarkings(newLitter, randomSample) {
+        if (!Array.isArray(newLitter) || newLitter.length === 0) return
+        const allMutations = MUTATIONS.allValues
+        if (!Array.isArray(allMutations) || allMutations.length === 0) return
+
+        newLitter.forEach(cub => {
+            if (!cub) return
+            if (cub.markings?.length > 0) return
+            if (cub.mutations?.length > 0) return
+
+            const randomMutation = randomSample(allMutations)
+            cub.addMutation(randomMutation)
+        })
     }
 
     function makeRandom(
@@ -143,6 +254,7 @@ export default defineStore('den', () => {
 
         _applyGuaranteedBuilds(newLitter)
         _applyInbreedingHealth(newLitter, rollD100, randomSample)
+        _forceMutationOnNoMarkings(newLitter, randomSample)
         offspring.value = newLitter
     }
 
@@ -164,6 +276,29 @@ export default defineStore('den', () => {
 
         _applyGuaranteedBuilds(newLitter)
         _applyInbreedingHealth(newLitter, rollD100, randomSample)
+        _forceMutationOnNoMarkings(newLitter, randomSample)
+        offspring.value = newLitter
+    }
+
+    function makeRandom1(
+        randomGenerator = new NemeionRandomGenerator(),
+        rollD100 = DEFAULT_ROLL_D100,
+        randomSample = DEFAULT_RANDOM_SAMPLE
+    ) {
+        if (!randomGenerator) {
+            throw new Error('Cannot make Nemeions without a random generator')
+        }
+        if (!(randomGenerator instanceof NemeionRandomGenerator)) {
+            throw new Error('Can only make Nemeions with a NemeionRandomGenerator')
+        }
+
+        const newLitter = _generateLitter(1, () => {
+            return randomGenerator.makeOffspring(selectedAddons.value)
+        })
+
+        _applyGuaranteedBuilds(newLitter)
+        _applyInbreedingHealth(newLitter, rollD100, randomSample)
+        _forceMutationOnNoMarkings(newLitter, randomSample)
         offspring.value = newLitter
     }
 
@@ -187,6 +322,10 @@ export default defineStore('den', () => {
         let litterSize = _rollLitterSize(chanceRoll)
 
         // Apply minimum guarantees first, then add bonuses on top
+        if (selectedAddons.value.includes(ADDONS.AO_POMEGRANATE_ELEUSIS)) {
+            const minimumCubs = DATA.add_ons.AO_POMEGRANATE_ELEUSIS.options.minimum_cubs
+            litterSize = Math.max(litterSize, minimumCubs)
+        }
         if (selectedAddons.value.includes(ADDONS.AO_BREEDER_I)) {
             const minimumCubs = DATA.add_ons.AO_BREEDER_I.options.minimum_cubs
             litterSize = Math.max(litterSize, minimumCubs)
@@ -227,31 +366,49 @@ export default defineStore('den', () => {
         })
 
         if (selectedAddons.value.includes(ADDONS.AO_MUTATION_STONE)) {
-            const litterWithZeroMutations = newLitter.every((child) => !child.hasMutations)
-            if (litterWithZeroMutations) {
-                newLitter[0].mutations = [randomSample(MUTATIONS.allValues)]
+            const cubWithSpace = newLitter.find(cub => Array.isArray(cub.mutations) ? cub.mutations.length < 3 : true)
+            if (cubWithSpace) {
+                cubWithSpace.addMutation(randomSample(MUTATIONS.allValues))
             }
         }
 
         if (selectedAddons.value.includes(ADDONS.AO_LEGATUS_SINGLE)) {
-            const mutationChance = DATA.add_ons.AO_LEGATUS_SINGLE.options.mutation_chance
+            let mutationChance = DATA.add_ons.AO_LEGATUS_SINGLE.options.mutation_chance
+
+            if (selectedAddons.value.includes(ADDONS.AO_WEREWORM)) {
+                mutationChance += DATA.add_ons.AO_WEREWORM.options.increased_chance
+            }
+            if (selectedAddons.value.includes(ADDONS.AO_RARE_BLOOD)) {
+                mutationChance += DATA.add_ons.AO_RARE_BLOOD.options.increased_chance
+            }
+
+            mutationChance = Math.min(1, mutationChance)
             newLitter.forEach(cub => {
                 if (fertilityTreatmentOverrides.shouldDoAction(mutationChance)) {
                     const randomMutation = randomSample(MUTATIONS.allValues)
                     if (!cub.mutations.includes(randomMutation)) {
-                        cub.mutations.push(randomMutation)
+                        cub.addMutation(randomMutation)
                     }
                 }
             })
         }
 
         if (selectedAddons.value.includes(ADDONS.AO_LEGATUS_DOUBLE)) {
-            const mutationChance = DATA.add_ons.AO_LEGATUS_DOUBLE.options.mutation_chance
+            let mutationChance = DATA.add_ons.AO_LEGATUS_DOUBLE.options.mutation_chance
+
+            if (selectedAddons.value.includes(ADDONS.AO_WEREWORM)) {
+                mutationChance += DATA.add_ons.AO_WEREWORM.options.increased_chance
+            }
+            if (selectedAddons.value.includes(ADDONS.AO_RARE_BLOOD)) {
+                mutationChance += DATA.add_ons.AO_RARE_BLOOD.options.increased_chance
+            }
+
+            mutationChance = Math.min(1, mutationChance)
             newLitter.forEach(cub => {
                 if (fertilityTreatmentOverrides.shouldDoAction(mutationChance)) {
                     const randomMutation = randomSample(MUTATIONS.allValues)
                     if (!cub.mutations.includes(randomMutation)) {
-                        cub.mutations.push(randomMutation)
+                        cub.addMutation(randomMutation)
                     }
                 }
             })
@@ -284,7 +441,7 @@ export default defineStore('den', () => {
                 // Add a random marking to the first cub
                 const randomMarking = randomSample(availableMarkings)
                 if (!newLitter[0].markings.includes(randomMarking)) {
-                    newLitter[0].markings.push(randomMarking)
+                    newLitter[0].addMarking(randomMarking)
                 }
             }
         }
@@ -318,7 +475,11 @@ export default defineStore('den', () => {
         }
 
         _applyGuaranteedBuilds(newLitter)
+        _applyVolatilePotionBuild(newLitter, randomSample)
         _applySpecialFeatures(newLitter, randomSample)
+
+        // Apply after other mutation-affecting addons so we only force it if needed.
+        _applyMutagenicPhysicalMutation(newLitter, randomSample, fertilityTreatmentOverrides.shouldDoAction)
 
         _applyInbreedingHealth(newLitter, rollD100, randomSample)
         offspring.value = newLitter
@@ -333,11 +494,14 @@ export default defineStore('den', () => {
         selectedApolloMarking,
         heritageEnabled,
         selectedHeritageTrait,
+        heritageDoubleEnabled,
+        selectedHeritageDoubleTrait,
         rank1Enabled,
         inbreedingEnabled,
 
         makeOffspring,
         makeRandom,
+        makeRandom1,
         makeRandom5
     }
 })

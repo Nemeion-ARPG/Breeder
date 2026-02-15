@@ -554,7 +554,7 @@ titan_traits:
       display_name: Onyxia's Secret Stash ★ 
       quality: Titan  
     Unas_Gift:
-      display_name: Unas's Gift ★ 
+      display_name: Una's Gift ★ 
       quality: Titan    
     Protean_Blood_Titan:
       display_name: Protean Blood ★ 
@@ -577,6 +577,9 @@ titan_traits:
     Mineral_Deficit:
       display_name: Drake's Mineral Deficit ★ 
       quality: Titan     
+    Breeder_II:
+      display_name: Breeder II ★ 
+      quality: Titan      
 
 # each element represents a separate option, with the options repeated with their weight of recieving that alternative
 # if the weight is null, the combination are considered illegal
@@ -671,6 +674,10 @@ furs:
     - Helm of Hephaestus (Blessing)
     - Mantle of Athena (Blessing)
     - Plucky Plumes (Blessing)
+    - Stygian Sting (Blessing)
+    - Befuddling Brew (Blessing)
+    - Freakish Fangs (Blessing)
+    - Blistering Bile (Blessing)
 
 mutations:
   random_cap: 2
@@ -686,38 +693,55 @@ mutations:
   available:
     Albinism:
       display_name: Albinism
+      category: color
     Auric:
       display_name: Auric
+      category: color
     Chimerism:
       display_name: Chimerism (Tan)
+      category: color
     Chimerism2:
       display_name: Chimerism (Cream)
+      category: color
     Chimerism3:
       display_name: Chimerism (Agouti)    
+      category: color
     Crucis:
       display_name: Crucis
+      category: color
     Erythrism:
       display_name: Erythrism
+      category: color
     Leucism:
       display_name: Leucism
+      category: color
     Maltese:
       display_name: Maltese
+      category: color
     Melanism:
       display_name: Melanism
+      category: color
     Sanguine:
       display_name: Sanguine
+      category: color
     Vitiligo:
       display_name: Vitiligo
+      category: color
     Polycaudal:
       display_name: Polycaudal
+      category: physical
     Raptor_Claws:
       display_name: Raptor Claws  
+      category: physical
     Double_Tusk:
       display_name: Double Tusk
+      category: physical
     Smilodon_Sabers:
       display_name: Smilodon Sabers
+      category: physical
     Double_Smilodon:
       display_name: Double Smilodon Sabers      
+      category: physical
 
 add_ons:
   AO_APHRO_PASSION:
@@ -735,6 +759,18 @@ add_ons:
       Brute: 0.80
       Regal: 0.20
 
+  AO_BURLY:
+    display_name: Burly
+    description: Increases the chance offspring will be a Brute build.
+    options:
+      increased_chance: 0.95
+
+  AO_PETITE:
+    display_name: Petite
+    description: Increases the chance offspring will be a Domestic build.
+    options:
+      increased_chance: 0.30
+
   AO_BIRTHRIGHT:
     display_name: Birthright
     description: Increase the chance of Common, Uncommon, and Rare traits to be inherited by 15%.
@@ -746,6 +782,8 @@ add_ons:
   AO_BLOSSOM_CHLORIS:
     display_name: Blossom of Chloris
     description: Guarantees an additional cub will be born.
+    mutually_exclusive:
+      - AO_POMEGRANATE_ELEUSIS
     options:
       additional: 1
 
@@ -757,8 +795,13 @@ add_ons:
     display_name: Delicate
     description: Increases the chance offspring will be a Regal build.
     options:
-      Brute: 0.40
-      Regal: 0.60
+      increased_chance: 0.75
+
+  AO_LEAN:
+    display_name: Lean
+    description: Increases the chance offspring will be a Pharaoh build.
+    options:
+      increased_chance: 0.15
 
   AO_DOMESTIC_POTION:
     display_name: Domestic Potion
@@ -786,6 +829,13 @@ add_ons:
   AO_MUTATION_STONE:
     display_name: Fragment of Distortion
     description: Guarantees at least 1 cub will have a random mutation.
+
+  AO_MUTAGENIC:
+    display_name: Mutagenic
+    description: Guarantees at least 1 cub will have a physical mutation; 50% chance to force a second cub; 25% chance to force each remaining cub.
+    options:
+      second_cub_chance: 0.50
+      remaining_cub_chance: 0.25
 
   AO_RARE_BLOOD:
     display_name: Rare Blood
@@ -817,6 +867,10 @@ add_ons:
     display_name: Regal Potion
     description: Guarantees at least 1 cub will be a Regal build.
 
+  AO_VOLATILE_POTION:
+    display_name: Volatile Potion
+    description: Forces at least 1 cub to have a build not present on either parent.
+
   AO_DWARF_POTION:
     display_name: Dwarfish Drought
     description: Guarantees 1-2 cubs will be a Dwarf build.
@@ -830,23 +884,37 @@ add_ons:
 
   AO_SHORT_STATURE:
     display_name: Short Stature
-    description: 25% chance that at least 1 cub will be a Dwarf build.
+    description: 50% chance that at least 1 cub will be a Dwarf build.
     options:
-      chance: 0.25
+      chance: 0.50
 
   AO_POSEIDONS_PROMISE:
     display_name: Poseidon's Promise
     description: Guarantees at least 1 cub will have a randomly selected non-limited marking not present in either parent.
 
+  AO_POMEGRANATE_ELEUSIS:
+    display_name: Pomegranate of Eleusis
+    description: Guarantees a minimum of 3 cubs returned.
+    mutually_exclusive:
+      - AO_BLOSSOM_CHLORIS
+      - AO_BREEDER_I
+      - AO_BREEDER_II
+    options:
+      minimum_cubs: 3
+
   AO_BREEDER_I:
     display_name: Breeder I
     description: Guarantees a minimum of 3 cubs returned.
+    mutually_exclusive:
+      - AO_POMEGRANATE_ELEUSIS
     options:
       minimum_cubs: 3
 
   AO_BREEDER_II:
     display_name: Breeder II
     description: Guarantees a minimum of 5 cubs returned.
+    mutually_exclusive:
+      - AO_POMEGRANATE_ELEUSIS
     options:
       minimum_cubs: 5
 
