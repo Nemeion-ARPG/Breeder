@@ -92,4 +92,21 @@ describe('Nemeion', () => {
             expect(instance.limitedMarkings).toEqual([MARKINGS.Tear])
         })
     })
+
+    describe('mutations', () => {
+        it('caps mutations to 3 by default', () => {
+            const cub = new Nemeion({
+                mutations: [MUTATIONS.Albinism, MUTATIONS.Auric, MUTATIONS.Chimerism, MUTATIONS.Heterochromia]
+            })
+            expect(cub.mutations.length).toBe(3)
+        })
+
+        it('allows more than 3 mutations when mutationCap is disabled', () => {
+            const parent = new Nemeion({
+                mutationCap: null,
+                mutations: [MUTATIONS.Albinism, MUTATIONS.Auric, MUTATIONS.Crucis, MUTATIONS.Erythrism]
+            })
+            expect(parent.mutations.length).toBe(4)
+        })
+    })
 })

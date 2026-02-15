@@ -21,8 +21,8 @@ const DEFAULT_SHOULD_DO_ACTION = rollForThreshold
 const DEFAULT_RANDOM_SAMPLE = _sample
 
 export default defineStore('den', () => {
-    const father = ref(new Nemeion({ gender: GENDERS.Male }))
-    const mother = ref(new Nemeion({ gender: GENDERS.Female }))
+    const father = ref(new Nemeion({ gender: GENDERS.Male, mutationCap: null }))
+    const mother = ref(new Nemeion({ gender: GENDERS.Female, mutationCap: null }))
     const offspring = ref([])
     const selectedAddons = ref([])
     const apolloFeatherEnabled = ref(false)

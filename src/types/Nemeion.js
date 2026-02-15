@@ -4,7 +4,7 @@ import { LIMITED_MARKINGS } from '@/Constants.js'
 const MARKING_COLLATOR = new Intl.Collator(undefined, { sensitivity: 'base' })
 const TRAIT_COLLATOR = new Intl.Collator(undefined, { sensitivity: 'base' })
 
-const MAX_MUTATIONS_PER_NEMEION = 3
+const DEFAULT_MUTATION_CAP = 3
 
 function sortMarkingsInPlace(markings) {
     if (!Array.isArray(markings)) return markings
@@ -48,7 +48,7 @@ const MUTATION_EXCLUSIVE_GROUP_BY_KEY = (() => {
     return map
 })()
 
-function normalizeMutationsInPlace(mutations) {
+function normalizeMutationsInPlace(mutations, mutationCap) {
     if (!Array.isArray(mutations)) return mutations
 
     const seenMutation = new Set()
@@ -69,12 +69,18 @@ function normalizeMutationsInPlace(mutations) {
     }
 
     mutations.length = 0
-    mutations.push(...normalized.slice(0, MAX_MUTATIONS_PER_NEMEION))
+
+    const shouldCap = Number.isFinite(mutationCap)
+    mutations.push(...(shouldCap ? normalized.slice(0, mutationCap) : normalized))
     return mutations
 }
 
 export default class Nemeion {
     constructor(initialValues = {}) {
+        // The mutation cap is meant for offspring output (max 3), not for parent input.
+        // Parents can opt out by setting mutationCap to null/undefined.
+        this.mutationCap = 'mutationCap' in initialValues ? initialValues.mutationCap : DEFAULT_MUTATION_CAP
+
         this.name = initialValues.name || ''
         this.url = initialValues.url || ''
         this.gender = initialValues.gender || null
@@ -144,7 +150,7 @@ export default class Nemeion {
     get mutations() { return this._mutations }
     set mutations(value) {
         const mutations = Array.isArray(value) ? [...value] : []
-        normalizeMutationsInPlace(mutations)
+        normalizeMutationsInPlace(mutations, this.mutationCap)
         this._mutations = mutations
     }
 
@@ -162,7 +168,7 @@ export default class Nemeion {
         }
 
         if (!this._mutations.includes(mutation)) {
-            if (this._mutations.length >= MAX_MUTATIONS_PER_NEMEION) {
+            if (Number.isFinite(this.mutationCap) && this._mutations.length >= this.mutationCap) {
                 return
             }
             this._mutations.push(mutation)
