@@ -272,11 +272,6 @@ export default class NemeionBreedingGround extends NemeionGenerator {
                 ? DATA.titan_traits.qualities[quality].inherit_chance.double
                 : DATA.titan_traits.qualities[quality].inherit_chance.single
             
-            // Apply Savory Ribs boost if present
-            if (addons.includes(ADDONS.AO_SAVORY_RIBS)) {
-                inheritChance += DATA.add_ons.AO_SAVORY_RIBS.options.titan_trait_boost
-            }
-            
             if (this.shouldDoAction(inheritChance)) {
                 result.push(titanTrait)
             }
@@ -388,7 +383,11 @@ export default class NemeionBreedingGround extends NemeionGenerator {
                 }
                 
                 if (aspectKey === ASPECT_KEYS.traits && addons.includes(ADDONS.AO_SAVORY_RIBS)) {
-                    result[aspect] += DATA.add_ons.AO_SAVORY_RIBS.options.trait_boost
+                    const quality = aspectData?.quality
+                    const boostableQualities = new Set(['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'])
+                    if (boostableQualities.has(quality)) {
+                        result[aspect] += DATA.add_ons.AO_SAVORY_RIBS.options.trait_boost
+                    }
                 }
                 
                 return result

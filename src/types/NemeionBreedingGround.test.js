@@ -1083,5 +1083,23 @@ describe('NemeionBreedingGround', () => {
                 expect(rolledSet).toContain(trait)
             })
         })
+
+        it('does not boost titan trait inheritance chance with Savory Ribs', () => {
+            const father = new Nemeion({ ...prototypeFather, titan_traits: [TITAN_TRAITS.allValues[0]] })
+            const mother = new Nemeion({ ...prototypeMother, titan_traits: [TITAN_TRAITS.allValues[0]] })
+
+            const titanTrait = TITAN_TRAITS.allValues[0]
+            const quality = DATA.titan_traits.available[titanTrait].quality
+            const expectedChance = DATA.titan_traits.qualities[quality].inherit_chance.double
+
+            const mockShouldDoAction = vi.fn().mockImplementation(() => false)
+            const breedingGround = new NemeionBreedingGround(father, mother, {
+                shouldDoAction: mockShouldDoAction,
+                randomSample: (arr) => arr[0]
+            })
+
+            const _ = breedingGround._generateTitanTraits([ADDONS.AO_SAVORY_RIBS])
+            expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChance)
+        })
     })
 })
