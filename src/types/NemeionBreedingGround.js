@@ -267,7 +267,8 @@ export default class NemeionBreedingGround extends NemeionGenerator {
 
             const inheritChance = DATA.titan_traits.qualities[quality].inherit_chance.single
             
-            if (this.shouldDoAction(inheritChance)) {
+            // rollForThreshold defaults to a +1% tolerance; Titan Traits should not receive that boost.
+            if (this.shouldDoAction(inheritChance, 0)) {
                 result.push(titanTrait)
             }
         }

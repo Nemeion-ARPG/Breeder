@@ -1100,7 +1100,7 @@ describe('NemeionBreedingGround', () => {
 
             const _ = breedingGround._generateTitanTraits([ADDONS.AO_SAVORY_RIBS])
             expect(mockShouldDoAction).toHaveBeenCalledTimes(1)
-            expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChance)
+            expect(mockShouldDoAction).toHaveBeenCalledWith(expectedChance, 0)
         })
     })
 })

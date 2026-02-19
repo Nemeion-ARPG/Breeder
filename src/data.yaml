@@ -848,7 +848,7 @@ add_ons:
     description: Increases chance of Traits and Titan Traits passing from parents by 5%.
     options:
       trait_boost: 0.05
-      titan_trait_boost: 0.05
+      titan_trait_boost: 0.01
 
   AO_CURSED_BLOOD:
     display_name: Cursed Blood
