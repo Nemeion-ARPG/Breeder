@@ -538,8 +538,8 @@ titan_traits:
   qualities:
     Titan:
       inherit_chance:
-        single: 0.03
-        double: 0.06
+        single: 0.01
+        double: 0.01
   available:
     Blessing_Titans:
       display_name: Blessing of the Titans ★ 
@@ -655,10 +655,10 @@ coats:
         Agouti: 1.00
 
 furs:
-  rare_chance: 0.03
+  rare_chance: 0.01
   inherit_chance:
-    single: 0.03
-    double: 0.05
+    single: 0.01
+    double: 0.01
   default: 
   rare_options:
     - Apollo's Ascension (Blessing)

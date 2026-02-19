@@ -256,21 +256,16 @@ export default class NemeionBreedingGround extends NemeionGenerator {
 
         let result = []
 
-        // Inherit from parents with proper single/double chance logic
-        const parentTitanTraits = [...this.father.titan_traits, ...this.mother.titan_traits]
+        // Inherit from parents.
+        // Titan Traits do not have a double-pass advantage: if both parents share the same Titan Trait,
+        // it is still rolled once at the single inherit chance.
+        const parentTitanTraits = [...new Set([...this.father.titan_traits, ...this.mother.titan_traits])]
         for (const titanTrait of parentTitanTraits) {
             const titanTraitData = DATA.titan_traits.available[titanTrait]
             if (!titanTraitData) continue
             const quality = titanTraitData.quality
-            
-            // Determine inherit chance based on whether both parents have the same trait
-            const fatherHasTrait = this.father.titan_traits.includes(titanTrait)
-            const motherHasTrait = this.mother.titan_traits.includes(titanTrait)
-            const bothParentsHaveTrait = fatherHasTrait && motherHasTrait
-            
-            let inheritChance = bothParentsHaveTrait 
-                ? DATA.titan_traits.qualities[quality].inherit_chance.double
-                : DATA.titan_traits.qualities[quality].inherit_chance.single
+
+            const inheritChance = DATA.titan_traits.qualities[quality].inherit_chance.single
             
             if (this.shouldDoAction(inheritChance)) {
                 result.push(titanTrait)
