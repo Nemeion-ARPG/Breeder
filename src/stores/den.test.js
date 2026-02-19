@@ -10,7 +10,7 @@ import denStore from "./den"
 import { DEFAULT_SHOULD_DO_ACTION } from './den'
 
 import DATA from '@/data.yaml'
-import { GENDERS, ADDONS, BUILDS, MUTATIONS } from '@/Constants'
+import { GENDERS, ADDONS, BUILDS, MUTATIONS, TITAN_TRAITS } from '@/Constants'
 
 describe("den store", () => {
     beforeEach(() => {
@@ -61,6 +61,42 @@ describe("den store", () => {
             
             den.makeOffspring(breedingGround)
             expect(breedingGround.makeOffspring).toHaveBeenCalled()
+        })
+
+        it('limits Titan Traits to one trait on one cub per litter', () => {
+            class MockBreedingGround extends NemeionBreedingGround {
+                constructor(father, mother) {
+                    super(father, mother)
+                    this.calls = 0
+                }
+
+                makeOffspring() {
+                    const traitA = TITAN_TRAITS.allValues[0]
+                    const traitB = TITAN_TRAITS.allValues[1]
+
+                    this.calls += 1
+                    if (this.calls === 1) return new Nemeion({ gender: GENDERS.Male, titan_traits: [traitA] })
+                    if (this.calls === 2) return new Nemeion({ gender: GENDERS.Male, titan_traits: [traitB] })
+                    return new Nemeion({ gender: GENDERS.Male, titan_traits: [] })
+                }
+            }
+
+            const den = denStore()
+            const breedingGround = new MockBreedingGround(den.father, den.mother)
+
+            const mockRandomSample = vi.fn().mockImplementation((arr) => arr[0])
+            // Force litter size to 3 (see DATA.litters.weights)
+            den.makeOffspring(breedingGround, () => DATA.litters.weights[2], undefined, mockRandomSample)
+
+            const cubsWithTitanTraits = den.offspring.filter(cub => cub.titan_traits.length > 0)
+            expect(cubsWithTitanTraits.length).toBeLessThanOrEqual(1)
+
+            const uniqueRolledTraits = [...new Set(den.offspring.flatMap(cub => cub.titan_traits))]
+            expect(uniqueRolledTraits.length).toBeLessThanOrEqual(1)
+
+            if (cubsWithTitanTraits.length === 1) {
+                expect(cubsWithTitanTraits[0].titan_traits.length).toBe(1)
+            }
         })
 
             describe('with pomegranate of eleusis addon', () => {

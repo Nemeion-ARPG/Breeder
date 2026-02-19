@@ -235,6 +235,30 @@ export default defineStore('den', () => {
         })
     }
 
+    function _enforceSingleTitanTraitPerLitter(newLitter, randomSample) {
+        if (!Array.isArray(newLitter) || newLitter.length === 0) return
+
+        const cubsWithTitanTraits = newLitter.filter(cub => Array.isArray(cub?.titan_traits) && cub.titan_traits.length > 0)
+        if (cubsWithTitanTraits.length === 0) return
+
+        const rolledTraits = [...new Set(cubsWithTitanTraits.flatMap(cub => cub.titan_traits))]
+        if (rolledTraits.length === 0) return
+
+        const sample = typeof randomSample === 'function' ? randomSample : DEFAULT_RANDOM_SAMPLE
+        const traitToKeep = sample(rolledTraits) ?? rolledTraits[0]
+        if (!traitToKeep) return
+
+        const eligibleCubs = cubsWithTitanTraits.filter(cub => cub.titan_traits.includes(traitToKeep))
+        const cubToKeep = sample(eligibleCubs) ?? eligibleCubs[0] ?? cubsWithTitanTraits[0]
+        if (!cubToKeep) return
+
+        newLitter.forEach(cub => {
+            if (!cub) return
+            cub.titan_traits = []
+        })
+        cubToKeep.titan_traits = [traitToKeep]
+    }
+
     function makeRandom(
         randomGenerator = new NemeionRandomGenerator(),
         chanceRoll = DEFAULT_CHANCE_ROLL,
@@ -482,6 +506,9 @@ export default defineStore('den', () => {
         _applyMutagenicPhysicalMutation(newLitter, randomSample, fertilityTreatmentOverrides.shouldDoAction)
 
         _applyInbreedingHealth(newLitter, rollD100, randomSample)
+
+        // Global litter rule: only one Titan Trait may pass, and only to one cub.
+        _enforceSingleTitanTraitPerLitter(newLitter, randomSample)
         offspring.value = newLitter
     }
 
